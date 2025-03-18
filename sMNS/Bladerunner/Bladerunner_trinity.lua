@@ -3,7 +3,10 @@
 --- Режим игры
 --- 1. FFA
 --- 2. 1x2
+--- 3. Бесит!(FFA)
+--- 4. Бесит!(1x2)
 local gmode = 1
+local smode
 ------------------------------------------------------------------------------------------
 --- коэффициент сложности (<0.9 легко; 0.9-1.1 средне; >1.1 сложно) - не применяется к Т0
 local kef = 1
@@ -1883,6 +1886,15 @@ function gmm(what1, what2)
 	end
 end
 
+-- Специальный режим карты
+function smm(whatever, what34)
+	if smode == (3 or 4) then
+		return what34
+	else
+		return whatever
+	end
+end
+
 -- Режим рынка
 function mmc(what1, what2)
 	if market_mode == 1 or gmode == 1 then
@@ -1935,6 +1947,18 @@ function rndAndSave(saveArray, values, ignore)
 	end
 	return res
 end
+
+-- преобразует таблицу из { key = N } в массив { keyN1, keyN2 ... keyNx }
+function convertN(tbl)
+	local result = {}
+	for k, n in pairs(tbl) do
+		for _=1,n,1 do
+			table.insert(result, k)
+		end
+	end
+	return result
+end
+
 
 -- субраса игрока
 function getPlayerSubRace(race)
@@ -2916,6 +2940,11 @@ function getZone5Stacks()
 		table.insert(stacks, z3Stacks2('g000ig0015'))
 		table.insert(stacks, z3Stacks2('g000ig0012'))
 	end
+	if smm(false, true) then
+			table.insert(stacks, specialGuard2())
+			table.insert(stacks, specialGuard2())
+			table.insert(stacks, specialGuard2())
+	end
 	return stacks
 end
 -------------------------
@@ -3012,6 +3041,56 @@ return {
 		},
 	}
 }
+end
+
+function specialGuard1(race) --
+	if smm(false, true) then
+		return {
+			value = { min = 1, max = 1 },
+			owner = race,
+			leaderIds = { 'g000uu6004' }, -- Толстый бес
+			leaderModifiers = convertN({
+				g000um9023 = 1, -- Артефакты
+				g000um9024 = 1, -- Реликвии
+				g000um9025 = 1, -- Знамена
+				g000um9027 = 1, -- Сферы
+				g000um9029 = 1, -- Свитки
+				g100um9003 = 10, -- +1 armor
+				g201um9210 = 3, -- +10 move
+				g201um9212 = 5, -- +1 move
+				g201um9182 = 4, -- 25% bodyguard
+				g201um9045 = 1, -- regen up to 25%
+			}),
+			loot = {
+				items = {
+					{ id = 'g001ig0128', min = 5, max = 5 }, -- Эликсир защиты от Оружия
+				}
+			}
+		}
+	end
+end
+
+function specialGuard2() --
+	if smm(false, true) then
+		return {
+			count = 1,
+			value = { min = 350, max = 350 },
+			order = Order.Guard,
+			name = 'Претендент',
+			leaderIds = { 'g000uu6004' }, -- Толстый бес
+			leaderModifiers = convertN({
+				g000um9027 = 1, -- Сферы
+				g201um9106 = 4, -- +1acc
+				g201um9119 = 12, -- -1ini
+				g201um9214 = 4, -- +50hp
+			}),
+			loot = {
+				items = {
+					{ id = 'g000ig9040', min = 1, max = 1 }, -- Сфера Полиморфа
+				}
+			}
+		}
+	end
 end
 
 -- Главная охрана т0-т4
@@ -3270,7 +3349,7 @@ function getTreasureZone5(zoneId, zoneSizeTre, races, mid)
 		return {
 			id = zoneId,
 			type = Zone.Water,
-			border = Border.SemiOpen,
+			border = Border.Open,
 			size = zoneSizeTre,
 			bags = bags5(),
 			stacks = {z5StackWater1(), z5StackWater2()}
@@ -3392,7 +3471,7 @@ function getZoneConnections(races)
 	-- игрок 1: т0 - т1
 	table.insert(connections, {from = 0, to = 1})
 	table.insert(connections, {from = 0, to = 1})
-	table.insert(connections, {from = 0, to = 1})
+	table.insert(connections, {from = 0, to = 1, guard = specialGuard1(races[1])})
 	table.insert(connections, {from = 0, to = 1})
 	table.insert(connections, {from = 0, to = 1})
 	-- игрок 1: т1 - т2
@@ -3405,7 +3484,7 @@ function getZoneConnections(races)
 	-- игрок 2: т0 - т1
 	table.insert(connections, {from = 8, to = 7})
 	table.insert(connections, {from = 8, to = 7})
-	table.insert(connections, {from = 8, to = 7})
+	table.insert(connections, {from = 8, to = 7, guard = specialGuard1(races[2])})
 	table.insert(connections, {from = 8, to = 7})
 	table.insert(connections, {from = 8, to = 7})
 	-- игрок 2: т1 - т2
@@ -3418,7 +3497,7 @@ function getZoneConnections(races)
 	-- игрок 3: т0 - т1
 	table.insert(connections, {from = 9, to = 10})
 	table.insert(connections, {from = 9, to = 10})
-	table.insert(connections, {from = 9, to = 10})
+	table.insert(connections, {from = 9, to = 10, guard = specialGuard1(races[3])})
 	table.insert(connections, {from = 9, to = 10})
 	table.insert(connections, {from = 9, to = 10})
 	-- игрок 3: т1 - т2
@@ -3533,7 +3612,6 @@ function getZoneConnections(races)
 	return connections
 end
 
-
 -- Дипломатия: возвращает информацию об дип.отношениях
 function getDiplomacyRelations(races)
 	if gmode == 2 then
@@ -3577,7 +3655,13 @@ function getTemplateContents(races, scenarioSize, parameters)
 
 	if parameters then
 		if parameters[1] then
-			gmode = parameters[1]
+			smode = parameters[1]
+			local n = parameters[1] % 2
+			if n == 1 then
+				gmode = 1
+			elseif n == 0 then
+				gmode = 2
+			end
 		end
 		if parameters[2] then
 			market_mode = parameters[2]
@@ -3610,7 +3694,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner 1.4b [Trinity] 1.2 beta4',
+	name = 'Bladerunner 1.4b [Trinity] 1.2 beta5',
 	description = getDescription()..'\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку!\nКарта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
@@ -3626,7 +3710,9 @@ template = {
 			name = 'Режим',
 			values = {
 				'FFA',
-				'1x2'
+				'1x2',
+				'FFA [Бесит!]',
+				'1x2 [Бесит!]',
 			},
 			default = gmode
 		},
