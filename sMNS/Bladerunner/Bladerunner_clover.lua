@@ -315,10 +315,12 @@ function zoneTownsResp0(race)
 	return {
 	{
 		tier = 1,
+		aiPriority = 0,
 		gapMask = 15,
 		stack = {
 			subraceTypes = rsub(),
 			value = valueTowerResp0,
+			aiPriority = 0,
 			loot = {
 				itemTypes = { Item.Scroll, Item.Orb },
 				value = { min = 400, max = 400 },
@@ -344,6 +346,7 @@ function zoneTowns2(race)
 	return {
 	{
 		tier = 1,
+		aiPriority = 0,
 		gapMask = 15,
 		stack = {
 			subraceTypes = NoUndead(),
@@ -351,6 +354,7 @@ function zoneTowns2(race)
 			loot = {
 				itemTypes = { Item.Scroll, Item.Orb },
 				value = { min = 450, max = 600 },
+				aiPriority = 0,
 				itemValue = { min = 450, max = 690 },
 				items = {
 					{ id = 'g000ig0001', min = 1, max = 1 }, --рес
@@ -373,11 +377,13 @@ function zoneTownsZone4()
 	return {
 	{
 		tier = 1,
+		aiPriority = 6,
 		gapMask = 15,
 		name = 'г.Стримерск',
 		stack = {
 			subraceTypes = { Subrace.NeutralDragon, Subrace.Human, Subrace.Heretic, Subrace.Dwarf, Subrace.Elf }, -- Subrace.Undead, убрал
 			value = { min = 1100*kef, max = 1100*kef*kr },
+			aiPriority = 0,
 			loot = {
 				itemTypes = { Item.Scroll, Item.Orb },
 				value = { min = 700, max = 800 },
@@ -1399,7 +1405,7 @@ function unitsMercen0(race)
 				'g000uu0013', -- Священник
 				'g000uu7569', -- Иерей
 				'g000uu0017', -- Аббатиса
-				'g001uu0021', -- Маг
+				'g000uu0010', -- Маг
 				'g000uu0153', -- Ученик-элементалист
 				'g001uu7581' -- Заклинатель
 		), unique = true } i = i + 1
@@ -1588,6 +1594,7 @@ function unitsMercen1()
 	end
 
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8151', level = 1, unique = true } i = i + 1 end -- Фурия 1215
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu2022', level = 1, unique = true } i = i + 1 end -- Ламия 1520
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8218', level = 1, unique = true } i = i + 1 end -- Волхв 1750
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu7567', level = 1, unique = true } i = i + 1 end -- Первородная сущность (ожог) 1800
 
@@ -1654,6 +1661,7 @@ function unitsMercen2()
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu2007', level = 3, unique = true } i = i + 1 end -- Мумификатор 860
 	end
 
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8213', level = 1, unique = true } i = i + 1 end -- Гоблин-шаман 1230
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7560', level = 1, unique = true } i = i + 1 end -- Каратель 1230
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g002uu5026', level = 1, unique = true } i = i + 1 end -- Элементаль воды 1450
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu7566', level = 1, unique = true } i = i + 1 end -- Первородная сущность (мороз) 1800
@@ -1722,6 +1730,7 @@ function unitsMercen3()
 		if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu0082', level = 3, unique = true } i = i + 1 end -- Некромант 710
 	end
 
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5006', level = 1, unique = true } i = i + 1 end -- Великий Оракул 1050
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu6121', level = 1, unique = true } i = i + 1 end -- Дхампир 1070
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8277', level = 1, unique = true } i = i + 1 end -- Уста богов 1520
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8237', level = 1, unique = true } i = i + 1 end -- Первородная сущность (рб) 1800
@@ -1788,6 +1797,7 @@ end
 function bags0()
 return {
 	count = 1,
+	aiPriority = 0,
 	loot = {
 		itemTypes = { Item.Valuable },
 		value = { min = 250, max = 250 },
@@ -1805,6 +1815,7 @@ end
 function bags1()
 return {
 	count = 1,
+	aiPriority = 0,
 	loot = {
 		itemTypes = { Item.Valuable },
 		value = { min = 500, max = 500 },
@@ -1822,6 +1833,7 @@ end
 function bags2()
 return {
 	count = 1,
+	aiPriority = 0,
 	loot = {
 		itemTypes = { Item.Valuable },
 		value = { min = 750, max = 750 },
@@ -1839,17 +1851,17 @@ end
 function bags3()
 return {
 	count = 1,
+	aiPriority = 0,
 	loot = {
 		itemTypes = { Item.Valuable },
-		value = { min = 1500, max = 1500 },
+		value = { min = 500, max = 500 },
 		itemValue = { min = 500, max = 500 },
 			items = {
-				{ id = 'g000ig0001', min = 2, max = 2 }, --рес
-				{ id = 'g000ig0006', min = 2, max = 2 }, --хил100
-				{ id = 'g000ig0018', min = 1, max = 1 }, --хил200
+				{ id = 'g000ig0001', min = 1, max = 2 }, --рес
+				{ id = 'g000ig0006', min = 1, max = 2 }, --хил100
+				{ id = 'g000ig0018', min = 0, max = 1 }, --хил200
 				{ id = pw5(), min = 1, max = 1 },
-				{ id = pw5(), min = 1, max = 1 },
-				{ id = pw5(), min = 1, max = 1 },
+				{ id = pw5(), min = 0, max = 1 },
 			}
 		}
 	}
@@ -2362,6 +2374,7 @@ end
 function zmStack(playerRace)
 	return {
 		count = 1,
+		aiPriority = 0,
 		value = { min = 1, max = 1 },
 		owner = playerRace,
 		name = workers_c_data[playerRace+1],
@@ -2399,9 +2412,10 @@ end
 ---------------------
 
 function z0Stacks1()
-return {  -- 140*2
+	return {  -- 140*2
 		subraceTypes = { Subrace.NeutralGreenSkin, Subrace.NeutralWolf },
 		count = 2,
+		aiPriority = 0,
 		value = { min = 280, max = 280*kr },
 		loot = {
 			items = {
@@ -2411,13 +2425,14 @@ return {  -- 140*2
 				rnd({ id = 'g000ig0021', min = 1, max = 1 }, { id = 'g000ig0024', min = 1, max = 1 }), --возд/огня
 			}
 		}
-}
+	}
 end
 
 function z0Stacks2()
-return {  -- 150*2
+	return {  -- 150*2
 		subraceTypes = rsub(),
 		count = 2,
+		aiPriority = 0,
 		value = { min = 300, max = 300*kr },
 		loot = {
 			items = {
@@ -2427,13 +2442,14 @@ return {  -- 150*2
 				{ id = rnd('g000ig0023', 'g000ig0022'), min = 1, max = 1 }, --земли/воды
 			}
 		}
-}
+	}
 end
 
 function z0Stacks3()
-return { -- 160*2
+	return { -- 160*2
 		subraceTypes = rsub(),
 		count = 2,
+		aiPriority = 0,
 		value = { min = 320, max = 320*kr },
 		loot = {
 			itemTypes = { Item.Orb },
@@ -2444,13 +2460,14 @@ return { -- 160*2
 				rnd({ id = 'g000ig0014', min = 1, max = 1 }, { id = 'g000ig0002', min = 1, max = 1 }), --атака15/защита15
 			}
 		}
-}
+	}
 end
 
 function z0Stacks4(race)
-return { -- 170*2
+	return { -- 170*2
 		subraceTypes = NoUndead(),
 		count = 2,
+		aiPriority = 0,
 		value = { min = 340, max = 340*kr },
 		loot = {
 			itemTypes = { Item.Scroll },
@@ -2461,13 +2478,14 @@ return { -- 170*2
 				rnd({ id = ExtraSmallManaProject4(race), min = 1, max = 1 }, { id = rmss(), min = 1, max = 1 }), --случ. доп. мал. доп. / случ мал шар манны
 			}
 		}
-}
+	}
 end
 
 function z0Stacks5()
-return { -- 180*1
+	return { -- 180*1
 		subraceTypes = NoUndead(),
 		count = 1,
+		aiPriority = 0,
 		value = { min = 180, max = 180*kr },
 		loot = {
 			items = {
@@ -2476,7 +2494,7 @@ return { -- 180*1
 				{ id = e2(), min = 1, max = 1 },
 			}
 		}
-}
+	}
 end
 
 --------------
@@ -2484,9 +2502,10 @@ end
 --------------
 
 function z1Stacks1(race)
-return {  --200xp*2
+	return {  --200xp*2
 		subraceTypes = { Subrace.NeutralGreenSkin, Subrace.NeutralWolf },
 		count = 2,
+		aiPriority = 0,
 		value = { min = 400*kef, max = 400*kef*kr },
 		loot = {
 			items = {
@@ -2497,98 +2516,102 @@ return {  --200xp*2
 				{ id = w15(), min = 1, max = 1 }, --случ. вард
 			}
 		}
-}
+	}
 end
 
 function z1Stacks2()
-return { --220xp*2
+	return { --220xp*2
 		subraceTypes = rsub(),
 		count = 2,
-			value = { min = 440*kef, max = 440*kef*kr },
-			loot = {
-				itemTypes = { Item.Orb },
-				value = { min = 400, max = 400 },
-				itemValue = { min = 200, max = 200 },
-				items = {
-					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
-					rnd({ id = 'g000ig0014', min = 1, max = 1 }, { id = 'g000ig0002', min = 1, max = 1 }), --атака15/защита15
-					rnd({ id = 'g000ig0021', min = 1, max = 1 }, { id = 'g000ig0024', min = 1, max = 1 }), --возд/огня
-					{ id = getTalisman2(), min = 1, max = 1 },  -- Талисман 400-500
+		aiPriority = 0,
+		value = { min = 440*kef, max = 440*kef*kr },
+		loot = {
+			itemTypes = { Item.Orb },
+			value = { min = 400, max = 400 },
+			itemValue = { min = 200, max = 200 },
+			items = {
+				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
+				rnd({ id = 'g000ig0014', min = 1, max = 1 }, { id = 'g000ig0002', min = 1, max = 1 }), --атака15/защита15
+				rnd({ id = 'g000ig0021', min = 1, max = 1 }, { id = 'g000ig0024', min = 1, max = 1 }), --возд/огня
+				{ id = getTalisman2(), min = 1, max = 1 },  -- Талисман 400-500
 
-				}
 			}
-
-}
+		}
+	}
 end
 
 function z1Stacks3()
-return { --240xp*2
+	return { --240xp*2
 		subraceTypes = rsub(),
 		count = 2,
-			value = { min = 480*kef, max = 480*kef*kr },
-			loot = {
-				itemTypes = { Item.Scroll },
-				value = { min = 800, max = 800 },
-				itemValue = { min = 400, max = 400 },
-				items = {
-					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
-					{ id = 'g001ig0378', min = 1, max = 1 }, --хил75
-					rnd({ id = 'g000ig0022', min = 1, max = 1 }, { id = 'g000ig0023', min = 1, max = 1 }), --воды/земли
-					{ id = rms(), min = 1, max = 1 }, --случ. шар манны
-				}
+		aiPriority = 0,
+		value = { min = 480*kef, max = 480*kef*kr },
+		loot = {
+			itemTypes = { Item.Scroll },
+			value = { min = 800, max = 800 },
+			itemValue = { min = 400, max = 400 },
+			items = {
+				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
+				{ id = 'g001ig0378', min = 1, max = 1 }, --хил75
+				rnd({ id = 'g000ig0022', min = 1, max = 1 }, { id = 'g000ig0023', min = 1, max = 1 }), --воды/земли
+				{ id = rms(), min = 1, max = 1 }, --случ. шар манны
 			}
-}
+		}
+	}
 end
 
 function z1Stacks4()
-return { --280xp*1
+	return { --280xp*1
 		count = 1,
-			subraceTypes = NoUndead(),
-			value = { min = 280*kef, max = 280*kef*kr },
-			loot = {
-				items = {
-					{ id = 'g000ig0006', min = 1, max = 1 }, --хил100
-					rnd({ id = 'g001ig0533', min = 1, max = 1 },{ id = 'g001ig0026', min = 1, max = 1 }), -- Зелье ясного взора / Аура регенерации +10реген аое
-					{ id = b15(), min = 1, max = 1 }, --случ. банка15
-					rnd({ id = 'g001ig0125', min = 1, max = 1 }, { id = 'g001ig0036', min = 1, max = 1 }), --разума/смерти
-				}
+		aiPriority = 0,
+		subraceTypes = NoUndead(),
+		value = { min = 280*kef, max = 280*kef*kr },
+		loot = {
+			items = {
+				{ id = 'g000ig0006', min = 1, max = 1 }, --хил100
+				rnd({ id = 'g001ig0533', min = 1, max = 1 },{ id = 'g001ig0026', min = 1, max = 1 }), -- Зелье ясного взора / Аура регенерации +10реген аое
+				{ id = b15(), min = 1, max = 1 }, --случ. банка15
+				rnd({ id = 'g001ig0125', min = 1, max = 1 }, { id = 'g001ig0036', min = 1, max = 1 }), --разума/смерти
 			}
-}
+		}
+	}
 
 end
 
 function z1Stacks5()
-return { --300xp*1
+	return { --300xp*1
 		count = 1,
-			subraceTypes = NoUndead(),
-			value = { min = 300*kef, max = 300*kef*kr },
-			loot = {
-				items = {
-					{ id = 'g000ig0001', min = 1, max = 1 }, --рес
-					{ id = 'g001ig0378', min = 1, max = 1 }, --хил75
-					{ id = w15(), min = 1, max = 1 }, --случ. вард
-					{ id = e4(), min = 1, max = 1 },
-				}
+		aiPriority = 0,
+		subraceTypes = NoUndead(),
+		value = { min = 300*kef, max = 300*kef*kr },
+		loot = {
+			items = {
+				{ id = 'g000ig0001', min = 1, max = 1 }, --рес
+				{ id = 'g001ig0378', min = 1, max = 1 }, --хил75
+				{ id = w15(), min = 1, max = 1 }, --случ. вард
+				{ id = e4(), min = 1, max = 1 },
 			}
-}
+		}
+	}
 end
 
 function z1Stacks6()
-return { --320xp*1
+	return { --320xp*1
 		count = 1,
-			subraceTypes = NoUndead(),
-			value = { min = 320*kef, max = 320*kef*kr },
-			loot = {
-				itemTypes = { Item.Talisman, Item.Wand },
-				value = { min = 200, max = 200 },
-				itemValue = { min = 200, max = 200 },
-				items = {
-					{ id = 'g000ig0006', min = 1, max = 1 }, --хил100
-					{ id = getTalisman2(), min = 1, max = 1 },  -- Талисман 400-500
-					{ id = d15(), min = 1, max = 1 }, --спец.вард
-				}
+		aiPriority = 0,
+		subraceTypes = NoUndead(),
+		value = { min = 320*kef, max = 320*kef*kr },
+		loot = {
+			itemTypes = { Item.Talisman, Item.Wand },
+			value = { min = 200, max = 200 },
+			itemValue = { min = 200, max = 200 },
+			items = {
+				{ id = 'g000ig0006', min = 1, max = 1 }, --хил100
+				{ id = getTalisman2(), min = 1, max = 1 },  -- Талисман 400-500
+				{ id = d15(), min = 1, max = 1 }, --спец.вард
 			}
-}
+		}
+	}
 end
 
 ------------------
@@ -2596,9 +2619,10 @@ end
 ------------------
 
 function z2Stacks1()
-return { -- 300xp*2
+	return { -- 300xp*2
 		subraceTypes = rsub(),
 		count = 2,
+		aiPriority = 0,
 		value = { min = 600*kef, max = 600*kef*kr},
 		loot = {
 			items = {
@@ -2614,9 +2638,10 @@ return { -- 300xp*2
 end
 
 function z2Stacks2()
-return { -- 400хп*2
+	return { -- 400хп*2
 		subraceTypes = rsub(),
 		count = 2,
+		aiPriority = 0,
 		value = { min = 800*kef, max = 800*kef*kr },
 		loot = {
 			itemTypes = { Item.Orb },
@@ -2629,13 +2654,14 @@ return { -- 400хп*2
 				rnd({ id = e2(), min = 1, max = 1}, { id = 'g002ig0006', min = 1, max = 1}, { id = 'g002ig0008', min = 1, max = 1}), -- e2 / Зелье бдительности 500 / Эликсир скрытого потенциала 500
 			}
 		}
-}
+	}
 end
 
 function z2Stacks3()
-return { -- 500xp*2
+	return { -- 500xp*2
 		subraceTypes = rsub(),
 		count = 2,
+		aiPriority = 0,
 		value = { min = 1000*kef, max = 1000*kef*kr},
 		loot = {
 			itemTypes = { Item.Scroll },
@@ -2652,9 +2678,10 @@ return { -- 500xp*2
 end
 
 function z2Stacks4()
-return { -- 550хп*1
+	return { -- 550хп*1
 		subraceTypes = NoUndead(),
 		count = 1,
+		aiPriority = 0,
 		value = { min = 550*kef, max = 550*kef*kr },
 		loot = {
 			items = {
@@ -2664,13 +2691,14 @@ return { -- 550хп*1
 				{ id = 'g001ig0036', min = 1, max = 1 }, --смерти
 			}
 		},
-}
+	}
 end
 
 function z2Stacks5()
-return { -- 575хп*1
+	return { -- 575хп*1
 		subraceTypes = NoUndead(),
 		count = 1,
+		aiPriority = 0,
 		value = { min = 575*kef, max = 575*kef*kr },
 		loot = {
 			items = {
@@ -2680,13 +2708,14 @@ return { -- 575хп*1
 				{ id = rnd(e2(), e2(), 'g002ig0005', 'g002ig0007'), min = 1, max = 1}, -- эл200 x2 / зелье наблюдательности / зелье магической устойчивости
 			}
 		},
-}
+	}
 end
 
 function z2Stacks6()
-return { -- 600хп*1
+	return { -- 600хп*1
 		subraceTypes = NoUndead(),
 		count = 1,
+		aiPriority = 0,
 		value = { min = 600*kef, max = 600*kef*kr },
 		loot = {
 			itemTypes = { Item.PotionPermanent },
@@ -2706,9 +2735,10 @@ end
 --------------------
 
 function z3Stacks1(zshm)
-return { -- 600xp
+	return { -- 600xp
 		subraceTypes = rsub(),
 		count = 1,
+		aiPriority = 0,
 		value = { min = 600*kef, max = 600*kef*kr},
 		loot = {
 			items = {
@@ -2722,9 +2752,10 @@ return { -- 600xp
 end
 
 function z3Stacks2(zb30)
-return { -- 700хп
+	return { -- 700хп
 		subraceTypes = rsub(),
 		count = 1,
+		aiPriority = 0,
 		value = { min = 700*kef, max = 700*kef*kr },
 		loot = {
 			items = {
@@ -2738,27 +2769,29 @@ return { -- 700хп
 end
 
 function z3Stacks3(zusil200)
-return { -- 750хп
+	return { -- 750хп
 		subraceTypes = rsub(),
 		count = 1,
+		aiPriority = 0,
 		value = { min = 750*kef, max = 750*kef*kr },
 		loot = {
 			itemTypes = { Item.Orb },
 			value = { min = 450, max = 600 },
 			itemValue = { min = 450, max = 600 },
-				items = {
-					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
-					rnd({ id = 'g001ig0180', min = 3, max = 3 }, { id = 'g001ig0378', min = 1, max = 1 }), --3хил25/хил75
-					{ id = zusil200, min = 1, max = 1 }, --усиление200
-				}
+			items = {
+				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
+				rnd({ id = 'g001ig0180', min = 3, max = 3 }, { id = 'g001ig0378', min = 1, max = 1 }), --3хил25/хил75
+				{ id = zusil200, min = 1, max = 1 }, --усиление200
+			}
 		}
-}
+	}
 end
 
 function z3Stacks4(zusil500, Scroll34)
-return { -- 800хп
+	return { -- 800хп
 		subraceTypes = NoUndead(),
 		count = 1,
+		aiPriority = 0,
 		value = { min = 800*kef, max = 800*kef*kr },
 		loot = {
 			items = {
@@ -2768,13 +2801,14 @@ return { -- 800хп
 				{ id = Scroll34, min = 1, max = 1 }, --свиток т3/т4
 			}
 		}
-}
+	}
 end
 
 function z3Stacks5(zperm)
-return { -- 850хп
+	return { -- 850хп
 		subraceTypes = NoUndead(),
 		count = 1,
+		aiPriority = 0,
 		value = { min = 850*kef, max = 850*kef*kr },
 		loot = {
 			items = {
@@ -2784,13 +2818,14 @@ return { -- 850хп
 				rnd({ id = rms(), min = 1, max = 1 }, { id = getTalisman4(), min = 1, max = 1 }, { id = b15(), min = 1, max = 1 }, { id = w15(), min = 1, max = 1 }), -- сл.шар/талисман 1000/b15/w15
 			}
 		}
-}
+	}
 end
 
 function z3StacksX()
-return { -- 1100хп
+	return { -- 1100хп
 		subraceTypes = { Subrace.NeutralDragon, Subrace.Human, Subrace.Heretic, Subrace.Dwarf, Subrace.Elf }, -- Subrace.Undead, убрал
 		count = 1,
+		aiPriority = 0,
 		value = { min = 1100*kef, max = 1100*kef*kr },
 		loot = {
 			items = {
@@ -2801,7 +2836,7 @@ return { -- 1100хп
 				rnd({ id = 'g001ig0151', min = 1, max = 1 }, { id = 'g000ig7003', min = 1, max = 1 }), -- Шар колдовства/Изумруд (Драгоценность) 150
 			}
 		}
-}
+	}
 end
 
 -------------------------
@@ -2809,101 +2844,109 @@ end
 -- Охрана объектов
 
 function guard1() -- зона1 --драги 250-375
-return {
-	value = { min = 230*kef, max = 230*kef*kr },
-	loot = {
-		itemTypes = { Item.Valuable },
-		value = { min = 250, max = 400 },
-		itemValue = { min = 250, max = 400 },
-		items = {
-			{ id = 'g000ig0005', min = 1, max = 1}, -- хил50
-		},
+	return {
+		value = { min = 230*kef, max = 230*kef*kr },
+		aiPriority = 0,
+		loot = {
+			itemTypes = { Item.Valuable },
+			value = { min = 250, max = 400 },
+			itemValue = { min = 250, max = 400 },
+			items = {
+				{ id = 'g000ig0005', min = 1, max = 1}, -- хил50
+			},
+		}
 	}
-}
 end
 
 function guard2() -- зона2 --драги 375-500
-return {
-	value = { min = 400*kef, max = 400*kef*kr },
-	loot = {
-		itemTypes = { Item.Valuable },
-		value = { min = 375, max = 525 },
-		itemValue = { min = 375, max = 525 },
-		items = {
-			{ id = 'g001ig0378', min = 1, max = 1}, -- хил75
-		},
+	return {
+		value = { min = 400*kef, max = 400*kef*kr },
+		aiPriority = 0,
+		loot = {
+			itemTypes = { Item.Valuable },
+			value = { min = 375, max = 525 },
+			itemValue = { min = 375, max = 525 },
+			items = {
+				{ id = 'g001ig0378', min = 1, max = 1}, -- хил75
+			},
+		}
 	}
-}
 end
 
 function guard2n() -- зона2 наём.
-return {
-	value = { min = 400*kef, max = 400*kef*kr },
-	loot = {
-		items = {
-			{ id = 'g000ig0006', min = 1, max = 1}, -- хил100
-			{ id = b15(), min = 1, max = 1 }, --случ. банка на 15
-		},
+	return {
+		value = { min = 400*kef, max = 400*kef*kr },
+		aiPriority = 0,
+		loot = {
+			items = {
+				{ id = 'g000ig0006', min = 1, max = 1}, -- хил100
+				{ id = b15(), min = 1, max = 1 }, --случ. банка на 15
+			},
+		}
 	}
-}
 end
 
 function guard2m() -- зона2 башня
-return {
-	value = { min = 400*kef, max = 400*kef*kr },
-	loot = {
-		items = {
-			rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
-			{ id = w15(), min = 1, max = 1 }, --случ. вард стих.
-		},
+	return {
+		value = { min = 400*kef, max = 400*kef*kr },
+		aiPriority = 0,
+		loot = {
+			items = {
+				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
+				{ id = w15(), min = 1, max = 1 }, --случ. вард стих.
+			},
+		}
 	}
-}
 end
 
 function guard3m() -- зона3 башня
-return {
-	value = { min = 750*kef, max = 750*kef*kr },
-	loot = {
-		items = {
-			rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
-			rnd({ id = 'g001ig0432', min = 1, max = 1 }, { id = rms(), min = 1, max = 1 }), --аметист125/случ. шар манны
-			{ id = b15(), min = 1, max = 1}, -- случ. банка15
-			{ id = w15(), min = 1, max = 1}, -- случ. вард
+	return {
+		value = { min = 750*kef, max = 750*kef*kr },
+		aiPriority = 0,
+		loot = {
+			items = {
+				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
+				rnd({ id = 'g001ig0432', min = 1, max = 1 }, { id = rms(), min = 1, max = 1 }), --аметист125/случ. шар манны
+				{ id = b15(), min = 1, max = 1}, -- случ. банка15
+				{ id = w15(), min = 1, max = 1}, -- случ. вард
+			},
 		},
-	},
-}
+	}
 end
 
 function guard3() -- зона3 --драги 500-625
-return {
-	value = { min = 750*kef, max = 750*kef*kr },
-	loot = {
-		itemTypes = { Item.Valuable },
-		value = { min = 500, max = 650 },
-		itemValue = { min = 500, max = 650 },
-		items = {
-			{ id = 'g000ig0006', min = 1, max = 1}, --хил100
-		},
+	return {
+		value = { min = 750*kef, max = 750*kef*kr },
+		aiPriority = 0,
+		loot = {
+			itemTypes = { Item.Valuable },
+			value = { min = 500, max = 650 },
+			itemValue = { min = 500, max = 650 },
+			items = {
+				{ id = 'g000ig0006', min = 1, max = 1}, --хил100
+			},
+		}
 	}
-}
 end
 
 function guard3n() -- зона3 наём.
-return {
-	value = { min = 750*kef, max = 750*kef*kr },
-	loot = {
-		items = {
+	return {
+		value = { min = 750*kef, max = 750*kef*kr },
+		aiPriority = 0,
+		loot = {
+			items = {
 				{ id = 'g000ig0001', min = 1, max = 1 }, --рес
 				{ id = b15(), min = 1, max = 1 }, --случ. банка на 15
-		},
+			},
+		}
 	}
-}
 end
 
 function specialGuard1(race) --
 	if smm(false, true) then
 		return {
 			value = { min = 1, max = 1 },
+			aiPriority = 6,
 			owner = race,
 			leaderIds = { 'g000uu6004' }, -- Толстый бес
 			leaderModifiers = convertN({
@@ -2917,6 +2960,7 @@ function specialGuard1(race) --
 				g201um9212 = 5, -- +1 move
 				g201um9182 = 4, -- 25% bodyguard
 				g201um9045 = 1, -- regen up to 25%
+				g201um9130 = 1, -- +10 negotiation
 			}),
 			loot = {
 				items = {
@@ -2932,7 +2976,8 @@ function specialGuard2() --
 		return {
 			count = 1,
 			value = { min = 350, max = 350 },
-			order = Order.Guard,
+			aiPriority = 0,
+			order = Order.Roam,
 			name = 'Претендент',
 			leaderIds = { 'g000uu6004' }, -- Толстый бес
 			leaderModifiers = convertN({
@@ -2940,6 +2985,8 @@ function specialGuard2() --
 				g201um9106 = 4, -- +1acc
 				g201um9119 = 12, -- -1ini
 				g201um9214 = 4, -- +50hp
+				g201um9046 = 1, -- regen up to 50%
+				g201um9130 = 1, -- +10 negotiation
 			}),
 			loot = {
 				items = {
@@ -2952,23 +2999,24 @@ end
 
 -- Главная охрана т0-т4
 function zoneGuardZone04(races)
-return {
-	subraceTypes = { getPlayerSubRace(guardRace) },
-	leaderIds = getFactionLeaders(guardRace),
-	value = { min = 700*kef, max = 700*kef*kr }, --
-	loot = {
-		value = { min = 300, max = 370 },
-		itemValue = { min = 300, max = 370 },
-		itemTypes = { Item.PotionPermanent },
-		items = {
-			{ id = 'g000ig0001', min = 2, max = 2 },
-			{ id = 'g000ig0006', min = 2, max = 2 },
-			rnd({ id = 'g001ig0151', min = 1, max = 1 }, { id = 'g000ig7004', min = 1, max = 1 }), -- Шар колдовства/Золотое кольцо (Драгоценность)200
-			{ id = p05(), min = 1, max = 1},
-			rnd({id = b15(), min = 1, max = 1}, {id = w15(), min = 1, max = 1}, {id = d15(), min = 1, max = 1}),
+	return {
+		subraceTypes = { getPlayerSubRace(guardRace) },
+		leaderIds = getFactionLeaders(guardRace),
+		value = { min = 700*kef, max = 700*kef*kr }, --
+		aiPriority = 0,
+		loot = {
+			value = { min = 300, max = 370 },
+			itemValue = { min = 300, max = 370 },
+			itemTypes = { Item.PotionPermanent },
+			items = {
+				{ id = 'g000ig0001', min = 2, max = 2 },
+				{ id = 'g000ig0006', min = 2, max = 2 },
+				rnd({ id = 'g001ig0151', min = 1, max = 1 }, { id = 'g000ig7004', min = 1, max = 1 }), -- Шар колдовства/Золотое кольцо (Драгоценность)200
+				{ id = p05(), min = 1, max = 1},
+				rnd({id = b15(), min = 1, max = 1}, {id = w15(), min = 1, max = 1}, {id = d15(), min = 1, max = 1}),
+			}
 		}
 	}
-}
 end
 
 -- Главная охрана т2 - т2
@@ -2976,6 +3024,7 @@ function zoneGuardZone2()
 return {
 	subraceTypes = { Subrace.NeutralDragon, Subrace.Human, Subrace.Heretic, Subrace.Dwarf, Subrace.Elf }, -- Subrace.Undead, убрал
 	value = { min = 1500*kef, max = 1560*kef }, --
+	aiPriority = 0,
 	loot = {
 		value = { min = 600, max = 740 },
 		itemValue = { min = 600, max = 740 },
@@ -3012,6 +3061,7 @@ function getPlayerZone0(zoneId, playerRace, zoneSize)
 		stacks = {z0Stacks1(), z0Stacks2(), z0Stacks3(), z0Stacks4(playerRace), z0Stacks5()},
 
 		capital = {
+			aiPriority = 0,
 			gapMask = 15,
 			garrison = { -- столица
 				subraceTypes = { getPlayerSubRace(playerRace) },
@@ -3589,7 +3639,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner 1.4b [Clover] 1.2 beta5',
+	name = 'Bladerunner 1.4b [Clover] 1.2 beta6',
 	description = 'Черная зона в центре, ее должны касаться 4 т.серых зоны.\nСиняя, белая, желтая, серая зоны должны касаться двух т.серых зон.\nКрасная, т.синяя, пурпурная, оранжевая должны касаться ближайшей т.серой\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
