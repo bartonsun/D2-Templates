@@ -7,8 +7,11 @@
 --- 4. Бесит!(FFA)
 --- 5. Бесит!(2x2 т0)
 --- 6. Бесит!(2x2 т2)
+--- 7. Баланс(FFA)
+--- 8. Баланс(2x2 т0)
+--- 9. Баланс(2x2 т2)
 local gmode = 1
-local smode
+local smode = 1
 ------------------------------------------------------------------------------------------
 --- коэффициент сложности (<0.9 легко; 0.9-1.1 средне; >1.1 сложно) - не применяется к Т0
 local kef = 1
@@ -39,8 +42,10 @@ local border_mode = 1
 local kr = 1.05
 ------------------------------------------------------------------------------------------
 --- количество заклинаний в башнях магии
-local sp1 = 15 -- т1
+local sp1 = 14 -- т1 + гарантированный призыв
 local sp3 = 7 -- т3
+------------------------------------------------------------------------------------------
+local iad = math.random(1,6)
 ------------------------------------------------------------------------------------------
 
 --- КОД ШАБЛОНА
@@ -76,8 +81,8 @@ local merchant_c_data = {
 -- Тренер
 local trainer_c_data = {
 	{
-		name = '',
-		description = '',
+		name = 'Самый Успешный Зал',
+		description = 'ОтСУЗь своих врагов полностью',
 	},
 	{
 		name = 'Лагерь Дедикейшена',
@@ -192,14 +197,30 @@ local workers_c_data = {
 ------------------------------------------------------------------------------------------
 
 --Башня магии в зоне 1
-function zoneMageResp1()
+function zoneMageResp1(race)
+	local summons = {}
+	if race ~= Race.Human then
+	end
+	if race ~= Race.Dwarf then
+		table.insert(summons, 'g000ss0025') -- Призыв I: Рух
+	end
+	if race ~= Race.Undead then
+		table.insert(summons, 'g000ss0061') -- Призыв I: Скелет
+	end
+	if race ~= Race.Heretic then
+		table.insert(summons, 'g000ss0041') -- Incantare Hellhound
+	end
+	if race ~= Race.Elf then
+		table.insert(summons, 'g000ss0098') -- Призыв I: Энт Малый
+	end
+
 	local spells_t1 = {
 		'g000ss0002', -- быстрота
 		'g000ss0007', -- Исцеление
 		'g000ss0178', -- Неудача --мэ
 
-		'g000ss0025', -- Призыв I: Рух
 		'g000ss0023', -- сила витара
+		'g000ss0179', -- устрашающий гимн
 
 		'g000ss0045', -- tormentio
 		'g000ss0044', -- Menta minoris
@@ -208,7 +229,7 @@ function zoneMageResp1()
 		'g000ss0064', -- слабость
 
 		'g000ss0101', -- стая
-		'g000ss0098', -- Призыв I: Энт Малый
+		'g000ss0102', -- стойкость рощи
 
 		'g000ss0183', -- сокрушение
 		'g000ss0197', -- Заступничество
@@ -229,9 +250,15 @@ function zoneMageResp1()
 		'g000ss0133', -- Песнь слез
 		'g000ss0107', -- Дикие саженцы --мж
 	}
+	local c_spells = chooseSpells(spells_t1, sp1)
+	shake(summons)
+	table.insert(c_spells, summons[1])
+	if iad == 1 then
+		table.insert(c_spells, 'g000ss0188') -- Incantare Adipem Diaboli
+	end
 	return {
 		{
-			spells = chooseSpells(spells_t1, sp1)
+			spells = c_spells
 		}
 	}
 end
@@ -809,6 +836,7 @@ return {
 				yn({ id = 'g001ig0415', min = 1, max = 1 }), -- Руна кары Тьяцци (Артефакт) 1150
 				yn({ id = 'g001ig0612', min = 1, max = 1 }), -- Кольцо небесной воли (Артефакт) 1000
 				yn({ id = 'g001ig0413', min = 1, max = 1 }), -- Корни триббога (Артефакт) 1200
+				yn({ id = 'g001ig0158', min = 1, max = 1 }), -- Ужасающий топор (Артефакт)1200
 				yn({ id = 'g001ig0411', min = 1, max = 1 }), -- Грань реальности (Артефакт)1400
 				yn({ id = 'g001ig0604', min = 1, max = 1 }), -- Кинжал жатвы (Артефакт)1300
 				yn({ id = 'g001ig0046', min = 1, max = 1 }), -- Кровь Владыки (Артефакт)1400
@@ -1172,8 +1200,8 @@ return {
 {
 	exchangeRates = [[
 		function getExchangeRates(visitor)
-				local k1 = 3
-				local k2 = 1
+				local k1 = 15
+				local k2 = 5
 			return {
 				{
 					Resource.Gold,
@@ -1910,9 +1938,11 @@ function gmm(what1, what2, what3)
 end
 
 -- Специальный режим карты
-function smm(whatever, what456)
-	if smode == (4 or 5 or 6) then
-		return what456
+function smm(whatever, what2, what3)
+	if smode == 2 then
+		return what2
+	elseif smode == 3 then
+		return what3
 	else
 		return whatever
 	end
@@ -2943,7 +2973,7 @@ function guard3n() -- зона3 наём.
 end
 
 function specialGuard1(race) --
-	if smm(false, true) then
+	if smm(false, true, false) then
 		return {
 			value = { min = 1, max = 1 },
 			aiPriority = 6,
@@ -2956,8 +2986,8 @@ function specialGuard1(race) --
 				g000um9027 = 1, -- Сферы
 				g000um9029 = 1, -- Свитки
 				g100um9003 = 10, -- +1 armor
-				g201um9210 = 3, -- +10 move
-				g201um9212 = 5, -- +1 move
+				g201um9210 = 2, -- +10 move
+				g201um9212 = 0, -- +1 move
 				g201um9182 = 4, -- 25% bodyguard
 				g201um9045 = 1, -- regen up to 25%
 				g201um9130 = 1, -- +10 negotiation
@@ -2972,7 +3002,7 @@ function specialGuard1(race) --
 end
 
 function specialGuard2() --
-	if smm(false, true) then
+	if smm(false, true, false) then
 		return {
 			count = 1,
 			value = { min = 350, max = 350 },
@@ -3133,7 +3163,7 @@ function getPlayerZone1(zoneId, playerRace, zoneSize)
 		size = zoneSize,
 		towns = zoneTownsResp0(playerRace),
 		merchants = zoneMerch1(),
-		mages = zoneMageResp1(),
+		mages = zoneMageResp1(playerRace),
 		ruins = zoneRuinRespZ(),
 		mines = getMinesRespZ2(playerRace),
 		bags = bags1(),
@@ -3537,6 +3567,40 @@ function getZoneConnections(races)
 	return connections
 end
 
+-- Переменные сценария
+function getScenarioVariables()
+	local races = { 'EMPIRE', 'LEGIONS', 'CLANS', 'HORDES', 'ELVES', 'NEUTRALS' }
+	local vars = smm(
+			-- оригинал
+			{},
+			-- бесит!
+			{
+				{ name = '_SCOUT_FLAT', value = 98 },
+			},
+			-- баланс
+			{
+				{ name = '_SCOUT_FLAT', value = 199 },
+				{ name = '_TIER_1_CITY_INCOME', value = 1 },
+				{ name = '_TIER_2_CITY_INCOME', value = 2 },
+				{ name = '_TIER_3_CITY_INCOME', value = 3 },
+				{ name = '_TIER_4_CITY_INCOME', value = 4 },
+				{ name = '_TIER_5_CITY_INCOME', value = 5 },
+				{ name = '_INITIATIVE_FLAT', value = 0 },
+				{ name = '_INITIATIVE_MULTI', value = 0 },
+				{ name = '_CRITDAMAGE1_MULTI', value = 99 },
+				{ name = '_CRITDAMAGE2_MULTI', value = 99 },
+				{ name = '_ARMOR_FLAT', value = 99 },
+			}
+	)
+	local result = {}
+	for _, v in pairs(vars) do
+		for _, race in pairs(races) do
+			table.insert(result, { name = race..v['name'], value = v['value'] })
+		end
+	end
+	return result
+end
+
 -- Дипломатия: возвращает информацию об дип.отношениях
 function getDiplomacyRelations(races)
 	if gmode == 2 or gmode == 3 then
@@ -3592,7 +3656,7 @@ function getTemplateContents(races, scenarioSize, parameters)
 	if parameters then
 		if parameters[1] then
 			local n = parameters[1] % 3
-			smode = parameters[1]
+			smode = math.ceil(parameters[1] / 3)
 			if n == 1 then
 				gmode = 1
 			elseif n == 2 then
@@ -3630,6 +3694,7 @@ function getTemplateContents(races, scenarioSize, parameters)
 		}
 	end
 
+	contents.scenarioVariables = getScenarioVariables()
 	contents.diplomacy = getDiplomacyRelations(races)
 	contents.zones = getZones(races)
 	contents.connections = getZoneConnections(races)
@@ -3639,7 +3704,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner 1.4b [Clover] 1.2 beta6',
+	name = 'Bladerunner 1.4b [Clover] 1.2 beta7',
 	description = 'Черная зона в центре, ее должны касаться 4 т.серых зоны.\nСиняя, белая, желтая, серая зоны должны касаться двух т.серых зон.\nКрасная, т.синяя, пурпурная, оранжевая должны касаться ближайшей т.серой\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
@@ -3660,6 +3725,9 @@ template = {
 				'FFA [Бесит!]',
 				'2x2 (т0) [Бесит!]',
 				'2x2 (т2) [Бесит!]',
+				'FFA [Баланс]',
+				'2x2 (т0) [Баланс]',
+				'2x2 (т2) [Баланс]',
 			},
 			default = gmode
 		},
