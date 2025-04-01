@@ -1613,8 +1613,8 @@ function unitsMercen1()
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8020', level = 3, unique = true } i = i + 1 end -- Стингер 830
 
 		if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu0054', level = 3, unique = true } i = i + 1 end -- Черный паладин 630
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu0171', level = 3, unique = true } i = i + 1 end -- Демонолог 760
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7574', level = 3, unique = true } i = i + 1 end -- Цитриновая гаргулья 1880
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu0171', level = 3, unique = true } i = i + 1 end -- Подражатель 1200
 
 		if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu0088', level = 3, unique = true } i = i + 1 end -- Скелет-воин 720
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7565', level = 2, unique = true } i = i + 1 end -- Чумной оборотень 600
@@ -1628,15 +1628,15 @@ function unitsMercen1()
 
 	if mercenary_mode >= 3 then
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7624', level = 1, unique = true } i = i + 1 end -- Неприкаянная 1900
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu6117', level = 1, unique = true } i = i + 1 end -- Костяной лорд 3250
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu7589', level = 1, unique = true } i = i + 1 end -- Осквернитель 2500
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu8255', level = 1, unique = true } i = i + 1 end -- Эльф-тень 3200
-		if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7601', level = 1, unique = true } i = i + 1 end -- Адепт культа 3600
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7625', level = 1, unique = true } i = i + 1 end -- Темный оракул 3700
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu7603', level = 1, unique = true } i = i + 1 end -- Несущий скорбь 3800
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8231', level = 1, unique = true } i = i + 1 end -- Катафрактарий 4700
 	end
 
 	if mercenary_mode >= 4 then
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu7589', level = 1, unique = true } i = i + 1 end -- Осквернитель 2500
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu6117', level = 1, unique = true } i = i + 1 end -- Костяной лорд 3250
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7625', level = 1, unique = true } i = i + 1 end -- Темный оракул 3700
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7618', level = 1, unique = true } i = i + 1 end -- Ересиарх 3800
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7541', level = 1, unique = true } i = i + 1 end -- Свежеватель 6500
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu6111', level = 1, unique = true } i = i + 1 end -- Командор легиона 7000
@@ -1695,17 +1695,18 @@ function unitsMercen2()
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu7566', level = 1, unique = true } i = i + 1 end -- Первородная сущность (мороз) 1800
 
 	if mercenary_mode >= 3 then
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7624', level = 1, unique = true } i = i + 1 end -- Неприкаянная 1900
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu6117', level = 1, unique = true } i = i + 1 end -- Костяной лорд 3250
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu8255', level = 1, unique = true } i = i + 1 end -- Эльф-тень 3200
-		if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7601', level = 1, unique = true } i = i + 1 end -- Адепт культа 3600
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7625', level = 1, unique = true } i = i + 1 end -- Темный оракул 3700
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8231', level = 1, unique = true } i = i + 1 end -- Катафрактарий 4700
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7596', level = 1, unique = true } i = i + 1 end -- Сюзерен бездны 2620
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8244', level = 1, unique = true } i = i + 1 end -- Отступник 3250
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu5014', level = 1, unique = true } i = i + 1 end -- Хан орков 3000
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8153', level = 1, unique = true } i = i + 1 end -- Жнец 4100
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8304', level = 1, unique = true } i = i + 1 end -- Ангел разорения 4200
+
 	end
 
 	if mercenary_mode >= 4 then
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8219', level = 1, unique = true } i = i + 1 end -- Верховный некромант 2575
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu7603', level = 1, unique = true } i = i + 1 end -- Несущий скорбь 3800
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu8260', level = 1, unique = true } i = i + 1 end -- Искуситель 3450
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7601', level = 1, unique = true } i = i + 1 end -- Адепт культа 3600
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu6116', level = 1, unique = true } i = i + 1 end -- Мантикора 5600
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8008', level = 1, unique = true } i = i + 1 end -- Падший инквизитор 8000
 	end
@@ -1764,17 +1765,17 @@ function unitsMercen3()
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8237', level = 1, unique = true } i = i + 1 end -- Первородная сущность (рб) 1800
 
 	if mercenary_mode >= 3 then
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7624', level = 1, unique = true } i = i + 1 end -- Неприкаянная 1900
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu6117', level = 1, unique = true } i = i + 1 end -- Костяной лорд 3250
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu8255', level = 1, unique = true } i = i + 1 end -- Эльф-тень 3200
-		if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7601', level = 1, unique = true } i = i + 1 end -- Адепт культа 3600
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7625', level = 1, unique = true } i = i + 1 end -- Темный оракул 3700
-		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8231', level = 1, unique = true } i = i + 1 end -- Катафрактарий 4700
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu6108', level = 1, unique = true } i = i + 1 end -- Барон 1940
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g006uu1026', level = 1, unique = true } i = i + 1 end -- Жрец Смерти 3250
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8278', level = 1, unique = true } i = i + 1 end -- Божественная Длань 3400
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7600', level = 1, unique = true } i = i + 1 end -- Длань инквизиции 3400
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu8305', level = 1, unique = true } i = i + 1 end -- Предвестница Смерти 5050
 	end
 
 	if mercenary_mode >= 4 then
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g005uu6111', level = 1, unique = true } i = i + 1 end -- Пожиратель 2600
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu7587', level = 1, unique = true } i = i + 1 end -- Ведьмак 2730
+		if math.random(0,1) == 1 then unitsm[i] = { id = 'g001uu8257', level = 1, unique = true } i = i + 1 end -- Громовержец 3950
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g005uu6002', level = 1, unique = true } i = i + 1 end -- Ангел Перерожденный 6000
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu6110', level = 1, unique = true } i = i + 1 end -- Гидра 7000
 
@@ -3704,7 +3705,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner 1.4b [Clover] 1.2 beta7',
+	name = 'Bladerunner 1.4b [Clover] 1.2 beta8',
 	description = 'Черная зона в центре, ее должны касаться 4 т.серых зоны.\nСиняя, белая, желтая, серая зоны должны касаться двух т.серых зон.\nКрасная, т.синяя, пурпурная, оранжевая должны касаться ближайшей т.серой\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
