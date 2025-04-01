@@ -164,27 +164,28 @@ local ruins_t_data = {
 
 -- Работники рынка
 local workers_c_data = {
-	'Ифрит',
-	'Хай',
-	'Амодеус',
-	'Райз',
-	'Бэка',
-	'Гастрофетус',
-	'Фуми',
-	'Токсин',
-	'Хрусталь',
-	'Магвай',
-	'Тезос',
-	'РингОф',
-	'Талион',
-	'Зухендер',
-	'ОР',
-	'Макрометр',
-	'Дзаро',
-	'Акира',
-	'Грон',
-	'Сыр Зерг',
-	'Протостар',
+	{ name = 'Райз', id = 'g000uu6008' }, -- СУЗ
+	{ name = 'Бэка', id = 'g000uu6008' },
+	{ name = 'Гастрофетус', id = 'g000uu6008' },
+	{ name = 'Фуми', id = 'g000uu5354' }, -- Фумитоксал
+	{ name = 'Токсин', id = 'g000uu5354' },
+	{ name = 'Хрусталь', id = 'g000uu5354' },
+	{ name = 'Магвай', id = 'g000uu5131' }, -- ППсД
+	{ name = 'Тезос', id = 'g000uu5131' },
+	{ name = 'РингОф', id = 'g000uu5131' },
+	{ name = 'Грон', id = 'g000uu5130' }, -- Секс Флотилия
+	{ name = 'Сыр Зерг', id = 'g000uu5130' },
+	{ name = 'Протостар', id = 'g000uu5130' },
+	{ name = 'Ифрит', id = 'g000uu5101' }, -- Сектанты
+	{ name = 'Хай', id = 'g000uu5101' },
+	{ name = 'Амодеус', id = 'g000uu5101' },
+	{ name = 'Талион', id = 'g000uu5101' }, -- Легенды операции "Ы"
+	{ name = 'Зухендер', id = 'g000uu5101' },
+	{ name = 'ОР', id = 'g000uu5101' },
+	{ name = 'Макрометр', id = 'g000uu5101' }, -- Ламборгини Хуракан
+	{ name = 'Дзаро', id = 'g000uu5101' },
+	{ name = 'Акира', id = 'g000uu5101' },
+
 }
 
 ------------------------------------------------------------------------------------------
@@ -2316,12 +2317,24 @@ end
 function zmStack(playerRace)
 	return {
 		count = 1,
+		aiPriority = 0,
 		value = { min = 1, max = 1 },
 		owner = playerRace,
-		name = workers_c_data[playerRace+1],
-		leaderIds = { 'g000uu7599' } -- Ничто
+		name = workers_c_data[playerRace+1]['name'],
+		leaderIds = { workers_c_data[playerRace+1]['id'] },
+		leaderModifiers = convertN({
+			g040um0279 = 1, -- Ничто
+			g000um9034 = 5, -- -10% ОД
+			g201um9108 = 100, -- -1 точности
+			g000um9032 = 5, -- -1 лидерство
+			g201um9037 = 4, -- -1 радиус обзора
+			g201um9042 = 1, -- -бонус дорог
+			g000um9030 = 1, -- неподкупность
+			g070um0318 = 1, -- кираса кровавого ворона (иммунитет к магии)
+		})
 	}
 end
+
 ---------------------
 --- Отряды респ зона 0
 ---------------------
@@ -2967,7 +2980,7 @@ function getPlayerZone0(zoneId, playerRace, zoneSize)
 	return {
 		id = zoneId,
 		type = Zone.PlayerStart,
-		border = gmm(Border.Open, Border.Close, Border.Open),
+		border = Border.Open,
 		race = playerRace,
 		size = zoneSize,
 		ruins = z0Ruins(),
@@ -3179,6 +3192,7 @@ function getZones(races)
 	zones[13] = getTreasureZone3(4, zc) -- чёрный
 
 	if mmc(false, true) then
+		shake(workers_c_data)
 		zones[14] = getMarketZone(13, zm, races[1], races[2]) -- т.серый
 		zones[15] = getMarketZone(14, zm, races[3], races[4]) -- т.серый
 	end
@@ -3428,7 +3442,7 @@ function getTemplateContents(races, scenarioSize, parameters)
 			end
 		end
 		if parameters[2] then
-			market_mode = parameters[3]
+			market_mode = parameters[2]
 		end
 		if parameters[3] then
 
