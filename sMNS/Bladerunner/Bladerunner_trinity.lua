@@ -3525,8 +3525,8 @@ function getZones(races)
 	if gmode == 1 then
 		zones[13] = getTreasureZone5(13, z5, races, mercs[3]) -- т.серый
 	elseif gmode == 2 then
-		zones[13] = getTreasureZone3(5, z3, trained_c_data[1]) -- серый
-		zones[14] = getTreasureZone3(13, z3, trained_c_data[2]) -- т.серый
+		zones[13] = getTreasureZone3(5, z3, 1) -- серый
+		zones[14] = getTreasureZone3(13, z3, 2) -- т.серый
 		if market_mode == 2 then
 			shake(workers_c_data)
 			zones[15] = getMarketZone(42, zm, races[2], races[3]) -- т.серый
@@ -3828,7 +3828,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner 1.4b [Trinity] 1.2 beta8',
+	name = 'Bladerunner 1.4b [Trinity] 1.2 beta8a',
 	description = getDescription()..'\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку!\nКарта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
