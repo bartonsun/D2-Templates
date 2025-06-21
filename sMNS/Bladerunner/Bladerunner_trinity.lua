@@ -62,8 +62,8 @@ local mage_c_data = {
 -- Торговец
 local merchant_c_data = {
 	{
-		name = '',
-		description = '',
+		name = 'Гастрономический бутик',
+		description = 'Продаются продукты со всего мира! Гордость нашей лавки особый вид макарон - фетучини',
 	},
 	{
 		name = 'Магазин Сатонира',
@@ -91,6 +91,27 @@ local market_c_data = {
 }
 
 -- Наемники
+local merc_t_data = {
+	{
+		name = 'Зоомагазин «Барсик»',
+		description = 'Восьмое чудо света!',
+		unit = { id = 'g000uu5037', level = 1, unique = true }
+	},
+	{
+		name = '',
+		description = '',
+	},
+	{
+		name = '',
+		description = '',
+	},
+	{
+		name = '',
+		description = '',
+	},
+}
+
+
 local desc_b = ''
 local unit_b = {}
 if math.random(0,1) == 0 then
@@ -152,7 +173,7 @@ local ruins_c_data = {
 	'',
 	'',
 	'',
-	'',
+	'Старая пивоварня Ивана',
 	'Без негатива',
 	'Твои недра',
 }
@@ -332,7 +353,7 @@ function zoneTownsResp0(race)
 	{
 		tier = 1,
 		aiPriority = 0,
-		gapMask = 9,
+		gapMask = 15,
 		stack = {
 			subraceTypes = rsub(),
 			value = valueTowerResp0,
@@ -363,15 +384,15 @@ function zoneTowns2(race)
 	{
 		tier = 1,
 		aiPriority = 0,
-		gapMask = 9,
+		gapMask = 15,
 		stack = {
 			subraceTypes = NoUndead(),
 			value = valueTowerZone,
 			loot = {
 				itemTypes = { Item.Scroll, Item.Orb },
-				value = { min = 450, max = 600 },
+				value = { min = 500, max = 650 },
 				aiPriority = 0,
-				itemValue = { min = 450, max = 690 },
+				itemValue = { min = 450, max = 650 },
 				items = {
 					{ id = 'g000ig0001', min = 1, max = 1 }, --рес
 					{ id = 'g000ig0006', min = 1, max = 1 }, --хил100
@@ -402,8 +423,8 @@ function zoneTownsZone4()
 			aiPriority = 0,
 			loot = {
 				itemTypes = { Item.Scroll, Item.Orb },
-				value = { min = 700, max = 800 },
-				itemValue = { min = 700, max = 890 },
+				value = { min = 700, max = 820 },
+				itemValue = { min = 700, max = 800 },
 				items = {
 					{ id = 'g000ig0001', min = 1, max = 1 }, --рес
 					{ id = 'g000ig0006', min = 2, max = 2 }, --хил100
@@ -720,7 +741,6 @@ function merchZone41()
 				yn({ id = 'g002ig0011', min = 1, max = 1 }), -- Щит рыцаря Феникса (Артефакт) 2400
 				yn({ id = 'g002ig0013', min = 1, max = 1 }), -- Серп Кровавого Ворона (Артефакт) 1450
 
-				yn({ id = 'g001ig0597', min = 1, max = 1 }), -- Кираса резонанса (Реликвия)1000
 				yn({ id = 'g001ig0419', min = 1, max = 1 }), -- Шлем воителя (Реликвия)1000
 				yn({ id = 'g001ig0430', min = 1, max = 1 }), -- Роба убийцы (Реликвия)850
 				yn({ id = 'g001ig0539', min = 1, max = 1 }), -- Тисовый лук (Реликвия)900
@@ -834,7 +854,6 @@ return {
 				yn({ id = 'g002ig0014', min = 1, max = 1 }), -- Кама Кровавого Ворона (Артефакт) 1750
 				yn({ id = 'g002ig0017', min = 1, max = 1 }), -- Копье Ангела (Артефакт) 1750
 
-				yn({ id = 'g001ig0597', min = 1, max = 1 }), -- Кираса резонанса (Реликвия)1000
 				yn({ id = 'g001ig0419', min = 1, max = 1 }), -- Шлем воителя (Реликвия)1000
 				yn({ id = 'g001ig0430', min = 1, max = 1 }), -- Роба убийцы (Реликвия)850
 				yn({ id = 'g001ig0539', min = 1, max = 1 }), -- Тисовый лук (Реликвия)900
@@ -973,7 +992,7 @@ return {
 		gold = goldRuinZone,
 		loot = {
 			itemTypes = { Item.Talisman, Item.Armor, Item.Jewel, Item.Weapon, Item.Banner, Item.TravelItem},
-			value = { min = 700, max = 800 },
+			value = { min = 700, max = 825 },
 			itemValue = { min = 700, max = 800 }
 		},
 		guard = {
@@ -1017,7 +1036,7 @@ local ruins = {
 			gold = goldRuinZone4,
 			loot = {
 					itemTypes = { Item.Armor }, -- 12 итемов
-					value = { min = 900, max = 1200 },
+					value = { min = 950, max = 1250 },
 					itemValue = { min = 900, max = 1200 }
 			},
 			guard = {
@@ -1030,7 +1049,7 @@ local ruins = {
 			gold = goldRuinZone4,
 			loot = {
 					itemTypes = { Item.Weapon }, -- 9 итемов
-					value = { min = 900, max = 1200 },
+					value = { min = 950, max = 1250 },
 					itemValue = { min = 900, max = 1200 }
 			},
 			guard = {
@@ -1043,8 +1062,8 @@ local ruins = {
 			gold = goldRuinZone4,
 			loot = {
 					itemTypes = { Item.Banner }, -- 8 итемов
-					value = { min = 900, max = 1200 },
-					itemValue = { min = 900, max = 1200 }
+					value = { min = 850, max = 1050 },
+					itemValue = { min = 800, max = 1000 }
 			},
 			guard = {
 				subraceTypes = NoUndead(),
@@ -1387,9 +1406,13 @@ end
 ----------------
 
 -- Юниты для наёмников зоны 2
-function unitsMercen0(race)
+function unitsMercen0(race, merc_unit)
 	local unitsm = {}
 	local i = 1
+
+	if merc_unit then
+		unitsm[i] = merc_unit i = i + 1
+	end
 
 	if race == Race.Human then
 		unitsm[i] = { id = 'g003uu5001', level = 1, unique = false } i = i + 1 -- Боец ополчения
@@ -1557,7 +1580,9 @@ end
 function zoneMercenZone2(race)
 	return {
 		{
-			units = unitsMercen0(race),
+			name = merc_t_data[1].name,
+			description = merc_t_data[1].description,
+			units = unitsMercen0(race, merc_t_data[1].unit)
 		}
 	}
 end
@@ -1598,6 +1623,7 @@ function unitsMercen1()
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu0085', level = 3, unique = true } i = i + 1 end -- Злой дух 810
 	end
 
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5033', level = 1, unique = true } i = i + 1 end -- Упырь 220
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8151', level = 1, unique = true } i = i + 1 end -- Фурия 1215
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu2022', level = 1, unique = true } i = i + 1 end -- Ламия 1520
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8218', level = 1, unique = true } i = i + 1 end -- Волхв 1750
@@ -1666,6 +1692,7 @@ function unitsMercen2()
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu2007', level = 3, unique = true } i = i + 1 end -- Мумификатор 860
 	end
 
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5033', level = 1, unique = true } i = i + 1 end -- Упырь 220
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8213', level = 1, unique = true } i = i + 1 end -- Гоблин-шаман 1230
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7560', level = 1, unique = true } i = i + 1 end -- Каратель 1230
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g002uu5026', level = 1, unique = true } i = i + 1 end -- Элементаль воды 1450
@@ -1736,6 +1763,7 @@ function unitsMercen3()
 		if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu0082', level = 3, unique = true } i = i + 1 end -- Некромант 710
 	end
 
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5033', level = 1, unique = true } i = i + 1 end -- Упырь 220
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5006', level = 1, unique = true } i = i + 1 end -- Великий Оракул 1050
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu6121', level = 1, unique = true } i = i + 1 end -- Дхампир 1070
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8277', level = 1, unique = true } i = i + 1 end -- Уста богов 1520
@@ -1796,6 +1824,7 @@ end
 function bags0()
 return {
 	count = 1,
+	aiPriority = 0,
 	loot = {
 		itemTypes = { Item.Valuable },
 		value = { min = 250, max = 250 },
@@ -2744,7 +2773,7 @@ function z2Stacks6()
 		value = { min = 600*kef, max = 600*kef*kr },
 		loot = {
 			itemTypes = { Item.PotionPermanent },
-			value = { min = 500, max = 600 },
+			value = { min = 600, max = 600 },
 			itemValue = { min = 500, max = 600 },
 			items = {
 				{ id = 'g000ig0006', min = 1, max = 1 }, --хил100
@@ -2801,8 +2830,8 @@ function z3Stacks3(zusil200)
 		value = { min = 750*kef, max = 750*kef*kr },
 		loot = {
 			itemTypes = { Item.Orb },
-			value = { min = 450, max = 600 },
-			itemValue = { min = 450, max = 600 },
+			value = { min = 600, max = 600 },
+			itemValue = { min = 500, max = 600 },
 			items = {
 				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
 				rnd({ id = 'g001ig0180', min = 3, max = 3 }, { id = 'g001ig0378', min = 1, max = 1 }), --3хил25/хил75
@@ -2910,7 +2939,7 @@ return { -- сфера
 			value = { min = 1280*kef, max = 1350*kef },
 				loot = {
 					itemTypes = { Item.Orb },
-					value = { min = 500, max = 700 }, -- сфера 450-700
+					value = { min = 525, max = 725 }, -- сфера 450-700
 					itemValue = { min = 500, max = 700 },
 					items =  {
 					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 2 }), --рес/хил100
@@ -2969,7 +2998,7 @@ return {
 			value = { min = 1280*kef, max = 1350*kef },
 				loot = {
 					itemTypes = { Item.Orb },
-					value = { min = 500, max = 700 }, -- сфера 450-700
+					value = { min = 525, max = 725 }, -- сфера 450-700
 					itemValue = { min = 500, max = 700 },
 					items =  {
 					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 2 }), --рес/хил100
@@ -3196,8 +3225,8 @@ function zoneGuardZone04(races)
 		value = { min = 700*kef, max = 700*kef*kr }, --
 		aiPriority = 0,
 		loot = {
-			value = { min = 300, max = 370 },
-			itemValue = { min = 300, max = 370 },
+			value = { min = 400, max = 400 },
+			itemValue = { min = 400, max = 400 },
 			itemTypes = { Item.PotionPermanent },
 			items = {
 				{ id = 'g000ig0001', min = 2, max = 2 },
@@ -3251,7 +3280,7 @@ function getPlayerZone0(zoneId, playerRace, zoneSize)
 
 		capital = {
 			aiPriority = 0,
-			gapMask = 0,
+			gapMask = 15,
 			garrison = { -- столица
 				subraceTypes = { getPlayerSubRace(playerRace) },
 				value = { min = 50, max = 50 },
@@ -3490,6 +3519,7 @@ function getZones(races)
 	shake(mage_c_data)
 	shake(merchant_c_data)
 	shake(merc_c_data)
+	shake(merc_t_data)
 	shake(trainer_c_data)
 	shake(ruins_c_data)
 	shake(spells_special)
@@ -3608,9 +3638,9 @@ function getZoneConnections(races)
 
 	if gmode == 1 then
 		-- го т0 - т4
-		table.insert(connections, {from = 0, to = 4, guard = zoneGuardZone04(races)})
-		table.insert(connections, {from = 8, to = 4, guard = zoneGuardZone04(races)})
-		table.insert(connections, {from = 9, to = 4, guard = zoneGuardZone04(races)})
+		table.insert(connections, {from = 0, to = 4}) --, guard = zoneGuardZone04(races)})
+		table.insert(connections, {from = 8, to = 4}) --, guard = zoneGuardZone04(races)})
+		table.insert(connections, {from = 9, to = 4}) --, guard = zoneGuardZone04(races)})
 
 		-- го т0 - т5
 		table.insert(connections, {from = 0, to = 12, guard = zoneGuardZone0()})
@@ -3713,7 +3743,7 @@ end
 
 -- Переменные сценария
 function getScenarioVariables()
-	local races = { 'EMPIRE', 'LEGIONS', 'CLANS', 'HORDES', 'ELVES', 'NEUTRALS' }
+	local races = { 'EMPIRE', 'LEGIONS', 'CLANS', 'HORDES', 'ELVES' }
 	local vars = smm(
 			-- оригинал
 			{},
@@ -3723,17 +3753,12 @@ function getScenarioVariables()
 			},
 			-- баланс
 			{
-				{ name = '_SCOUT_FLAT', value = 199 },
-				{ name = '_TIER_1_CITY_INCOME', value = 1 },
-				{ name = '_TIER_2_CITY_INCOME', value = 2 },
-				{ name = '_TIER_3_CITY_INCOME', value = 3 },
-				{ name = '_TIER_4_CITY_INCOME', value = 4 },
-				{ name = '_TIER_5_CITY_INCOME', value = 5 },
-				{ name = '_INITIATIVE_FLAT', value = 0 },
-				{ name = '_INITIATIVE_MULTI', value = 0 },
-				{ name = '_CRITDAMAGE1_MULTI', value = 99 },
-				{ name = '_CRITDAMAGE2_MULTI', value = 99 },
-				{ name = '_ARMOR_FLAT', value = 99 },
+				{ name = '_SCOUT_FLAT', value = 99 },
+				{ name = '_TIER_1_CITY_INCOME', value = 0 },
+				{ name = '_TIER_2_CITY_INCOME', value = 25 },
+				{ name = '_TIER_3_CITY_INCOME', value = 50 },
+				{ name = '_TIER_4_CITY_INCOME', value = 125 },
+				{ name = '_TIER_5_CITY_INCOME', value = 250 },
 			}
 	)
 	local result = {}
@@ -3828,7 +3853,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner 1.4b [Trinity] 1.2 beta8a',
+	name = 'Bladerunner[Trinity] 1.2 Beta9',
 	description = getDescription()..'\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку!\nКарта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
@@ -3883,7 +3908,7 @@ template = {
 			name = 'Нейтралы',
 			min = 50,
 			max = 200,
-			step = 10,
+			step = 5,
 			default = 100,
 			unit = '%'
 		},
@@ -4141,10 +4166,6 @@ forbiddenItems = {
 'g000ig5060', --Deus talonis
 'g000ig5019', --Армагеддон
 'g000ig5080', --Истребление
-
---багнутые знамена на опыт
-'g001ig0587', -- Знамя мастера
-'g001ig0588', -- Знамя тысячи битв
 
 --пермо
 'g001ig0519', -- Война престолов(+10 сопротивления ворам)

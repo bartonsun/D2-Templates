@@ -69,8 +69,8 @@ local mage_c_data = {
 -- Торговец
 local merchant_c_data = {
 	{
-		name = '',
-		description = '',
+		name = 'Гастрономический бутик',
+		description = 'Продаются продукты со всего мира! Гордость нашей лавки особый вид макарон - фетучини',
 	},
 	{
 		name = 'Магазин Сатонира',
@@ -98,6 +98,27 @@ local market_c_data = {
 }
 
 -- Наемники
+local merc_t_data = {
+	{
+		name = 'Зоомагазин «Барсик»',
+		description = 'Восьмое чудо света!',
+		unit = { id = 'g000uu5037', level = 1, unique = true }
+	},
+	{
+		name = '',
+		description = '',
+	},
+	{
+		name = '',
+		description = '',
+	},
+	{
+		name = '',
+		description = '',
+	},
+}
+
+
 local desc_b = ''
 local unit_b = {}
 if math.random(0,1) == 0 then
@@ -159,7 +180,7 @@ local ruins_c_data = {
 	'',
 	'',
 	'',
-	'',
+	'Старая пивоварня Ивана',
 	'Без негатива',
 	'Твои недра',
 }
@@ -381,9 +402,9 @@ function zoneTowns2(race)
 			value = valueTowerZone,
 			loot = {
 				itemTypes = { Item.Scroll, Item.Orb },
-				value = { min = 450, max = 600 },
+				value = { min = 500, max = 650 },
 				aiPriority = 0,
-				itemValue = { min = 450, max = 690 },
+				itemValue = { min = 450, max = 650 },
 				items = {
 					{ id = 'g000ig0001', min = 1, max = 1 }, --рес
 					{ id = 'g000ig0006', min = 1, max = 1 }, --хил100
@@ -414,8 +435,8 @@ function zoneTownsZone4()
 			aiPriority = 0,
 			loot = {
 				itemTypes = { Item.Scroll, Item.Orb },
-				value = { min = 700, max = 800 },
-				itemValue = { min = 700, max = 890 },
+				value = { min = 700, max = 820 },
+				itemValue = { min = 700, max = 800 },
 				items = {
 					{ id = 'g000ig0001', min = 1, max = 1 }, --рес
 					{ id = 'g000ig0006', min = 2, max = 2 }, --хил100
@@ -732,7 +753,6 @@ function merchZone31()
 				yn({ id = 'g002ig0011', min = 1, max = 1 }), -- Щит рыцаря Феникса (Артефакт) 2400
 				yn({ id = 'g002ig0013', min = 1, max = 1 }), -- Серп Кровавого Ворона (Артефакт) 1450
 
-				yn({ id = 'g001ig0597', min = 1, max = 1 }), -- Кираса резонанса (Реликвия)1000
 				yn({ id = 'g001ig0419', min = 1, max = 1 }), -- Шлем воителя (Реликвия)1000
 				yn({ id = 'g001ig0430', min = 1, max = 1 }), -- Роба убийцы (Реликвия)850
 				yn({ id = 'g001ig0539', min = 1, max = 1 }), -- Тисовый лук (Реликвия)900
@@ -846,7 +866,6 @@ return {
 				yn({ id = 'g002ig0014', min = 1, max = 1 }), -- Кама Кровавого Ворона (Артефакт) 1750
 				yn({ id = 'g002ig0017', min = 1, max = 1 }), -- Копье Ангела (Артефакт) 1750
 
-				yn({ id = 'g001ig0597', min = 1, max = 1 }), -- Кираса резонанса (Реликвия)1000
 				yn({ id = 'g001ig0419', min = 1, max = 1 }), -- Шлем воителя (Реликвия)1000
 				yn({ id = 'g001ig0430', min = 1, max = 1 }), -- Роба убийцы (Реликвия)850
 				yn({ id = 'g001ig0539', min = 1, max = 1 }), -- Тисовый лук (Реликвия)900
@@ -990,7 +1009,7 @@ return {
 		gold = goldRuinZone,
 		loot = {
 			itemTypes = { Item.Talisman, Item.Armor, Item.Jewel, Item.Weapon, Item.Banner, Item.TravelItem},
-			value = { min = 700, max = 800 },
+			value = { min = 700, max = 825 },
 			itemValue = { min = 700, max = 800 }
 		},
 		guard = {
@@ -1007,14 +1026,20 @@ function zoneRuinZone3(rid1, rid2)
 local valueRuinZone3 = { min = 900*kef, max = 900*kef*kr }
 local goldRuinZone3 = { min = 400, max = 450 }
 	local ruins = {}
+	local ruins_name = ''
 	if rid1 == 1 or rid2 == 1 then
+		if rid1 == 1 then
+			ruins_name = ruins_c_data[1]
+		else
+			ruins_name = ruins_c_data[5]
+		end
 		table.insert(ruins, {
-			name = ruins_c_data[1],
+			name = ruins_name,
 			gold = goldRuinZone3,
 			loot = {
-					itemTypes = { Item.Armor }, -- 12 итемов
-					value = { min = 900, max = 1200 },
-					itemValue = { min = 900, max = 1200 }
+				itemTypes = { Item.Armor }, -- 12 итемов
+				value = { min = 950, max = 1250 },
+				itemValue = { min = 900, max = 1200 }
 			},
 			guard = {
 				subraceTypes = NoUndead(),
@@ -1023,12 +1048,17 @@ local goldRuinZone3 = { min = 400, max = 450 }
 		})
 	end
 	if rid1 == 2 or rid2 == 2 then
+		if rid1 == 2 then
+			ruins_name = ruins_c_data[2]
+		else
+			ruins_name = ruins_c_data[6]
+		end
 		table.insert(ruins, {
-			name = ruins_c_data[2],
+			name = ruins_name,
 			gold = goldRuinZone3,
 			loot = {
 					itemTypes = { Item.Weapon }, -- 9 итемов
-					value = { min = 900, max = 1200 },
+					value = { min = 950, max = 1250 },
 					itemValue = { min = 900, max = 1200 }
 			},
 			guard = {
@@ -1038,12 +1068,17 @@ local goldRuinZone3 = { min = 400, max = 450 }
 		})
 	end
 	if rid1 == 3 or rid2 == 3 then
+		if rid1 == 3 then
+			ruins_name = ruins_c_data[3]
+		else
+			ruins_name = ruins_c_data[7]
+		end
 		table.insert(ruins, {
-			name = ruins_c_data[3],
+			name = ruins_name,
 			gold = goldRuinZone3,
 			loot = {
 					itemTypes = { Item.Jewel, Item.Talisman }, -- 7 + 4 итемов
-					value = { min = 900, max = 1200 },
+					value = { min = 950, max = 1250 },
 					itemValue = { min = 900, max = 1200 }
 			},
 			guard = {
@@ -1053,13 +1088,18 @@ local goldRuinZone3 = { min = 400, max = 450 }
 		})
 	end
 	if rid1 == 4 or rid2 == 4 then
+		if rid1 == 4 then
+			ruins_name = ruins_c_data[4]
+		else
+			ruins_name = ruins_c_data[8]
+		end
 		table.insert(ruins, {
-			name = ruins_c_data[4],
+			name = ruins_name,
 			gold = goldRuinZone3,
 			loot = {
 					itemTypes = { Item.Banner }, -- 8 итемов
-					value = { min = 800, max = 1000 },
-					itemValue = { min = 800, max = 1200 }
+					value = { min = 850, max = 1050 },
+					itemValue = { min = 800, max = 1000 }
 			},
 			guard = {
 				subraceTypes = NoUndead(),
@@ -1067,7 +1107,6 @@ local goldRuinZone3 = { min = 400, max = 450 }
 			}
 		})
 	end
-
 	return ruins
 end
 
@@ -1411,9 +1450,13 @@ end
 ----------------
 
 -- Юниты для наёмников зоны 2
-function unitsMercen0(race)
+function unitsMercen0(race, merc_unit)
 	local unitsm = {}
 	local i = 1
+
+	if merc_unit then
+		unitsm[i] = merc_unit i = i + 1
+	end
 
 	if race == Race.Human then
 		unitsm[i] = { id = 'g003uu5001', level = 1, unique = false } i = i + 1 -- Боец ополчения
@@ -1578,10 +1621,12 @@ end
 
 
 -- Наёмники в зоне 2
-function zoneMercenZone2(race)
+function zoneMercenZone2(race, merc_id)
 	return {
 		{
-			units = unitsMercen0(race),
+			name = merc_t_data[merc_id].name,
+			description = merc_t_data[merc_id].description,
+			units = unitsMercen0(race, merc_t_data[merc_id].unit)
 		}
 	}
 end
@@ -1622,6 +1667,7 @@ function unitsMercen1()
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu0085', level = 3, unique = true } i = i + 1 end -- Злой дух 810
 	end
 
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5033', level = 1, unique = true } i = i + 1 end -- Упырь 220
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8151', level = 1, unique = true } i = i + 1 end -- Фурия 1215
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu2022', level = 1, unique = true } i = i + 1 end -- Ламия 1520
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8218', level = 1, unique = true } i = i + 1 end -- Волхв 1750
@@ -1690,6 +1736,7 @@ function unitsMercen2()
 		if math.random(0,1) == 1 then unitsm[i] = { id = 'g000uu2007', level = 3, unique = true } i = i + 1 end -- Мумификатор 860
 	end
 
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5033', level = 1, unique = true } i = i + 1 end -- Упырь 220
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8213', level = 1, unique = true } i = i + 1 end -- Гоблин-шаман 1230
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7560', level = 1, unique = true } i = i + 1 end -- Каратель 1230
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g002uu5026', level = 1, unique = true } i = i + 1 end -- Элементаль воды 1450
@@ -1760,6 +1807,7 @@ function unitsMercen3()
 		if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu0082', level = 3, unique = true } i = i + 1 end -- Некромант 710
 	end
 
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5033', level = 1, unique = true } i = i + 1 end -- Упырь 220
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5006', level = 1, unique = true } i = i + 1 end -- Великий Оракул 1050
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu6121', level = 1, unique = true } i = i + 1 end -- Дхампир 1070
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8277', level = 1, unique = true } i = i + 1 end -- Уста богов 1520
@@ -1803,19 +1851,25 @@ function zoneMercenZone3(merc_id)
 	}
 	shake(merc_units)
 	if merc_id == 1 then
+		if merc_c_data[merc_id].unit then
+			table.insert(merc_units[merc_id], merc_c_data[merc_id].unit)
+		end
 		return {
 			{
 				name = merc_c_data[merc_id].name,
 				description = merc_c_data[merc_id].description,
-				units = merc_units[1]
+				units = merc_units[merc_id]
 			}
 		}
 	elseif merc_id == 2 then
+		if merc_c_data[merc_id].unit then
+			table.insert(merc_units[merc_id], merc_c_data[merc_id].unit)
+		end
 		return {
 			{
 				name = merc_c_data[merc_id].name,
 				description = merc_c_data[merc_id].description,
-				units = merc_units[2]
+				units = merc_units[merc_id]
 			}
 		}
 	end
@@ -2761,7 +2815,7 @@ function z2Stacks6()
 		value = { min = 600*kef, max = 600*kef*kr },
 		loot = {
 			itemTypes = { Item.PotionPermanent },
-			value = { min = 500, max = 600 },
+			value = { min = 600, max = 600 },
 			itemValue = { min = 500, max = 600 },
 			items = {
 				{ id = 'g000ig0006', min = 1, max = 1 }, --хил100
@@ -2818,8 +2872,8 @@ function z3Stacks3(zusil200)
 		value = { min = 750*kef, max = 750*kef*kr },
 		loot = {
 			itemTypes = { Item.Orb },
-			value = { min = 450, max = 600 },
-			itemValue = { min = 450, max = 600 },
+			value = { min = 600, max = 600 },
+			itemValue = { min = 500, max = 600 },
 			items = {
 				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
 				rnd({ id = 'g001ig0180', min = 3, max = 3 }, { id = 'g001ig0378', min = 1, max = 1 }), --3хил25/хил75
@@ -3003,6 +3057,7 @@ function specialGuard1(race) --
 				g201um9182 = 4, -- 25% bodyguard
 				g201um9045 = 1, -- regen up to 25%
 				g201um9130 = 1, -- +10 negotiation
+				g201um9139 = 1, -- 1 source - life
 			}),
 			loot = {
 				items = {
@@ -3047,8 +3102,8 @@ function zoneGuardZone04(races)
 		value = { min = 700*kef, max = 700*kef*kr }, --
 		aiPriority = 0,
 		loot = {
-			value = { min = 300, max = 370 },
-			itemValue = { min = 300, max = 370 },
+			value = { min = 400, max = 400 },
+			itemValue = { min = 400, max = 400 },
 			itemTypes = { Item.PotionPermanent },
 			items = {
 				{ id = 'g000ig0001', min = 2, max = 2 },
@@ -3184,7 +3239,7 @@ function getPlayerZone1(zoneId, playerRace, zoneSize)
 end
 
 -- сводная зоны 2
-function getTreasureZone2(zoneId, playerRace, zoneSizeTre)
+function getTreasureZone2(zoneId, playerRace, zoneSizeTre, merc_id)
 	return {
 		id = zoneId,
 		race = playerRace,
@@ -3195,7 +3250,7 @@ function getTreasureZone2(zoneId, playerRace, zoneSizeTre)
 		merchants = zoneMerch2(),
 		ruins = zoneRuinZone2(),
 		mines = getMinesZone2(playerRace),
-		mercenaries = zoneMercenZone2(playerRace),
+		mercenaries = zoneMercenZone2(playerRace, merc_id),
 		stacks = {z2Stacks1(), z2Stacks2(), z2Stacks3(), z2Stacks4(), z2Stacks5(), z2Stacks6()},
 		bags = bags2(),
 	}
@@ -3270,9 +3325,6 @@ function getTreasureZone4(zoneId, zoneSizeTre, races)
 		mines = getMinesZone4(races),
 		resourceMarkets = mmc(rMarketsZone3(), {}),
 		stacks = { --4+4
-            z3Stacks1(rmss()),
-            z3Stacks1(rmss()),
-            z3Stacks1(rmss()),
 			z3StacksX(), -- пермо+15
 		},
 	}
@@ -3305,18 +3357,19 @@ function getZones(races)
 	local zm = gmm(0, 6, 6)
 
 	local zones = {}
-    local build = {1, 2, 3, 4} 								-- тип торговца: лавка/маг/наемники/тренер
-	local bid = {1, 2} 										-- варианты торговцев
-    local rid = {1, 2, 3, 4} 								-- варианты руин
-    local sid = {1, 2, 3, 4} 								-- варианты отрядов
+	local build = {1, 2, 3, 4} 								            -- тип торговца: лавка/маг/наемники/тренер
+	local bid = {1, 2} 										                -- варианты торговцев
+	local rid = {1, 2, 3, 4} 								              -- варианты руин
+	local sid = {1, 2, 3, 4} 								              -- варианты отрядов
 	local mid = {races[1], races[2], races[3], races[4]} 	-- варианты шахт
 	shake(build)
-    shake(bid)
-    shake(rid)
-    shake(sid)
+	shake(bid)
+	shake(rid)
+	shake(sid)
 	shake(mage_c_data)
 	shake(merchant_c_data)
 	shake(merc_c_data)
+	shake(merc_t_data)
 	shake(trainer_c_data)
 	shake(ruins_c_data)
 	shake(ruins_t_data)
@@ -3330,28 +3383,28 @@ function getZones(races)
 	perks_perm = {}
 	zones[1] = getPlayerZone0(0, races[1], z0) -- красный
 	zones[2] = getPlayerZone1(1, races[1], z1) -- зелёный
-	zones[3] = getTreasureZone2(2, races[1], z2) -- синий
+	zones[3] = getTreasureZone2(2, races[1], z2, 1) -- синий
 
 	shake(mines1)
 	shake(mines2)
 	perks_perm = {}
 	zones[4] = getPlayerZone0(11, races[2], z0) -- т.синий
 	zones[5] = getPlayerZone1(12, races[2], z1) -- коричневый
-	zones[6] = getTreasureZone2(5, races[2], z2) -- серый
+	zones[6] = getTreasureZone2(5, races[2], z2, 2) -- серый
 
 	shake(mines1)
 	shake(mines2)
 	perks_perm = {}
 	zones[7] = getPlayerZone0(8, races[3], z0) -- пурпурный
 	zones[8] = getPlayerZone1(7, races[3], z1) -- голубой
-	zones[9] = getTreasureZone2(6, races[3], z2) -- жёлтый
+	zones[9] = getTreasureZone2(6, races[3], z2, 3) -- жёлтый
 
 	shake(mines1)
 	shake(mines2)
 	perks_perm = {}
 	zones[10] = getPlayerZone0(9, races[4], z0) -- оранжавый
 	zones[11] = getPlayerZone1(10, races[4], z1) -- т.зеленый
-	zones[12] = getTreasureZone2(3, races[4], z2) -- белый
+	zones[12] = getTreasureZone2(3, races[4], z2, 4) -- белый
 
 	zones[13] = getTreasureZone3(13, z3, build[1], build[3], bid[1], rid[1], rid[3], sid[1], mid[1]) -- т.серая
 	zones[14] = getTreasureZone3(14, z3, build[2], build[4], bid[2], rid[2], rid[4], sid[2], mid[2]) -- т.серая
@@ -3376,10 +3429,10 @@ function getZoneConnections(races)
 	local connections = {}
 
 	-- го т0 - т3
-	table.insert(connections, {from = 0, to = 13, guard = zoneGuardZone04(races)})
-	table.insert(connections, {from = 11, to = 14, guard = zoneGuardZone04(races)})
-	table.insert(connections, {from = 8, to = 15, guard = zoneGuardZone04(races)})
-	table.insert(connections, {from = 9, to = 16, guard = zoneGuardZone04(races)})
+	table.insert(connections, {from = 0, to = 13})--, guard = zoneGuardZone04(races)})
+	table.insert(connections, {from = 11, to = 14})--, guard = zoneGuardZone04(races)})
+	table.insert(connections, {from = 8, to = 15})--, guard = zoneGuardZone04(races)})
+	table.insert(connections, {from = 9, to = 16})--, guard = zoneGuardZone04(races)})
 
 	-- игрок 1: т0 - т1
 	table.insert(connections, {from = 0, to = 1})
@@ -3452,20 +3505,20 @@ function getZoneConnections(races)
 
 	-- т3 - т4
 	table.insert(connections, {from = 4, to = 13, guard = z3Stacks5('g001ig0307')})
-	table.insert(connections, {from = 4, to = 13, size = 0})
 	table.insert(connections, {from = 4, to = 13, guard = specialGuard2()})
+	table.insert(connections, {from = 4, to = 13, guard = z3Stacks1(rmss())})
 
 	table.insert(connections, {from = 4, to = 14, guard = z3Stacks5('g001ig0309')})
-	table.insert(connections, {from = 4, to = 14, size = 0})
 	table.insert(connections, {from = 4, to = 14, guard = specialGuard2()})
+	table.insert(connections, {from = 4, to = 14, guard = z3Stacks1(rmss())})
 
 	table.insert(connections, {from = 4, to = 15, guard = z3Stacks5('g001ig0313')})
-	table.insert(connections, {from = 4, to = 15, size = 0})
 	table.insert(connections, {from = 4, to = 15, guard = specialGuard2()})
+	table.insert(connections, {from = 4, to = 15, guard = z3Stacks1(rmss())})
 
 	table.insert(connections, {from = 4, to = 16, guard = z3Stacks5('g001ig0315')})
-	table.insert(connections, {from = 4, to = 16, size = 0})
 	table.insert(connections, {from = 4, to = 16, guard = specialGuard2()})
+	table.insert(connections, {from = 4, to = 16, guard = z3Stacks1(rmss())})
 
 	if gmode == 1 then
 
@@ -3581,7 +3634,7 @@ end
 
 -- Переменные сценария
 function getScenarioVariables()
-	local races = { 'EMPIRE', 'LEGIONS', 'CLANS', 'HORDES', 'ELVES', 'NEUTRALS' }
+	local races = { 'EMPIRE', 'LEGIONS', 'CLANS', 'HORDES', 'ELVES' }
 	local vars = smm(
 			-- оригинал
 			{},
@@ -3591,17 +3644,12 @@ function getScenarioVariables()
 			},
 			-- баланс
 			{
-				{ name = '_SCOUT_FLAT', value = 199 },
-				{ name = '_TIER_1_CITY_INCOME', value = 1 },
-				{ name = '_TIER_2_CITY_INCOME', value = 2 },
-				{ name = '_TIER_3_CITY_INCOME', value = 3 },
-				{ name = '_TIER_4_CITY_INCOME', value = 4 },
-				{ name = '_TIER_5_CITY_INCOME', value = 5 },
-				{ name = '_INITIATIVE_FLAT', value = 0 },
-				{ name = '_INITIATIVE_MULTI', value = 0 },
-				{ name = '_CRITDAMAGE1_MULTI', value = 99 },
-				{ name = '_CRITDAMAGE2_MULTI', value = 99 },
-				{ name = '_ARMOR_FLAT', value = 99 },
+				{ name = '_SCOUT_FLAT', value = 99 },
+				{ name = '_TIER_1_CITY_INCOME', value = 0 },
+				{ name = '_TIER_2_CITY_INCOME', value = 25 },
+				{ name = '_TIER_3_CITY_INCOME', value = 50 },
+				{ name = '_TIER_4_CITY_INCOME', value = 125 },
+				{ name = '_TIER_5_CITY_INCOME', value = 250 },
 			}
 	)
 	local result = {}
@@ -3716,7 +3764,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner 1.4b [Clover] 1.2 beta8',
+	name = 'Bladerunner[Clover] 1.2 Beta9',
 	description = 'Черная зона в центре, ее должны касаться 4 т.серых зоны.\nСиняя, белая, желтая, серая зоны должны касаться двух т.серых зон.\nКрасная, т.синяя, пурпурная, оранжевая должны касаться ближайшей т.серой\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
@@ -3773,7 +3821,7 @@ template = {
 			name = 'Нейтралы',
 			min = 50,
 			max = 200,
-			step = 10,
+			step = 5,
 			default = 100,
 			unit = '%'
 		},
@@ -4031,10 +4079,6 @@ forbiddenItems = {
 'g000ig5060', --Deus talonis
 'g000ig5019', --Армагеддон
 'g000ig5080', --Истребление
-
---багнутые знамена на опыт
-'g001ig0587', -- Знамя мастера
-'g001ig0588', -- Знамя тысячи битв
 
 --пермо
 'g001ig0519', -- Война престолов(+10 сопротивления ворам)
