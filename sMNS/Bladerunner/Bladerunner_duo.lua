@@ -305,9 +305,7 @@ local spells_t3_1 = {
 	'g000ss0108', -- Призыв III: Энт Большой
 
 	'g000ss0082', -- Благословение Всевышнего +20%хп +5 брони 1200
-	'g000ss0114', -- Плесень
-
-	'g000ss0079', -- Защита от Оружия
+	'g000ss0114', -- Плесень -27 брони
 
 	'g000ss0207', -- Пробирающий холод -вард вода
 	'g000ss0208', -- Хворь -вард земля
@@ -320,13 +318,22 @@ local spells_t3_2 = {
 	'g000ss0073', -- Прикосновение Мортис +20% ХП
 	'g000ss0111', -- Отвлечение -15 точн и урон
 
-	'g000ss0091', -- Tempus status -33 ини 1200
+	'g000ss0115', -- Проклятие Галеана -30% урона
 	'g000ss0116', -- Благословение Галеана +50хп
-
-	'g000ss0039', -- Неподкупность
 
 	'g000ss0206', -- Dominatum ignis -вард огонь
 	'g000ss0209', -- Небесный молот -вард воздух
+}
+
+local spells_wards = {
+	'g000ss0005', -- Защита от магии Воды
+	'g000ss0001', -- Защита от магии Воздуха
+	'g000ss0010', -- Защита от магии Земли
+	'g000ss0016', -- Защита от магии Огня
+	'g000ss0011', -- Защита от магии Разума
+	'g000ss0018', -- Защита от магии Смерти
+	'g000ss0079', -- Защита от Оружия
+	'g000ss0039', -- Неподкупность
 }
 
 local spells_special = {
@@ -342,6 +349,7 @@ local spells_special = {
 function zoneMageZone3(mage_id)
 	if mage_id == 1 then
 		local spells_list = chooseSpells(spells_t3_1, sp3)
+		table.insert(spells_list, spells_wards[mage_id])
 		for _,v in pairs(spells_special[mage_id]) do
 			table.insert(spells_list, v)
 		end
@@ -354,6 +362,7 @@ function zoneMageZone3(mage_id)
 		}
 	elseif mage_id == 2 then
 		local spells_list = chooseSpells(spells_t3_2, sp3)
+		table.insert(spells_list, spells_wards[mage_id])
 		for _,v in pairs(spells_special[mage_id]) do
 			table.insert(spells_list, v)
 		end
@@ -1089,7 +1098,7 @@ local goldRuinZone3 = { min = 400, max = 450 }
 			name = ruins_name,
 			gold = goldRuinZone3,
 			loot = {
-					itemTypes = { Item.Jewel, Item.Talisman }, -- 7 + 4 итемов
+					itemTypes = { Item.Jewel }, -- 7 итемов
 					value = { min = 950, max = 1250 },
 					itemValue = { min = 900, max = 1200 }
 			},
@@ -1200,8 +1209,11 @@ return {
 {
 	exchangeRates = [[
 		function getExchangeRates(visitor)
-				local k1 = 15
-				local k2 = 5
+			local k1 = 15
+			local k2 = 5
+			if visitor.owner.lord == Lord.Mage then
+				k1 = 10
+			end
 			return {
 				{
 					Resource.Gold,
@@ -1898,7 +1910,6 @@ return {
 }
 end
 
--- Сундуки т3
 function bags3()
 return {
 	count = 1,
@@ -1908,8 +1919,10 @@ return {
 		value = { min = 400, max = 400 },
 		itemValue = { min = 400, max = 400 },
 			items = {
+				{ id = rnd(b15(), w15()), min = 1, max = 1}, -- случайная банка на 15 / случайная банка вард от стихий
 				{ id = 'g000ig0001', min = 1, max = 1 }, --рес
 				{ id = 'g000ig0006', min = 1, max = 1 }, --хил100
+				{ id = 'g001ig0180', min = 2, max = 2 }, --хил25
 			}
 		}
 	}
@@ -2891,7 +2904,7 @@ function z3StacksX()
 				{ id = 'g000ig0001', min = 1, max = 1 }, --рес
 				rnd({ id = 'g001ig0378', min = 2, max = 2 }, { id = 'g000ig0006', min = 1, max = 1 }), --хил75/хил100
 				rnd({ id = 'g001ig0152', min = 1, max = 1 }, { id = 'g000ig0018', min = 1, max = 1 }), -- Эликсир избавления/мазь
-				{ id = p15(), min = 1, max = 1 }, --пермо 1200
+				{ id = rnd(p15(), getTalisman4()), min = 1, max = 1 }, --пермо 1200 / талисман 1000
 				rnd({ id = 'g001ig0151', min = 1, max = 1 }, { id = 'g000ig7003', min = 1, max = 1 }), -- Шар колдовства/Изумруд (Драгоценность) 150
 			}
 		}
@@ -3511,6 +3524,7 @@ function getZones(races)
 	shake(ruins_c_data)
 	shake(ruins_t_data)
 	shake(spells_special)
+	shake(spells_wards)
 	shake(borders1)
 	shake(borders2)
 	guardRace = getGuardRace(races)
@@ -3653,26 +3667,55 @@ end
 
 -- Переменные сценария
 function getScenarioVariables()
+	local result = {}
+
+	local lords = { 'WARRIOR', 'MAGE', 'GUILDMASTER' }
+	local l_vars = {
+		{ name = '_GOLD_INCOME', value = {0, 0, 0} },
+		{ name = '_MANA_INCOME', value = {0, 25, 0} },
+	}
+
+	for i, lord in pairs(lords) do
+		for _, v in pairs(l_vars) do
+			table.insert(result, { name = lord..v['name'], value = v['value'][i] })
+		end
+	end
+
 	local races = { 'EMPIRE', 'LEGIONS', 'CLANS', 'HORDES', 'ELVES' }
-	local vars = smm(
+	local t1 = smm(0, 0, 0)
+	local t2 = smm(0, 0, 25)
+	local t3 = smm(25, 25, 50)
+	local t4 = smm(75, 75, 125)
+	local t5 = smm(150, 150, 250)
+	local r_vars = smm(
 			-- оригинал
-			{},
+			{
+				{ name = '_TIER_1_CITY_INCOME', value = t1 },
+				{ name = '_TIER_2_CITY_INCOME', value = t2 },
+				{ name = '_TIER_3_CITY_INCOME', value = t3 },
+				{ name = '_TIER_4_CITY_INCOME', value = t4 },
+				{ name = '_TIER_5_CITY_INCOME', value = t5 },
+			},
 			-- бесит!
 			{
 				{ name = '_SCOUT_FLAT', value = 98 },
+				{ name = '_TIER_1_CITY_INCOME', value = t1 },
+				{ name = '_TIER_2_CITY_INCOME', value = t2 },
+				{ name = '_TIER_3_CITY_INCOME', value = t3 },
+				{ name = '_TIER_4_CITY_INCOME', value = t4 },
+				{ name = '_TIER_5_CITY_INCOME', value = t5 },
 			},
 			-- баланс
 			{
 				{ name = '_SCOUT_FLAT', value = 99 },
-				{ name = '_TIER_1_CITY_INCOME', value = 0 },
-				{ name = '_TIER_2_CITY_INCOME', value = 25 },
-				{ name = '_TIER_3_CITY_INCOME', value = 50 },
-				{ name = '_TIER_4_CITY_INCOME', value = 125 },
-				{ name = '_TIER_5_CITY_INCOME', value = 250 },
+				{ name = '_TIER_1_CITY_INCOME', value = t1 },
+				{ name = '_TIER_2_CITY_INCOME', value = t2 },
+				{ name = '_TIER_3_CITY_INCOME', value = t3 },
+				{ name = '_TIER_4_CITY_INCOME', value = t4 },
+				{ name = '_TIER_5_CITY_INCOME', value = t5 },
 			}
 	)
-	local result = {}
-	for _, v in pairs(vars) do
+	for _, v in pairs(r_vars) do
 		for _, race in pairs(races) do
 			table.insert(result, { name = race..v['name'], value = v['value'] })
 		end
@@ -3720,7 +3763,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner[Duo] 1.2 Beta10',
+	name = 'Bladerunner[Duo] 2.0',
 	description = 'Шаблон для игры 1x1. 1 герой, 1 жезловик, 1 вор\nСиняя, т.синяя, оранжевая, желтая зоны должны касаться двух т.серых зон центра\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
