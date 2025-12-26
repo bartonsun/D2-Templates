@@ -711,6 +711,7 @@ return {
 				rnd({ id = 'g000ig5050', min = 1, max = 1}, { id = 'g001ig0253', min = 1, max = 1}, { id = 'g001ig0255', min = 1, max = 1}, { id = 'g001ig0256', min = 1, max = 1}), -- Свиток "Chronos"-ини, прокл.эмира-урон, спеш.время+ини, могущество+урон
 				rnd({ id = 'g000ig5103', min = 1, max = 1}, { id = 'g000ig5030', min = 1, max = 1}, { id = 'g000ig5104', min = 1, max = 1}, { id = 'g001ig0085', min = 1, max = 1}), -- Свиток "Призыв II: Энт" / Свиток "Взгляд Сивиллы"+7x7карта / Свиток "Опаление"-25дмг / Свиток "Потоп"
 				rnd({ id = 'g000ig5007', min = 1, max = 1 }, { id = 'g000ig5029', min = 1, max = 1 }), -- св. исцеление / рит. исцеления
+				{ id = 'g000ig5040', min = 1, max = 1 }, -- песнь Вотана
 			}
 		},
 --класс		guard = guard2(),
@@ -2236,7 +2237,7 @@ function e2()
 	return rnd(
 			'g001ig0560', -- Зелье провокатора 25принять
 			'g001ig0547', -- Зелье пронзающего взгляда +10крит
-			'g001ig0490', -- Зелье выносливости +25оз
+			--'g001ig0490', -- Зелье возвышения +10% ЭЗБ
 			'g001ig0329', -- Эликсир защиты от дота
 			'g001ig0351', -- Эликсир защиты от поглощения
 			'g001ig0343' -- Эликсир защиты от проклятий
@@ -2544,6 +2545,7 @@ function z0Stacks4(race)
 			itemValue = { min = 200, max = 200 },
 			items = {
 				{ id = 'g000ig5084', min = 1, max = 1 },
+				{ id = rnd('g001ig0176', 'g001ig0134', 'g001ig0443'), min = 1, max = 1 }, -- Сфера Вампиризма II / Сфера Урона II / Сфера Брони II
 				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
 				rnd({ id = ExtraSmallManaProject4(race), min = 1, max = 1 }, { id = rmss(), min = 1, max = 1 }), --случ. доп. мал. доп. / случ мал шар манны
 			}
@@ -2584,6 +2586,7 @@ function z1Stacks1(race)
 				{ id = ExtraSmallManaProject4(race), min = 1, max = 1 }, --случ. мал. доп. шар манны
 				rnd({ id = 'g000ig0011', min = 1, max = 1 }, { id = 'g000ig0008', min = 1, max = 1 }), --ини15/точность15
 				{ id = w15(), min = 1, max = 1 }, --случ. вард
+				{ id = rnd('g001ig0176', 'g001ig0134', 'g001ig0443'), min = 1, max = 1 }, -- Сфера Вампиризма II / Сфера Урона II / Сфера Брони II
 			}
 		}
 	}
@@ -3015,7 +3018,7 @@ function z5StackWater1()
 return {
 			count = 1,
 			subraceTypes = NoUndead(),
-			order = Order.Beserk,
+			order = Order.Bezerk,
 			aiPriority = 0,
 			leaderIds = {'g000uu5127'}, -- Кракен
 			value = { min = 1280*kef, max = 1350*kef },
@@ -3037,7 +3040,7 @@ function z5StackWater2()
 return {
 			count = 1,
 			subraceTypes = NoUndead(),
-			order = Order.Beserk,
+			order = Order.Bezerk,
 			aiPriority = 0,
 			leaderIds = {'g000uu5129'}, -- Морской змей
 			value = { min = 1280*kef, max = 1350*kef },
@@ -3297,7 +3300,7 @@ function getPlayerZone0(zoneId, zoneSize, playerRace)
 						{ id = 'g000ig0002', min = 1, max = 1 }, --15
 						{ id = 'g000ig0014', min = 1, max = 1 }, --15
 						{ id = 'g000ig0011', min = 1, max = 1 }, --15
-						{ id = 'g000ig0008', min = 1, max = 1 }, --15
+						{ id = 'g000ig0008', min = 2, max = 2 }, --15
 						{ id = b15(), min = 1, max = 1}, -- случ. банка15
 						{ id = b15(), min = 1, max = 1}, -- случ. банка15
 
@@ -3405,13 +3408,13 @@ function getTreasureZone3(zoneId, zoneSize, b1, b2, bid, rid1, rid2, sid, mid)
         z3Stacks3(e2),
     }
     if sid == 1 then
-        table.insert(r_stacks, z3Stacks4('g001ig0562', rnd('g000ig5091', 'g000ig5055'))) -- Зелье дуэлянта +20крит и Свиток "Tempus status" -33ини / Свиток "Tortio menta" -33точность
+        table.insert(r_stacks, z3Stacks4('g001ig0562', rnd('g000ig5091', 'g000ig5055', 'g000ig5055'))) -- Зелье дуэлянта +20крит и Свиток "Tempus status" -33ини / Свиток "Tortio menta" -33точность
     elseif sid == 2 then
         table.insert(r_stacks, z3Stacks4('g001ig0491', rnd('g000ig5039', 'g001ig0586'))) -- Зелье похищения жизни +25вамп и Свиток "Неподкупность" / Свиток "Предательство -20 воры
     elseif sid == 3 then
         table.insert(r_stacks, z3Stacks4('g001ig0355', rnd('g000ig5079', 'g000ig5096'))) -- Зелье тритоньей чешуи +вардурон и Свиток "Защита от Оружия" / Свиток "Прикосновение вампира" +35вамп
     elseif sid == 4 then
-        table.insert(r_stacks, z3Stacks4('g001ig0127', rnd('g000ig5012', 'g000ig5013'))) -- Эликсир жизненной силы +50максоз и Свиток "Святая броня" +15 броня / Свиток "Святая сила" +15урон и точн
+        table.insert(r_stacks, z3Stacks4('g001ig0127', rnd('g000ig5012', 'g000ig5013', 'g000ig5013'))) -- Эликсир жизненной силы +50максоз и Свиток "Святая броня" +15 броня / Свиток "Святая сила" +15урон и точн
     end
 
 	return {
@@ -3565,7 +3568,7 @@ end
 
 -- ПРОХОДЫ: Вернет таблицу с проходами между зонами:
 function getZoneConnections(races)
-	local p01 = 4
+	local p01 = 5
 	local p01gs = 1
 	local p12 = 5
 	local p23 = 3
@@ -3671,7 +3674,7 @@ function getScenarioVariables()
 
 	local lords = { 'WARRIOR', 'MAGE', 'GUILDMASTER' }
 	local l_vars = {
-		{ name = '_GOLD_INCOME', value = {0, 0, 0} },
+		{ name = '_GOLD_INCOME', value = {0, 0, 25} },
 		{ name = '_MANA_INCOME', value = {0, 25, 0} },
 	}
 
@@ -3763,7 +3766,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner[Duo] 2.0',
+	name = 'Bladerunner[Duo] 2.1',
 	description = 'Шаблон для игры 1x1. 1 герой, 1 жезловик, 1 вор\nСиняя, т.синяя, оранжевая, желтая зоны должны касаться двух т.серых зон центра\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
@@ -3956,7 +3959,7 @@ forbiddenUnits = {
 ------------- Bladerunner
 'g000uu8266', -- Дроттар--
 'g000uu8265', -- дева пламени--
-'g001uu0171', -- двойник
+'g000uu1001', -- двойник
 'g000uu8217', -- Призрачный дракон л.
 'g000uu8216', -- Призрачный дракон
 'g000uu8269', -- Кровавый дракон л.
@@ -3990,6 +3993,7 @@ forbiddenItems = {
 'g000ig0020', --Эликсир могущества
 'g000ig0017', --Эликсир неуязвимости
 'g001ig0126', --Эликсир Всевышнего
+'g001ig0490', --Эликсир возвышения
 'g001ig0129', --Зелье вампиризма50
 'g001ig0020', --Великая аура вампиризма
 'g001ig0035', --Великая аура жизненной силы
@@ -4077,6 +4081,9 @@ forbiddenItems = {
 'g001ig0587', -- Знамя мастера
 'g001ig0588', -- Знамя тысячи битв
 'g001ig0523', -- Зелье воеводы
+
+--
+'g002ig0021', -- Знамя двойственной судьбы
 
 --пермо
 'g001ig0519', -- Война престолов(+10 сопротивления ворам)
