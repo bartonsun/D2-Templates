@@ -83,6 +83,24 @@ local mage_c_data = {
 		description = 'Комментаторская вышка',
 	},
 }
+local mage_t_data = {
+	{
+		name = '',
+		description = '',
+	},
+	{
+		name = '',
+		description = '',
+	},
+	{
+		name = '',
+		description = '',
+	},
+	{
+		name = '',
+		description = '',
+	},
+}
 
 -- Торговец
 local merchant_c_data = {
@@ -95,7 +113,7 @@ local merchant_c_data = {
 		description = 'У меня лучший CUMпот в округе',
 	},
 }
-local merchant_t_data = {
+local merchant_t1_data = {
 	{
 		name = 'Лавка "Летящий дракон"',
 		description = 'Мало что происходит в этом городе без моего ведома. Лао Чу',
@@ -103,6 +121,24 @@ local merchant_t_data = {
 	{
 		name = 'Мельница Пешека',
 		description = 'Сначала монеты, потом мораль',
+	},
+	{
+		name = 'Таверна РокВолка',
+		description = 'У нас тут творческий коллектив. Можем спеть, сыграть, нарисовать... ну или или нахер вас послать!',
+	},
+	{
+		name = '',
+		description = '',
+	},
+}
+local merchant_t2_data = {
+	{
+		name = 'Клиника по борьбе с расстройствами пищевого поведения',
+		description = 'В животе живой паук - вас спасет доктор наук!',
+	},
+	{
+		name = 'Песочница Дзаро',
+		description = 'Сюрикены, Расенганы, сеансы Нарутотерапии',
 	},
 	{
 		name = '',
@@ -146,8 +182,9 @@ local merc_t_data = {
 		unit = { id = 'g000uu5028', level = 1, unique = true } -- Тритон
 	},
 	{
-		name = '',
-		description = '',
+		name = 'Вечнотренировочный лагерь "Новичок"',
+		description = 'Наш говорящий пенистый паук все время зовет Наташу. Пожалуйста, найдите её!',
+		unit = { id = 'g001uu8282', level = 1, unique = true } -- Тенистый паук
 	},
 	{
 		name = '',
@@ -173,8 +210,8 @@ local merc_c_data = {
 		unit = unit_b
 	},
 	{
-		name = '',
-		description = ''
+		name = 'Обессатиренный заповедник',
+		description = 'Козлят нет, забрал доктор'
 	},
 	{
 		name = '',
@@ -212,14 +249,20 @@ local merc_c_data = {
 
 -- Руины
 local ruins_c_data = {
-	'',
-	'',
-	'',
+	'Ифритский уголок',
+	"Замок-кузня Kowka'Mare",
+	'Древневавилонская таверна "Некситель"',
 	'Пиратский Гронт. Над входом табличка: заходи, у нас Nice Kok',
 	'They Might As Well Be Dead',
 	'Старая пивоварня Ивана',
 	'Без негатива',
-	'Твои недра',
+	'Protoss Bone Nexus',
+}
+local ruins_t1_data = {
+	'',
+	'',
+	'Шахманый клуб "Programmer Helix"',
+	'Гараж Вадим Палыча. На стене изображен когтистый медведь, ниже надпись: "Не беспокоить, Ивана нет", подпись: "Евгений"',
 }
 -- Руины 2
 local ruins_t_data = {
@@ -336,6 +379,57 @@ local spells_wards = {
 	'g000ss0039', -- Неподкупность
 }
 
+local scrollsT3 = {
+	{ id = 'g000ig5089', amount = 1, weight = 1 }, -- Свиток "Preces"
+	{ id = 'g001ig0165', amount = 1, weight = 1 }, -- Свиток "Плесень"
+	{ id = 'g000ig5073', amount = 1, weight = 1 }, -- Свиток "Прикосновение Мортис"
+	{ id = 'g000ig5026', amount = 1, weight = 1 }, -- Свиток "Гимн кланов"
+	{ id = 'g000ig5012', amount = 1, weight = 1 }, -- Свиток "Святая броня"
+	{ id = 'g000ig5013', amount = 1, weight = 1 }, -- Свиток "Святая сила"
+}
+
+local scrollsT5 = {
+	{ id = 'g000ig5091', amount = 1, weight = 1 }, -- Свиток "Tempus status" 700 -иня
+	{ id = 'g000ig5055', amount = 1, weight = 1 }, -- Свиток "Tortio menta" 700 -точность
+	{ id = 'g000ig5115', amount = 1, weight = 1 }, -- Свиток "Проклятие Галеана" 700 -урон
+	{ id = 'g001ig0586', amount = 1, weight = 1 }, -- Свиток "Предательство" 700 -благородство
+	{ id = 'g000ig5035', amount = 1, weight = 1 }, -- Свиток "Стойкость" 700 +броня
+	{ id = 'g000ig5017', amount = 1, weight = 1 }, -- Свиток "Призыв к оружию" 700 +урон
+	{ id = 'g000ig5114', amount = 1, weight = 1 }, -- Свиток "Знак Таладриэль" 700 +точность
+	{ id = 'g002ig0024', amount = 1, weight = 1 }, -- Свиток "Пламенные небеса" 700 -резист к ударке и эфф.заклинаний-благословлений
+}
+
+local scrollsWard = {
+	'g000ig5005', -- Свиток "Защита от магии Воды"
+	'g000ig5001', -- Свиток "Защита от магии Воздуха"
+	'g000ig5010', -- Свиток "Защита от магии Земли"
+	'g000ig5016', -- Свиток "Защита от магии Огня"
+	'g000ig5011', -- Свиток "Защита от магии Разума"
+	'g000ig5018', -- Свиток "Защита от магии Смерти"
+	'g000ig5079', -- Свиток "Защита от Оружия"
+}
+
+local sphereT5 = {
+	'g000ig9025', -- Сфера Алчности 60 вамп аое 900
+	'g001ig0459', -- Сфера Землетрясения 75 колонны 900
+	'g001ig0477', -- Сфера Терзаний 85 ряд 900
+	'g000ig9027', -- Сфера Урагана 99 2x2 900
+	'g000ig9032', -- Сфера Цунами 90 неприкр 900
+	'g000ig9006', -- Сфера Окаменения 1200
+	'g000ig9039', -- Сфера Паралича 1200
+}
+
+local staffT5 = {
+	{ id = 'g000ig6008', amount = 1, weight = 1 }, -- Посох невидимости
+	{}, --
+	{}, --
+	{}, --
+	{}, --
+	{}, --
+	{}, --
+	{}, --
+}
+
 local spells_special = {
 	{
 		a = 'g000ss0145', -- Потоп
@@ -433,6 +527,7 @@ function zoneTowns2(race)
 					rnd({ id = b15(), min = 1, max = 1 }, { id = w15(), min = 1, max = 1 }, { id = 'g002ig0007', min = 1, max = 1 }), -- случ. банка15 / случ. вард / Зелье магической устойчивости
 					{ id = pw5(), min = 1, max = 1 },
 					{ id = rndAndSave(perks_perm, {'g001ig0525', 'g001ig0528'}, {}), min = 1, max = 1 }, -- Эликсир учености (артефакты) / Честный труд (походное снаряжение)
+					{ id = rnd('g000ig5099', 'g002ig0023'), min = 1, max = 1}, -- Свиток "Опутывание" / Свиток "Забвение"
 				}
 			}
 		}
@@ -474,9 +569,11 @@ end
 ----------------------
 
 -- Лавка т1
-function zoneMerch1() -- свитки 400
+function zoneMerch1(merch_id) -- свитки 400
 return {
 	{
+		name = merchant_t1_data[merch_id].name,
+		description = merchant_t1_data[merch_id].description,
 		goods = {
 			itemTypes = { Item.Scroll },
 			value = { min = 800, max = 800 },
@@ -491,7 +588,7 @@ return {
 				{ id = 'g000ig0002', min = 1, max = 2 }, --15з
 				{ id = 'g000ig0014', min = 1, max = 1 }, --15а
 				{ id = 'g000ig0011', min = 1, max = 2 }, --15и
-				{ id = 'g000ig0008', min = 1, max = 1 }, --15т
+				{ id = 'g000ig0008', min = 2, max = 2 }, --15т
 
 				{ id = 'g000ig0021', min = 1, max = 2 }, -- вард в
 				{ id = 'g000ig0022', min = 1, max = 1 }, -- вард в
@@ -590,6 +687,7 @@ return {
 				rnd({ id = 'g000ig5021', min = 1, max = 1}, { id = 'g000ig5003', min = 1, max = 1}, { id = 'g001ig0250', min = 1, max = 1}, { id = 'g000ig5023', min = 1, max = 1}), -- свиток л.щит, сила, с.кости, с.витара
 				rnd({ id = 'g001ig0248', min = 1, max = 1}, { id = 'g000ig5045', min = 1, max = 1}, { id = 'g000ig5064', min = 1, max = 1}, { id = 'g000ig5101', min = 1, max = 1}), -- свиток устр. гимн, tormentio-броня, слабость, стая
 				rnd({ id = 'g000ig5007', min = 1, max = 1 }, { id = 'g000ig5029', min = 1, max = 1 }), -- св. исцеление / рит. исцеления
+				{ id = 'g000ig5084', min = 1, max = 1}, -- Свиток "Дар"
 			}
 		},
 --класс			guard = guard1(),
@@ -601,8 +699,8 @@ end
 function zoneMerch2(merch_id) -- свитки 550
 return {
 	{
-		name = merchant_t_data[merch_id].name,
-		description = merchant_t_data[merch_id].description,
+		name = merchant_t2_data[merch_id].name,
+		description = merchant_t2_data[merch_id].description,
 		goods = {
 			itemTypes = { Item.Scroll },
 			value = { min = 1100, max = 1100 },
@@ -617,7 +715,7 @@ return {
 				{ id = 'g000ig0002', min = 1, max = 1 }, --15з
 				{ id = 'g000ig0014', min = 1, max = 2 }, --15а
 				{ id = 'g000ig0011', min = 1, max = 1 }, --15и
-				{ id = 'g000ig0008', min = 1, max = 2 }, --15т
+				{ id = 'g000ig0008', min = 2, max = 2 }, --15т
 
 				{ id = 'g000ig0021', min = 1, max = 1 }, -- вард в
 				{ id = 'g000ig0022', min = 1, max = 2 }, -- вард в
@@ -641,6 +739,7 @@ return {
 
 				{ id = perks_perm[1], min = 1, max = 1 }, -- Пермо на навык
 				{ id = perks_perm[2], min = 1, max = 1 }, -- Пермо на навык
+				{ id = 'g001ig0534', min = 1, max = 1}, -- Экстракт таинственной энергии (смена источника атаки)
 
 				{ id = rnd('g001ig0493', 'g001ig0494', 'g001ig0495'), min = 1, max = 1 }, -- Книга Божественных даров(артефакты) / Книга странника (сапоги) / Книга наследия (знамёна)
 
@@ -711,7 +810,9 @@ return {
 				rnd({ id = 'g000ig5050', min = 1, max = 1}, { id = 'g001ig0253', min = 1, max = 1}, { id = 'g001ig0255', min = 1, max = 1}, { id = 'g001ig0256', min = 1, max = 1}), -- Свиток "Chronos"-ини, прокл.эмира-урон, спеш.время+ини, могущество+урон
 				rnd({ id = 'g000ig5103', min = 1, max = 1}, { id = 'g000ig5030', min = 1, max = 1}, { id = 'g000ig5104', min = 1, max = 1}, { id = 'g001ig0085', min = 1, max = 1}), -- Свиток "Призыв II: Энт" / Свиток "Взгляд Сивиллы"+7x7карта / Свиток "Опаление"-25дмг / Свиток "Потоп"
 				rnd({ id = 'g000ig5007', min = 1, max = 1 }, { id = 'g000ig5029', min = 1, max = 1 }), -- св. исцеление / рит. исцеления
-				{ id = 'g000ig5040', min = 1, max = 1 }, -- песнь Вотана
+				{ id = 'g000ig5040', min = 1, max = 1 }, -- Свиток "Песнь Вотана"
+				{ id = 'g000ig5084', min = 1, max = 1}, -- Свиток "Дар"
+				{ id = getAndRemove(scrollsWard), min = 1, max = 1}, -- случайный свиток за защиту
 			}
 		},
 --класс		guard = guard2(),
@@ -723,8 +824,8 @@ end
 function merchZone31()
 	return {
 			itemTypes = { Item.Scroll },
-			value = { min = 1400, max = 1400 },
-			itemValue = { min = 700, max = 700 },
+			value = { min = 1100, max = 1100 },
+			itemValue = { min = 550, max = 550 },
 			items = {
 				{ id = 'g000ig0001', min = 5, max = 6 },
 				{ id = 'g000ig0006', min = 5, max = 6 },
@@ -740,7 +841,7 @@ function merchZone31()
 				yn({ id = 'g000ig0002', min = 1, max = 2 }), --защита15
 				yn({ id = 'g000ig0014', min = 1, max = 2 }), --атака15
 				yn({ id = 'g000ig0011', min = 1, max = 2 }), --ини15
-				yn({ id = 'g000ig0008', min = 1, max = 2 }), --точность15
+				{ id = 'g000ig0008', min = 2, max = 2 }, --точность15
 
 				yn({ id = 'g000ig0021', min = 1, max = 2 }), -- вард воздух
 				yn({ id = 'g000ig0022', min = 1, max = 2 }), -- вард вода
@@ -804,8 +905,6 @@ function merchZone31()
 				yn({ id = 'g001ig0183', min = 1, max = 1 }), -- Сфера Обширной коррозии II -20брони аое 700
 				yn({ id = 'g001ig0480', min = 1, max = 1 }), -- Сфера Горы урон110 800
 				yn({ id = 'g001ig0059', min = 1, max = 1 }), -- Сфера защиты от Оружия 800
-				yn({ id = 'g000ig9025', min = 1, max = 1 }), -- Сфера Алчности 60 вамп аое 900
-				yn({ id = 'g001ig0459', min = 1, max = 1 }), -- Сфера Землетрясения 75 колонны 900
 				yn({ id = 'g000ig9014', min = 1, max = 1 }), -- Сфера Массового замедления 50 1000
 
 				--знамя
@@ -828,6 +927,7 @@ function merchZone31()
 				--свитки
 				rnd({ id = 'g000ig5110', min = 1, max = 1}, { id = 'g000ig5109', min = 1, max = 1}, { id = 'g001ig0165', min = 1, max = 1}, { id = 'g000ig5108', min = 1, max = 1}), -- Свиток "Излечение" / Свиток "Блуждающий Огонек"-40дмг / Свиток "Забвение"-перки / Свиток "Призыв III: Энт Большой"
 				rnd({ id = 'g000ig5089', min = 1, max = 1}, { id = 'g000ig5026', min = 1, max = 1}, { id = 'g000ig5013', min = 1, max = 1}, { id = 'g000ig5012', min = 1, max = 1}), -- Свиток "Preces"-точн.урон / Свиток "Гимн кланов"+ини / Свиток "Святая сила"+точн.урон / Свиток "Святая броня"+броня
+				{ id = getAndRemove(scrollsWard), min = 1, max = 1}, -- случайный свиток за защиту
 			}
 		}
 end
@@ -835,8 +935,8 @@ end
 function merchZone32()
 return {
 			itemTypes = { Item.Scroll },
-			value = { min = 1400, max = 1400 },
-			itemValue = { min = 700, max = 700 },
+			value = { min = 1100, max = 1100 },
+			itemValue = { min = 550, max = 550 },
 			items = {
 				{ id = 'g000ig0001', min = 5, max = 6 },
 				{ id = 'g000ig0006', min = 5, max = 6 },
@@ -852,7 +952,7 @@ return {
 				yn({ id = 'g000ig0002', min = 1, max = 2 }), --защита15
 				yn({ id = 'g000ig0014', min = 1, max = 2 }), --атака15
 				yn({ id = 'g000ig0011', min = 1, max = 2 }), --ини15
-				yn({ id = 'g000ig0008', min = 1, max = 2 }), --точность15
+				{ id = 'g000ig0008', min = 2, max = 2 }, --точность15
 
 				yn({ id = 'g000ig0021', min = 1, max = 2 }), -- вард воздух
 				yn({ id = 'g000ig0022', min = 1, max = 2 }), -- вард вода
@@ -916,9 +1016,7 @@ return {
 				yn({ id = 'g000ig9028', min = 1, max = 1 }), -- Сфера Грозы 110урон 700
 				yn({ id = 'g001ig0136', min = 1, max = 1 }), -- Сфера Брони III 35 800
 				yn({ id = 'g001ig0303', min = 1, max = 1 }), -- Сфера Древнего вамп100 800
-				yn({ id = 'g001ig0477', min = 1, max = 1 }), -- Сфера Терзаний 85 ряд 900
-				yn({ id = 'g000ig9027', min = 1, max = 1 }), -- Сфера Урагана 99 2x2 900
-				yn({ id = 'g000ig9032', min = 1, max = 1 }), -- Сфера цунами 90 неприкр 900
+				yn({ id = 'g000ig9014', min = 1, max = 1 }), -- Сфера Массового замедления 50 1000
 
 				--знамя
 				yn({ id = 'g000ig1002', min = 1, max = 1 }), -- знамя неуязв700
@@ -940,6 +1038,7 @@ return {
 				--свитки
 				rnd({ id = 'g000ig5110', min = 1, max = 1}, { id = 'g000ig5109', min = 1, max = 1}, { id = 'g001ig0165', min = 1, max = 1}, { id = 'g000ig5108', min = 1, max = 1}), -- Свиток "Излечение" / Свиток "Блуждающий Огонек"-40дмг / Свиток "Забвение"-перки / Свиток "Призыв III: Энт Большой"
 				rnd({ id = 'g000ig5089', min = 1, max = 1}, { id = 'g000ig5026', min = 1, max = 1}, { id = 'g000ig5013', min = 1, max = 1}, { id = 'g000ig5012', min = 1, max = 1}), -- Свиток "Preces"-точн.урон / Свиток "Гимн кланов"+ини / Свиток "Святая сила"+точн.урон / Свиток "Святая броня"+броня
+				{ id = getAndRemove(scrollsWard), min = 1, max = 1}, -- случайный свиток за защиту
 
 			}
 		}
@@ -1030,7 +1129,7 @@ return {
 	{
 		gold = goldRuinZone,
 		loot = {
-			itemTypes = { Item.Talisman, Item.Armor, Item.Jewel, Item.Weapon, Item.Banner, Item.TravelItem},
+			itemTypes = { Item.Armor, Item.Jewel, Item.Weapon, Item.Banner, Item.TravelItem },
 			value = { min = 700, max = 825 },
 			itemValue = { min = 700, max = 800 }
 		},
@@ -1301,25 +1400,25 @@ end
 function getMinesRespZ(race)
 	local mines = gmm(
 		{	-- FFA: 3 = 1 золото, 1 родная мана, 1 "важная" мана
-			[Race.Human] = { gold = 1, lifeMana = 1, runicMana = mines1[1], deathMana = 0, infernalMana = 0, groveMana = mines1[2] },
-			[Race.Dwarf] = { gold = 1, lifeMana = mines1[1], runicMana = 1, deathMana = 0, infernalMana = 0, groveMana = mines1[2] },
-			[Race.Undead] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = 1, infernalMana = mines1[1], groveMana = mines1[2] },
-			[Race.Heretic] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = mines1[1], infernalMana = 1, groveMana = mines1[2] },
-			[Race.Elf] = { gold = 1, lifeMana = mines1[1], runicMana = 0, deathMana = 0, infernalMana = mines1[2], groveMana = 1 }
+			[Race.Human] = { gold = 0, lifeMana = 1, runicMana = mines1[1], deathMana = 0, infernalMana = 0, groveMana = mines1[2] },
+			[Race.Dwarf] = { gold = 0, lifeMana = mines1[1], runicMana = 1, deathMana = 0, infernalMana = 0, groveMana = mines1[2] },
+			[Race.Undead] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = 1, infernalMana = mines1[1], groveMana = mines1[2] },
+			[Race.Heretic] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = mines1[1], infernalMana = 1, groveMana = mines1[2] },
+			[Race.Elf] = { gold = 0, lifeMana = mines1[1], runicMana = 0, deathMana = 0, infernalMana = mines1[2], groveMana = 1 }
 		},
 		{	-- 2x2 T0: 4 = 1 золото, 1 родная мана, 1 "важная" мана, 1 "неважная" мана
-			[Race.Human] = { gold = 1, lifeMana = 1, runicMana = mines1[1], deathMana = mines2[1], infernalMana = mines2[2], groveMana = mines1[2] },
-			[Race.Dwarf] = { gold = 1, lifeMana = mines1[1], runicMana = 1, deathMana = mines2[1], infernalMana = mines2[2], groveMana = mines1[2] },
-			[Race.Undead] = { gold = 1, lifeMana = mines2[1], runicMana = mines2[2], deathMana = 1, infernalMana = mines1[1], groveMana = mines1[2] },
-			[Race.Heretic] = { gold = 1, lifeMana = mines2[1], runicMana = mines2[2], deathMana = mines1[1], infernalMana = 1, groveMana = mines1[2] },
-			[Race.Elf] = { gold = 1, lifeMana = mines1[1], runicMana = mines2[1], deathMana = mines2[2], infernalMana = mines1[2], groveMana = 1 }
+			[Race.Human] = { gold = 0, lifeMana = 1, runicMana = mines1[1], deathMana = mines2[1], infernalMana = mines2[2], groveMana = mines1[2] },
+			[Race.Dwarf] = { gold = 0, lifeMana = mines1[1], runicMana = 1, deathMana = mines2[1], infernalMana = mines2[2], groveMana = mines1[2] },
+			[Race.Undead] = { gold = 0, lifeMana = mines2[1], runicMana = mines2[2], deathMana = 1, infernalMana = mines1[1], groveMana = mines1[2] },
+			[Race.Heretic] = { gold = 0, lifeMana = mines2[1], runicMana = mines2[2], deathMana = mines1[1], infernalMana = 1, groveMana = mines1[2] },
+			[Race.Elf] = { gold = 0, lifeMana = mines1[1], runicMana = mines2[1], deathMana = mines2[2], infernalMana = mines1[2], groveMana = 1 }
 		},
 		{	-- 2x2 T2: 3 = 1 золото, 1 родная мана, 1 "важная" мана
-			[Race.Human] = { gold = 1, lifeMana = 1, runicMana = mines1[1], deathMana = 0, infernalMana = 0, groveMana = mines1[2] },
-			[Race.Dwarf] = { gold = 1, lifeMana = mines1[1], runicMana = 1, deathMana = 0, infernalMana = 0, groveMana = mines1[2] },
-			[Race.Undead] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = 1, infernalMana = mines1[1], groveMana = mines1[2] },
-			[Race.Heretic] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = mines1[1], infernalMana = 1, groveMana = mines1[2] },
-			[Race.Elf] = { gold = 1, lifeMana = mines1[1], runicMana = 0, deathMana = 0, infernalMana = mines1[2], groveMana = 1 }
+			[Race.Human] = { gold = 0, lifeMana = 1, runicMana = mines1[1], deathMana = 0, infernalMana = 0, groveMana = mines1[2] },
+			[Race.Dwarf] = { gold = 0, lifeMana = mines1[1], runicMana = 1, deathMana = 0, infernalMana = 0, groveMana = mines1[2] },
+			[Race.Undead] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = 1, infernalMana = mines1[1], groveMana = mines1[2] },
+			[Race.Heretic] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = mines1[1], infernalMana = 1, groveMana = mines1[2] },
+			[Race.Elf] = { gold = 0, lifeMana = mines1[1], runicMana = 0, deathMana = 0, infernalMana = mines1[2], groveMana = 1 }
 		}
 	)
 	return mines[race]
@@ -1329,25 +1428,25 @@ end
 function getMinesRespZ2(race)
 	local mines = gmm(
 		{ -- FFA: 4 = 1 золото, 1 родная мана, 1 "важная" мана, 1 "неважная" мана
-			[Race.Human] = { gold = 1, lifeMana = 1, runicMana = mines1[2], deathMana = mines2[1], infernalMana = mines2[2], groveMana = mines1[1] },
-			[Race.Dwarf] = { gold = 1, lifeMana = mines1[2], runicMana = 1, deathMana = mines2[1], infernalMana = mines2[2], groveMana = mines1[1] },
-			[Race.Undead] = { gold = 1, lifeMana = mines2[1], runicMana = mines2[2], deathMana = 1, infernalMana = mines1[2], groveMana = mines1[1] },
-			[Race.Heretic] = { gold = 1, lifeMana = mines2[1], runicMana = mines2[2], deathMana = mines1[2], infernalMana = 1, groveMana = mines1[1] },
-			[Race.Elf] = { gold = 1, lifeMana = mines1[2], runicMana = mines2[1], deathMana = mines2[2], infernalMana = mines1[1], groveMana = 1 }
+			[Race.Human] = { gold = 0, lifeMana = 1, runicMana = mines1[2], deathMana = mines2[1], infernalMana = mines2[2], groveMana = mines1[1] },
+			[Race.Dwarf] = { gold = 0, lifeMana = mines1[2], runicMana = 1, deathMana = mines2[1], infernalMana = mines2[2], groveMana = mines1[1] },
+			[Race.Undead] = { gold = 0, lifeMana = mines2[1], runicMana = mines2[2], deathMana = 1, infernalMana = mines1[2], groveMana = mines1[1] },
+			[Race.Heretic] = { gold = 0, lifeMana = mines2[1], runicMana = mines2[2], deathMana = mines1[2], infernalMana = 1, groveMana = mines1[1] },
+			[Race.Elf] = { gold = 0, lifeMana = mines1[2], runicMana = mines2[1], deathMana = mines2[2], infernalMana = mines1[1], groveMana = 1 }
 		},
 		{	-- 2x2 T0: 3 = 1 золото, 1 родная мана, 1 "важная" мана
-			[Race.Human] = { gold = 1, lifeMana = 1, runicMana = mines1[2], deathMana = 0, infernalMana = 0, groveMana = mines1[1] },
-			[Race.Dwarf] = { gold = 1, lifeMana = mines1[2], runicMana = 1, deathMana = 0, infernalMana = 0, groveMana = mines1[1] },
-			[Race.Undead] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = 1, infernalMana = mines1[2], groveMana = mines1[1] },
-			[Race.Heretic] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = mines1[2], infernalMana = 1, groveMana = mines1[1] },
-			[Race.Elf] = { gold = 1, lifeMana = mines1[2], runicMana = 0, deathMana = 0, infernalMana = mines1[1], groveMana = 1 }
+			[Race.Human] = { gold = 0, lifeMana = 1, runicMana = mines1[2], deathMana = 0, infernalMana = 0, groveMana = mines1[1] },
+			[Race.Dwarf] = { gold = 0, lifeMana = mines1[2], runicMana = 1, deathMana = 0, infernalMana = 0, groveMana = mines1[1] },
+			[Race.Undead] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = 1, infernalMana = mines1[2], groveMana = mines1[1] },
+			[Race.Heretic] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = mines1[2], infernalMana = 1, groveMana = mines1[1] },
+			[Race.Elf] = { gold = 0, lifeMana = mines1[2], runicMana = 0, deathMana = 0, infernalMana = mines1[1], groveMana = 1 }
 		},
 		{	-- 2x2 T2: 3 = 1 золото, 1 родная мана, 1 "неважная" мана
-			[Race.Human] = { gold = 1, lifeMana = 1, runicMana = 0, deathMana = mines2[1], infernalMana = mines2[2], groveMana = 0 },
-			[Race.Dwarf] = { gold = 1, lifeMana = 0, runicMana = 1, deathMana = mines2[1], infernalMana = mines2[2], groveMana = 0 },
-			[Race.Undead] = { gold = 1, lifeMana = mines2[1], runicMana = mines2[2], deathMana = 1, infernalMana = 0, groveMana = 0 },
-			[Race.Heretic] = { gold = 1, lifeMana = mines2[1], runicMana = mines2[2], deathMana = 0, infernalMana = 1, groveMana = 0 },
-			[Race.Elf] = { gold = 1, lifeMana = 0, runicMana = mines2[1], deathMana = mines2[2], infernalMana = 0, groveMana = 1 }
+			[Race.Human] = { gold = 0, lifeMana = 1, runicMana = 0, deathMana = mines2[1], infernalMana = mines2[2], groveMana = 0 },
+			[Race.Dwarf] = { gold = 0, lifeMana = 0, runicMana = 1, deathMana = mines2[1], infernalMana = mines2[2], groveMana = 0 },
+			[Race.Undead] = { gold = 0, lifeMana = mines2[1], runicMana = mines2[2], deathMana = 1, infernalMana = 0, groveMana = 0 },
+			[Race.Heretic] = { gold = 0, lifeMana = mines2[1], runicMana = mines2[2], deathMana = 0, infernalMana = 1, groveMana = 0 },
+			[Race.Elf] = { gold = 0, lifeMana = 0, runicMana = mines2[1], deathMana = mines2[2], infernalMana = 0, groveMana = 1 }
 		}
 	)
 	return mines[race]
@@ -1357,18 +1456,18 @@ end
 function getMinesZone2(race)
 	local mines = gmm(
 		{	-- FFA: 2 = 1 золото, 1 "неважная" мана
-			[Race.Human] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = mines2[2], infernalMana = mines2[1], groveMana = 0 },
-			[Race.Dwarf] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = mines2[2], infernalMana = mines2[1], groveMana = 0 },
-			[Race.Undead] = { gold = 1, lifeMana = mines2[2], runicMana = mines2[1], deathMana = 0, infernalMana = 0, groveMana = 0 },
-			[Race.Heretic] = { gold = 1, lifeMana = mines2[2], runicMana = mines2[1], deathMana = 0, infernalMana = 0, groveMana = 0 },
-			[Race.Elf] = { gold = 1, lifeMana = 0, runicMana = mines2[2], deathMana = mines2[1], infernalMana = 0, groveMana = 0 },
+			[Race.Human] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = mines2[2], infernalMana = mines2[1], groveMana = 0 },
+			[Race.Dwarf] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = mines2[2], infernalMana = mines2[1], groveMana = 0 },
+			[Race.Undead] = { gold = 0, lifeMana = mines2[2], runicMana = mines2[1], deathMana = 0, infernalMana = 0, groveMana = 0 },
+			[Race.Heretic] = { gold = 0, lifeMana = mines2[2], runicMana = mines2[1], deathMana = 0, infernalMana = 0, groveMana = 0 },
+			[Race.Elf] = { gold = 0, lifeMana = 0, runicMana = mines2[2], deathMana = mines2[1], infernalMana = 0, groveMana = 0 },
 		},
 		{	-- 2x2 T0: 2 = 1 золото, 1 "неважная" мана
-			[Race.Human] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = mines2[2], infernalMana = mines2[1], groveMana = 0 },
-			[Race.Dwarf] = { gold = 1, lifeMana = 0, runicMana = 0, deathMana = mines2[2], infernalMana = mines2[1], groveMana = 0 },
-			[Race.Undead] = { gold = 1, lifeMana = mines2[2], runicMana = mines2[1], deathMana = 0, infernalMana = 0, groveMana = 0 },
-			[Race.Heretic] = { gold = 1, lifeMana = mines2[2], runicMana = mines2[1], deathMana = 0, infernalMana = 0, groveMana = 0 },
-			[Race.Elf] = { gold = 1, lifeMana = 0, runicMana = mines2[2], deathMana = mines2[1], infernalMana = 0, groveMana = 0 },
+			[Race.Human] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = mines2[2], infernalMana = mines2[1], groveMana = 0 },
+			[Race.Dwarf] = { gold = 0, lifeMana = 0, runicMana = 0, deathMana = mines2[2], infernalMana = mines2[1], groveMana = 0 },
+			[Race.Undead] = { gold = 0, lifeMana = mines2[2], runicMana = mines2[1], deathMana = 0, infernalMana = 0, groveMana = 0 },
+			[Race.Heretic] = { gold = 0, lifeMana = mines2[2], runicMana = mines2[1], deathMana = 0, infernalMana = 0, groveMana = 0 },
+			[Race.Elf] = { gold = 0, lifeMana = 0, runicMana = mines2[2], deathMana = mines2[1], infernalMana = 0, groveMana = 0 },
 		},
 		{	-- 2x2 T2: 3 = 1 золото, 1 "важная" мана, 1 "неважная" мана
 			[Race.Human] = { gold = 1, lifeMana = 0, runicMana = mines1[2], deathMana = mines2[2], infernalMana = mines2[1], groveMana = mines1[1] },
@@ -1397,11 +1496,11 @@ end
 -- Источники т4
 function getMinesZone4(race)
 	local mines = {
-		[Race.Human] = { gold = 2, lifeMana = 1},
-		[Race.Dwarf] = { gold = 2, runicMana = 1},
-		[Race.Undead] = { gold = 2, deathMana = 1},
-		[Race.Heretic] = { gold = 2, infernalMana = 1},
-		[Race.Elf] = { gold = 2, groveMana = 1},
+		[Race.Human] = { gold = 1, lifeMana = 1},
+		[Race.Dwarf] = { gold = 1, runicMana = 1},
+		[Race.Undead] = { gold = 1, deathMana = 1},
+		[Race.Heretic] = { gold = 1, infernalMana = 1},
+		[Race.Elf] = { gold = 1, groveMana = 1},
 	}
 	return mines[race]
 end
@@ -1648,7 +1747,13 @@ function unitsMercen1()
 	end
 
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5033', level = 1, unique = true } i = i + 1 end -- Упырь 220
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu2006', level = 1, unique = true } i = i + 1 end -- Наяда 235
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8048', level = 1, unique = true } i = i + 1 end -- Старейшина Гоблинов 570
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8042', level = 1, unique = true } i = i + 1 end -- Темный Эльф Потрошитель 625
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu7607', level = 1, unique = true } i = i + 1 end -- Черный ядозуб 825
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8151', level = 1, unique = true } i = i + 1 end -- Фурия 1215
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5026', level = 1, unique = true } i = i + 1 end -- Русалка 1320
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7586', level = 1, unique = true } i = i + 1 end -- Легат 1480
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8035', level = 1, unique = true } i = i + 1 end -- Вильсида 1620
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8218', level = 1, unique = true } i = i + 1 end -- Волхв 1750
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu7567', level = 1, unique = true } i = i + 1 end -- Первородная сущность (ожог) 1800
@@ -1717,9 +1822,15 @@ function unitsMercen2()
 	end
 
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5033', level = 1, unique = true } i = i + 1 end -- Упырь 220
-	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8213', level = 1, unique = true } i = i + 1 end -- Гоблин-шаман 1230
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu2006', level = 1, unique = true } i = i + 1 end -- Наяда 235
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8213', level = 1, unique = true } i = i + 1 end -- Гоблин-шаман 525
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu7590', level = 1, unique = true } i = i + 1 end -- Ящер-охотник 590
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8041', level = 1, unique = true } i = i + 1 end -- Темный Эльф Мясник 625
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8043', level = 1, unique = true } i = i + 1 end -- Жрица Безмясой 900
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu6106', level = 1, unique = true } i = i + 1 end -- Принцесса гномов 1200
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7560', level = 1, unique = true } i = i + 1 end -- Каратель 1230
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g002uu5026', level = 1, unique = true } i = i + 1 end -- Элементаль воды 1450
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7620', level = 1, unique = true } i = i + 1 end -- Одержимый великан 1560
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu7566', level = 1, unique = true } i = i + 1 end -- Первородная сущность (мороз) 1800
 
 	if mercenary_mode >= 3 then
@@ -1788,8 +1899,14 @@ function unitsMercen3()
 	end
 
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5033', level = 1, unique = true } i = i + 1 end -- Упырь 220
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu2006', level = 1, unique = true } i = i + 1 end -- Наяда 235
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8157', level = 1, unique = true } i = i + 1 end -- Гоблин-громыхун 400
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu7619', level = 1, unique = true } i = i + 1 end -- Слуга культа 625
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu5012', level = 1, unique = true } i = i + 1 end -- Орк-багатур 750
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g001uu7617', level = 1, unique = true } i = i + 1 end -- Тень культа 1070
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu6121', level = 1, unique = true } i = i + 1 end -- Дхампир 1070
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8275', level = 1, unique = true } i = i + 1 end -- Медуза 1250
+	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8174', level = 1, unique = true } i = i + 1 end -- Вестник распада 1400
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8277', level = 1, unique = true } i = i + 1 end -- Уста богов 1520
 	if math.random(0,1) ~= 1 then unitsm[i] = { id = 'g000uu8237', level = 1, unique = true } i = i + 1 end -- Первородная сущность (рб) 1800
 
@@ -2417,6 +2534,14 @@ function getTalisman5()
 	)
 end
 
+-- Получить предмет из таблицы и удалить его из неё
+function getAndRemove(values)
+	shake(values)
+	local item = values[1]
+	table.remove(values, 1)
+	return item
+end
+
 -- случайная субраса
 function rsub()
 	return rnd(
@@ -2428,13 +2553,13 @@ function rsub()
 	)
 end
 
--- субраса только не нежить
+-- субраса только не нежить + водные
 function NoUndead()
 	return rnd(
-			{ Subrace.Human, Subrace.Neutral, Subrace.NeutralHuman, Subrace.NeutralGreenSkin, Subrace.NeutralDragon, Subrace.NeutralMarsh, Subrace.NeutralBarbarian, Subrace.NeutralWolf }, --люди
-			{ Subrace.Elf, Subrace.Neutral, Subrace.NeutralElf, Subrace.NeutralGreenSkin, Subrace.NeutralDragon, Subrace.NeutralMarsh, Subrace.NeutralBarbarian, Subrace.NeutralWolf }, --эльфы
-			{ Subrace.Heretic, Subrace.Neutral, Subrace.NeutralGreenSkin, Subrace.NeutralDragon, Subrace.NeutralMarsh, Subrace.NeutralBarbarian, Subrace.NeutralWolf }, --демоны
-			{ Subrace.Dwarf, Subrace.Neutral, Subrace.NeutralGreenSkin, Subrace.NeutralDragon, Subrace.NeutralMarsh, Subrace.NeutralBarbarian, Subrace.NeutralWolf } --гномы
+			{ Subrace.Human, Subrace.Neutral, Subrace.NeutralHuman, Subrace.NeutralGreenSkin, Subrace.NeutralDragon, Subrace.NeutralMarsh, Subrace.NeutralBarbarian, Subrace.NeutralWolf, Subrace.NeutralWater }, --люди
+			{ Subrace.Elf, Subrace.Neutral, Subrace.NeutralElf, Subrace.NeutralGreenSkin, Subrace.NeutralDragon, Subrace.NeutralMarsh, Subrace.NeutralBarbarian, Subrace.NeutralWolf, Subrace.NeutralWater }, --эльфы
+			{ Subrace.Heretic, Subrace.Neutral, Subrace.NeutralGreenSkin, Subrace.NeutralDragon, Subrace.NeutralMarsh, Subrace.NeutralBarbarian, Subrace.NeutralWolf, Subrace.NeutralWater }, --демоны
+			{ Subrace.Dwarf, Subrace.Neutral, Subrace.NeutralGreenSkin, Subrace.NeutralDragon, Subrace.NeutralMarsh, Subrace.NeutralBarbarian, Subrace.NeutralWolf, Subrace.NeutralWater } --гномы
 	)
 end
 
@@ -2862,7 +2987,7 @@ function z3Stacks3(zusil200)
 	}
 end
 
-function z3Stacks4(zusil500, Scroll34)
+function z3Stacks4(zusil500, scroll)
 	return { -- 800хп
 		subraceTypes = NoUndead(),
 		count = 1,
@@ -2873,7 +2998,7 @@ function z3Stacks4(zusil500, Scroll34)
 				rnd({ id = 'g001ig0378', min = 2, max = 2 }, { id = 'g001ig0378', min = 2, max = 2 }, { id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0018', min = 1, max = 1 }), -- хил75-50%/рес-25%/мазь-25%
 				rnd({ id = 'g000ig0006', min = 1, max = 1 }, { id = 'g000ig0005', min = 2, max = 2 }), --хил100/2хил50
 				{ id = zusil500, min = 1, max = 1 }, --усиление500
-				{ id = Scroll34, min = 1, max = 1 }, --свиток т3/т4
+				{ id = scroll, min = 1, max = 1 }, --свиток т3
 			}
 		}
 	}
@@ -2925,15 +3050,16 @@ return { -- шар
 			aiPriority = 0,
 			subraceTypes = NoUndead(),
 			value = { min = 1280*kef, max = 1350*kef },
-				loot = {
-					items = {
-						rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 2 }), --рес/хил100
-						{ id = rms(), min = 1, max = 1 }, --случ. шар манны
-						{ id = 'g001ig0378', min = 2, max = 3}, --хил75
-						{ id = 'g001ig0431', min = 3, max = 5}, -- гранат
-						{ id = rnd('g001ig0525', 'g001ig0182', 'g000ig2002'), min = 1, max = 1 }, --эликсир учености(артефакты)/счастливая кость/святая чаша (артефакт)
-					}
+			loot = {
+				items = {
+					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 2 }), --рес/хил100
+					{ id = rms(), min = 1, max = 1 }, --случ. шар манны
+					{ id = 'g001ig0378', min = 2, max = 3}, --хил75
+					{ id = 'g001ig0431', min = 3, max = 5}, -- гранат
+					{ id = rnd('g001ig0182', 'g000ig2002'), min = 1, max = 1 }, -- счастливая кость/святая чаша (артефакт)
+					getAndRemove(staffT5), -- посох
 				}
+			}
 }
 end
 
@@ -2943,15 +3069,17 @@ return { -- свиток
 			aiPriority = 0,
 			subraceTypes = NoUndead(),
 			value = { min = 1280*kef, max = 1350*kef },
-				loot = {
-					itemTypes = { Item.Scroll },
-					value = { min = 550, max = 550 },
-					itemValue = { min = 550, max = 550 },
-					items = {
+			loot = {
+				--itemTypes = { Item.Scroll },
+				--value = { min = 550, max = 550 },
+				--itemValue = { min = 550, max = 550 },
+				items = {
 					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 2 }), --рес/хил100
-						{ id = 'g001ig0378', min = 2, max = 3}, --хил75
-						{ id = 'g001ig0432', min = 2, max = 3}, -- аметист
-						{ id = rnd('g001ig0528', 'g001ig0111', 'g001ig0114'), min = 1, max = 1 }, --честный труд(сапоги)/сапоги ассасина/тяжелые сапоги (снаряжение)
+					{ id = 'g001ig0378', min = 2, max = 3}, --хил75
+					{ id = 'g001ig0432', min = 2, max = 3}, -- аметист
+					{ id = rnd('g001ig0111', 'g001ig0114'), min = 1, max = 1 }, -- сапоги ассасина/тяжелые сапоги (снаряжение)
+					getAndRemove(scrollsT5), -- свиток 700
+					getAndRemove(staffT5), -- посох
 				}
 			}
 }
@@ -2963,17 +3091,19 @@ return { -- сфера
 			aiPriority = 0,
 			subraceTypes = NoUndead(),
 			value = { min = 1280*kef, max = 1350*kef },
-				loot = {
-					itemTypes = { Item.Orb },
-					value = { min = 525, max = 725 }, -- сфера 450-700
-					itemValue = { min = 500, max = 700 },
-					items =  {
+			loot = {
+				--itemTypes = { Item.Orb },
+				--value = { min = 525, max = 725 }, -- сфера 450-700
+				--itemValue = { min = 500, max = 700 },
+				items =  {
 					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 2 }), --рес/хил100
-						{ id = 'g001ig0378', min = 2, max = 3}, --хил75
-						{ id = 'g000ig7006', min = 1, max = 1}, -- сапфир
-						{ id = rnd('g001ig0526', 'g000ig1001', 'g000ig1003'), min = 1, max = 1 }, --зелье оруженосца(знамя)/знамя защиты/ знамя сражения/#знамя мастера#
-					}
+					{ id = 'g001ig0378', min = 2, max = 3}, --хил75
+					{ id = 'g000ig7006', min = 1, max = 1}, -- сапфир
+					{ id = rnd('g000ig1001', 'g000ig1003'), min = 1, max = 1 }, -- знамя защиты/ знамя сражения/#знамя мастера#
+					{ id = getAndRemove(sphereT5), min = 1, max = 1}, -- сферы за 900 + сферы недлительного контроля
+					getAndRemove(staffT5), -- посох
 				}
+			}
 }
 end
 
@@ -2983,15 +3113,15 @@ return { -- e4
 			aiPriority = 0,
 			subraceTypes = NoUndead(),
 			value = { min = 1280*kef, max = 1350*kef },
-				loot = {
-					items = {
-					rnd(
-						{ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 2, max = 3 }), --рес/хил100
-						{ id = e4(), min = 1, max = 1 }, --эликсир400
-						{ id = 'g000ig7004', min = 1, max = 2}, -- золотое кольцо
-						{ id = rnd('g001ig0527', 'g001ig0099', 'g000ig3020', 'g001ig0421'), min = 1, max = 1 }, --зелье постижения(реликвии)/перчатки дуэлянта/череп танатоса/борода имира (реликвия)
-					}
+			loot = {
+				items = {
+					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 2, max = 3 }), --рес/хил100
+					{ id = e4(), min = 1, max = 1 }, --эликсир400
+					{ id = 'g000ig7004', min = 1, max = 2}, -- золотое кольцо
+					{ id = rnd('g001ig0099', 'g000ig3020', 'g001ig0421'), min = 1, max = 1 }, --перчатки дуэлянта/череп танатоса/борода имира (реликвия)
+					getAndRemove(staffT5), -- посох
 				}
+			}
 }
 end
 
@@ -3001,16 +3131,16 @@ return { --2000хп*1 -- пермо500*2
 			aiPriority = 0,
 			subraceTypes = NoUndead(),
 			value = { min = 1600*kef, max = 1680*kef },
-				loot = {
-					items = {
-						{ id = 'g000ig0001', min = 2, max = 3 }, --рес
-						{ id = 'g000ig0006', min = 2, max = 3 }, --хил100
-						{ id = 'g000ig0018', min = 2, max = 2 }, --хил200
-						{ id = 'g000ig7005', min = 1, max = 2}, -- рубин
-						{ id = rnd('g001ig0024', 'g001ig0021б', 'g001ig0025', 'g001ig0563', 'g001ig0031'), min = 1, max = 1 }, --аура защиты|слепой ярости|живучести|внимательности|точности
-						{ id = rnd('g001ig0027', 'g001ig0029', 'g001ig0028', 'g001ig0018', 'g001ig0022'), min = 1, max = 1 }, --аура брони|силы|выносливости|великая тролля|меткости
-					}
+			loot = {
+				items = {
+					{ id = 'g000ig0001', min = 2, max = 3 }, --рес
+					{ id = 'g000ig0006', min = 2, max = 3 }, --хил100
+					{ id = 'g000ig0018', min = 2, max = 2 }, --хил200
+					{ id = 'g000ig7005', min = 1, max = 2}, -- рубин
+					{ id = rnd('g001ig0024', 'g001ig0021б', 'g001ig0025', 'g001ig0563', 'g001ig0031'), min = 1, max = 1 }, --аура защиты|слепой ярости|живучести|внимательности|точности
+					{ id = rnd('g001ig0027', 'g001ig0029', 'g001ig0028', 'g001ig0018', 'g001ig0022'), min = 1, max = 1 }, --аура брони|силы|выносливости|великая тролля|меткости
 				}
+			}
 }
 end
 
@@ -3030,7 +3160,7 @@ return {
 					rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 2 }), --рес/хил100
 						{ id = 'g001ig0378', min = 2, max = 3}, --хил75
 						{ id = 'g000ig7006', min = 1, max = 1}, -- сапфир
-						{ id = rnd('g001ig0526', 'g000ig1001', 'g000ig1003'), min = 1, max = 1 }, --зелье оруженосца(знамя)/знамя защиты/ знамя сражения/#знамя мастера
+						{ id = rnd('g000ig1001', 'g000ig1003'), min = 1, max = 1 }, --знамя защиты/ знамя сражения/#знамя мастера
 					}
 				}
 }
@@ -3050,7 +3180,7 @@ return {
 						{ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 2, max = 3 }), --рес/хил100
 						{ id = e4(), min = 1, max = 1 }, --эликсир400
 						{ id = 'g000ig7004', min = 1, max = 2}, -- золотое кольцо
-						{ id = rnd('g001ig0527', 'g001ig0099', 'g000ig3020', 'g001ig0421'), min = 1, max = 1 }, --зелье постижения(реликвии)/перчатки дуэлянта/череп танатоса/борода имира (реликвия)
+						{ id = rnd('g001ig0099', 'g000ig3020', 'g001ig0421'), min = 1, max = 1 }, --перчатки дуэлянта/череп танатоса/борода имира (реликвия)
 					}
 				}
 }
@@ -3342,7 +3472,7 @@ function getPlayerZone0(zoneId, zoneSize, playerRace)
 end
 
 -- сводная зоны 1
-function getPlayerZone1(zoneId, zoneSize, playerRace)
+function getPlayerZone1(zoneId, zoneSize, playerRace, name_id)
 	return {
 		id = zoneId,
 		type = Zone.Junction,
@@ -3350,7 +3480,7 @@ function getPlayerZone1(zoneId, zoneSize, playerRace)
 		race = playerRace,
 		size = zoneSize,
 		towns = zoneTownsResp0(playerRace),
-		merchants = zoneMerch1(),
+		merchants = zoneMerch1(name_id),
 		mages = zoneMageResp1(playerRace),
 		ruins = zoneRuinRespZ(),
 		mines = getMinesRespZ2(playerRace),
@@ -3407,14 +3537,15 @@ function getTreasureZone3(zoneId, zoneSize, b1, b2, bid, rid1, rid2, sid, mid)
         z3Stacks2(b30),
         z3Stacks3(e2),
     }
+
     if sid == 1 then
-        table.insert(r_stacks, z3Stacks4('g001ig0562', rnd('g000ig5091', 'g000ig5055', 'g000ig5055'))) -- Зелье дуэлянта +20крит и Свиток "Tempus status" -33ини / Свиток "Tortio menta" -33точность
+        table.insert(r_stacks, z3Stacks4('g001ig0562', getAndRemove(scrollsT3))) -- Зелье дуэлянта +20крит и т3 свиток
     elseif sid == 2 then
-        table.insert(r_stacks, z3Stacks4('g001ig0491', rnd('g000ig5039', 'g001ig0586'))) -- Зелье похищения жизни +25вамп и Свиток "Неподкупность" / Свиток "Предательство -20 воры
+        table.insert(r_stacks, z3Stacks4('g001ig0491', getAndRemove(scrollsT3))) -- Зелье похищения жизни +25вамп и т3 свиток
     elseif sid == 3 then
-        table.insert(r_stacks, z3Stacks4('g001ig0355', rnd('g000ig5079', 'g000ig5096'))) -- Зелье тритоньей чешуи +вардурон и Свиток "Защита от Оружия" / Свиток "Прикосновение вампира" +35вамп
+        table.insert(r_stacks, z3Stacks4('g001ig0355', getAndRemove(scrollsT3))) -- Зелье тритоньей чешуи +вардурон и т3 свиток
     elseif sid == 4 then
-        table.insert(r_stacks, z3Stacks4('g001ig0127', rnd('g000ig5012', 'g000ig5013', 'g000ig5013'))) -- Эликсир жизненной силы +50максоз и Свиток "Святая броня" +15 броня / Свиток "Святая сила" +15урон и точн
+        table.insert(r_stacks, z3Stacks4('g001ig0127', getAndRemove(scrollsT3))) -- Эликсир жизненной силы +50максоз и т3 свиток
     end
 
 	return {
@@ -3443,7 +3574,7 @@ function getTreasureZone4(zoneId, zoneSize, mid)
 		size = zoneSize,
 		towns = zoneTownsZone4(),
 		ruins = zoneRuinZone4(),
-		mines = getMinesZone4(mid),
+		--mines = getMinesZone4(mid),
 		resourceMarkets = mmc(rMarketsZone4(), {}),
 		stacks = { --4+4
             --z3Stacks1(rmss()),
@@ -3520,7 +3651,8 @@ function getZones(races)
 	shake(mid)
 	shake(mage_c_data)
 	shake(merchant_c_data)
-	shake(merchant_t_data)
+	shake(merchant_t1_data)
+	shake(merchant_t2_data)
 	shake(merc_c_data)
 	shake(merc_t_data)
 	shake(trainer_c_data)
@@ -3536,7 +3668,7 @@ function getZones(races)
 	shake(mines2)
 	perks_perm = {}
 	table.insert(zones, getPlayerZone0(c0_1, z0, races[1]))
-	table.insert(zones, getPlayerZone1(c1_1, z1, races[1]))
+	table.insert(zones, getPlayerZone1(c1_1, z1, races[1], 1))
 	table.insert(zones, getPlayerZone2(c2_1, z2, races[1], 1))
 
 	table.insert(zones, getEmptyZone(ce_1, zw))
@@ -3547,7 +3679,7 @@ function getZones(races)
 	shake(mines2)
 	perks_perm = {}
 	table.insert(zones, getPlayerZone0(c0_2, z0, races[2]))
-	table.insert(zones, getPlayerZone1(c1_2, z1, races[2]))
+	table.insert(zones, getPlayerZone1(c1_2, z1, races[2], 1))
 	table.insert(zones, getPlayerZone2(c2_2, z2, races[2], 2))
 
 	table.insert(zones, getEmptyZone(ce_3, zw))
@@ -3685,14 +3817,16 @@ function getScenarioVariables()
 	end
 
 	local races = { 'EMPIRE', 'LEGIONS', 'CLANS', 'HORDES', 'ELVES' }
-	local t1 = smm(0, 0, 0)
-	local t2 = smm(0, 0, 25)
-	local t3 = smm(25, 25, 50)
-	local t4 = smm(75, 75, 125)
-	local t5 = smm(150, 150, 250)
+	local t0 = 50
+	local t1 = 50
+	local t2 = 50
+	local t3 = 100
+	local t4 = 175
+	local t5 = 250
 	local r_vars = smm(
 			-- оригинал
 			{
+				{ name = '_TIER_0_CITY_INCOME', value = t0 },
 				{ name = '_TIER_1_CITY_INCOME', value = t1 },
 				{ name = '_TIER_2_CITY_INCOME', value = t2 },
 				{ name = '_TIER_3_CITY_INCOME', value = t3 },
@@ -3702,6 +3836,7 @@ function getScenarioVariables()
 			-- бесит!
 			{
 				{ name = '_SCOUT_FLAT', value = 98 },
+				{ name = '_TIER_0_CITY_INCOME', value = t0 },
 				{ name = '_TIER_1_CITY_INCOME', value = t1 },
 				{ name = '_TIER_2_CITY_INCOME', value = t2 },
 				{ name = '_TIER_3_CITY_INCOME', value = t3 },
@@ -3711,6 +3846,7 @@ function getScenarioVariables()
 			-- баланс
 			{
 				{ name = '_SCOUT_FLAT', value = 99 },
+				{ name = '_TIER_0_CITY_INCOME', value = t0 },
 				{ name = '_TIER_1_CITY_INCOME', value = t1 },
 				{ name = '_TIER_2_CITY_INCOME', value = t2 },
 				{ name = '_TIER_3_CITY_INCOME', value = t3 },
@@ -3766,7 +3902,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner[Duo] 2.1',
+	name = 'Bladerunner[Duo] 2.2',
 	description = 'Шаблон для игры 1x1. 1 герой, 1 жезловик, 1 вор\nСиняя, т.синяя, оранжевая, желтая зоны должны касаться двух т.серых зон центра\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
@@ -3902,7 +4038,7 @@ forbiddenUnits = {
 
 --- Фракционные хиллеры-солдаты с большим кол-вом опыта
 'g000uu0017', -- Аббатиса
-'g000uu8035', -- Вильсида
+--'g000uu8035', -- Вильсида
 'g002uu8039', -- Вердант
 'g000uu7570', -- Епископ
 'g000uu7569', -- Иерей
@@ -3946,9 +4082,9 @@ forbiddenUnits = {
 'g000uu8289', -- Древо жизни л
 'g000uu7521', -- Целитель л.
 'g000uu5006', -- Великий Оракул
-'g000uu8222', -- Волхв л. бафер
-'g000uu8218', -- Волхв
-'g000uu7544', -- Настоятельница
+--'g000uu8222', -- Волхв л. бафер
+--'g000uu8218', -- Волхв
+--'g000uu7544', -- Настоятельница
 'g000uu8213', -- Гоблин-шаман
 'g001uu8262', -- Знахарка
 'g000uu2021', -- Проповедник
