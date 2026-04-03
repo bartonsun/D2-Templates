@@ -27,7 +27,8 @@ local ce_4 = 286 -- c.серый
 --- режим карты:
 --- 1. 1x1
 --- 2. Бесит!(1x1)
---- 3. Баланс(1x1)
+--- 3. КотоБесия(1x1)
+--- 4. Котовасия(1x1)
 local gmode = 1
 local smode = 1
 ------------------------------------------------------------------------------------------
@@ -70,7 +71,7 @@ local iad = math.random(1,6)
 -- переменные для рудников
 local mines1 = {0, 1}
 local mines2 = {0, 1}
-local guardRace = Race.NeutralBarbarian
+local guardRace = Subrace.NeutralBarbarian
 
 --  Маг
 local mage_c_data = {
@@ -124,7 +125,7 @@ local merchant_t1_data = {
 	},
 	{
 		name = 'Таверна РокВолка',
-		description = 'У нас тут творческий коллектив. Можем спеть, сыграть, нарисовать... ну или или нахер вас послать!',
+		description = 'У нас тут творческий коллектив. Можем спеть, сыграть, нарисовать... ну или нахер вас послать!',
 	},
 	{
 		name = '',
@@ -270,6 +271,164 @@ local ruins_t_data = {
 	'УЛЬТРА ДРЕВНЕЕ КИТАЙСКОЕ ПРОКЛЯТИЕ НА ЗАЛИВКУ В ЭТИХ РУИНАХ',
 }
 ------------------------------------------------------------------------------------------
+local BUILDINGS = {
+	EMPIRE = {
+		L_FIGHTER = {
+			{'g000bb0001', 'g000bb0002', 'g000bb0003', 'g000bb0004'}, -- Мастер клинка + Хранитель Ордена
+			{'g000bb0001', 'g000bb0002', 'g000bb0003', 'g000bb0005'}, -- Паладин + Кастелян
+			{'g000bb0001', 'g000bb0002', 'g000bb0006'},               -- Ангел + Сенешаль
+			{'g000bb0007', 'g000bb0008', 'g000bb0009'},               -- Великий Инквизитор + Эмиссар
+			{'g000bb0136', 'g000bb0137', 'g000bb0138', 'g000bb0139'}, -- Фанатик + Игнар
+		},
+		L_ARCHER = {
+			{'g000bb0010', 'g000bb0011', 'g000bb0190'}, -- Юстициар
+			{'g000bb0010', 'g000bb0131', 'g000bb0132'}, -- Кара Императора
+			{'g000bb0170', 'g000bb0171'},               -- Бореалис
+		},
+		L_MAGE = {
+			{'g000bb0012', 'g000bb0013', 'g000bb0014'},               -- Белый Маг
+			--{'g000bb0012', 'g000bb0015', 'g000bb0143', 'g000bb0154'}, -- Демиург #SUMMONER
+			{'g000bb0012', 'g000bb0182', 'g000bb0183'},               -- Криомант
+		},
+		L_SPECIAL = {
+			{'g000bb0016', 'g000bb0017', 'g000bb0018'}, -- Патриарх
+			{'g000bb0016', 'g000bb0168', 'g000bb0169'}, -- Епископ
+			{'g000bb0019', 'g000bb0020', 'g000bb0021'}, -- Прорицательница
+		},
+		L_SIDESHOW = {
+			{'g000bb0022', 'g000bb0192'}, -- Рефаим
+		},
+	},
+	CLANS = {
+		L_FIGHTER = {
+			{'g000bb0026', 'g000bb0027', 'g000bb0028', 'g000bb0029'}, -- Ярл + Гарм
+			{'g000bb0026', 'g000bb0027', 'g000bb0028', 'g000bb0030'}, -- Конунг + Гарм
+			{'g000bb0026', 'g000bb0027', 'g000bb0133'},               -- Хранитель рун + Гарм
+			{'g000bb0026', 'g000bb0031', 'g000bb0032', 'g000bb0158'}, -- Жрец Имира + Белый волк
+			--{'g000bb0026', 'g000bb0031', 'g000bb0033'},               -- Повелитель волков + Белый волк #SUMMONER
+		},
+		L_ARCHER = {
+			{'g000bb0034', 'g000bb0035'},               -- Защитник горна
+			{'g000bb0034', 'g000bb0036', 'g000bb0142'}, -- Метатель Огня
+			{'g000bb0034', 'g000bb0175'},               -- Сотрясатель
+		},
+		L_MAGE = {
+			{'g000bb0037', 'g000bb0038', 'g000bb0039'}, -- Архидруид
+			{'g000bb0037', 'g000bb0040', 'g000bb0172'}, -- Эйра
+			{'g000bb0037', 'g000bb0173', 'g000bb0174'}, -- Хейса
+		},
+		L_SPECIAL = {
+			{'g000bb0041', 'g000bb0042', 'g000bb0043'},               -- Повелитель Бурь
+			{'g000bb0041', 'g000bb0149', 'g000bb0150'},               -- Сын земли
+			{'g000bb0041', 'g000bb0044', 'g000bb0045', 'g000bb0123'}, -- Гримтурс
+		},
+		L_SIDESHOW = {
+			{'g000bb0046', 'g000bb0189'}, -- Йамму
+		},
+	},
+	LEGIONS = {
+		L_FIGHTER = {
+			{ 'g000bb0050', 'g000bb0051', 'g000bb0052' }, -- Возвышенный
+			{ 'g000bb0050', 'g000bb0051', 'g000bb0159' }, -- Искоренитель
+			{ 'g000bb0050', 'g000bb0125', 'g000bb0126' }, -- Истязатель душ
+		},
+		L_ARCHER = {
+			{ 'g000bb0053', 'g000bb0054' }, -- Ониксовая
+			{ 'g000bb0053', 'g000bb0162' }, -- Азуритовая
+			{ 'g000bb0176', 'g000bb0177' }, -- Чароитовая
+			{ 'g000bb0176', 'g000bb0178' }, -- Цитриновая
+		},
+		L_MAGE = {
+			{ 'g000bb0055', 'g000bb0056', 'g000bb0057', 'g000bb0058' }, -- Модеус
+			{ 'g000bb0055', 'g000bb0056', 'g000bb0057', 'g000bb0153' }, -- Барантор
+			{ 'g000bb0055', 'g000bb0056', 'g000bb0060', 'g000bb0140' }, -- Якшини
+			--{ 'g000bb0055', 'g000bb0059', 'g000bb0157' },               -- Хозяин масок #SUMMONER
+			{ 'g000bb0061', 'g000bb0062', 'g000bb0063' },               -- Суккуб
+		},
+		L_SPECIAL = {
+			{ 'g000bb0064', 'g000bb0065', 'g000bb0066', 'g000bb0067' }, -- Тиамат
+			{ 'g000bb0064', 'g000bb0065', 'g000bb0068', 'g000bb0069' }, -- Владыка
+			{ 'g000bb0064', 'g000bb0065', 'g000bb0068', 'g000bb0070' }, -- Демон бездны
+			{ 'g000bb0064', 'g000bb0065', 'g000bb0144', 'g000bb0145' }, -- Багряный ангел
+		},
+		L_SIDESHOW = {
+			{ 'g000bb0071', 'g000bb0181' }, -- Сатир
+		},
+		L_CUSTOM = {
+			{ 'g000bb0186' }, -- Ведьмино отродье
+		},
+	},
+	UNDEAD = {
+		L_FIGHTER = {
+			{'g000bb0075', 'g000bb0076', 'g000bb0077', 'g000bb0078'}, -- Воин-призрак
+			{'g000bb0075', 'g000bb0076', 'g000bb0077', 'g000bb0146'}, -- Черный рыцарь
+			{'g000bb0079', 'g000bb0080', 'g000bb0163'},               -- Клеврет смерти
+		},
+		L_ARCHER = {
+			{'g000bb0081', 'g000bb0082'},               -- Тень
+			{'g000bb0081', 'g000bb0129', 'g000bb0130'}, -- Длань Мортис
+			{'g000bb0081', 'g000bb0161'},               -- Эльф-призрак
+		},
+		L_MAGE = {
+			{'g000bb0083', 'g000bb0084', 'g000bb0085', 'g000bb0086'}, -- Верховный Вампир
+			{'g000bb0083', 'g000bb0084', 'g000bb0087', 'g000bb0088'}, -- Архилич
+			--{'g000bb0083', 'g000bb0191'},                             -- Теневидец #SUMMONER
+			{'g000bb0164', 'g000bb0089', 'g000bb0090', 'g000bb0155'}, -- Драуг
+			{'g000bb0164', 'g000bb0089', 'g000bb0091', 'g000bb0141'}, -- Бааванши
+		},
+		L_SPECIAL = {
+			{'g000bb0092', 'g000bb0093', 'g000bb0094'},               -- Вирм + Каган Каменной Пасти
+			{'g000bb0092', 'g000bb0093', 'g000bb0095', 'g000bb0127'}, -- Змий разложения + Хан Каменной Пасти
+		},
+		L_SIDESHOW = {
+			{'g000bb0096', 'g000bb0167'}, -- Волколак
+			{'g000bb0096', 'g000bb0165'}, -- Чумной оборотень
+			{'g000bb0096', 'g000bb0166'}, -- Хорт
+		},
+	},
+	ELVES = {
+		L_FIGHTER = {
+			{'g000bb0100', 'g000bb0101', 'g000bb0179'}, -- Кераст
+			{'g000bb0100', 'g000bb0134', 'g000bb0156'}, -- Штормовой кентавр
+			{'g000bb0102', 'g000bb0180'},               -- Кентавр-гвардеец
+		},
+		L_ARCHER = {
+			{'g000bb0103', 'g000bb0104'},                             -- Стингер
+			{'g000bb0103', 'g000bb0105', 'g000bb0121', 'g000bb0122'}, -- Мародер
+			{'g000bb0103', 'g000bb0105', 'g000bb0135', 'g000bb0152'}, -- Кокильяр
+			{'g000bb0106', 'g000bb0107'},                             -- Стражник
+			{'g000bb0106', 'g000bb0108'},                             -- Часовой
+		},
+		L_MAGE = {
+			{'g000bb0109', 'g000bb0110'},               -- Тиург
+			{'g000bb0109', 'g000bb0111'},               -- Архонт
+			{'g000bb0109', 'g000bb0151', 'g000bb0160'}, -- Консул
+		},
+		L_SPECIAL = {
+			{'g000bb0112', 'g000bb0113', 'g000bb0114', 'g000bb0115'}, -- Сильфида
+			{'g000bb0112', 'g000bb0113', 'g000bb0124'},               -- Целитель
+			{'g000bb0112', 'g000bb0113', 'g000bb0148'},               -- Дриолисса
+		},
+		L_SIDESHOW = {
+			{'g000bb0116', 'g000bb0117', 'g000bb0147'}, -- Владыка Небес
+		},
+	},
+}
+function getBuildings(race)
+    local buildings = {}
+    if smm(false, false, true, true) then
+        for _, raceData in pairs(BUILDINGS) do
+            for _, categoryVariants in pairs(raceData) do
+                local chosen = categoryVariants[math.random(#categoryVariants)]
+                for _, id in pairs(chosen) do
+                    table.insert(buildings, id)
+                end
+            end
+        end
+    end
+    return buildings
+end
+------------------------------------------------------------------------------------------
 
 --Башня магии в зоне 1
 function zoneMageResp1(race)
@@ -379,6 +538,17 @@ local spells_wards = {
 	'g000ss0039', -- Неподкупность
 }
 
+local scrollsSummon = {
+	{ id = 'g000ig5015', amount = 1, weight = 1 }, -- Свиток "Призыв II: Голем" 700
+	{ id = 'g000ig5038', amount = 1, weight = 1 }, -- Свиток "Призыв III: Каменный Предок" 700
+	{ id = 'g000ig5058', amount = 1, weight = 1 }, -- Свиток "Incantare Avenger" 700
+	{ id = 'g000ig5078', amount = 1, weight = 1 }, -- Свиток "Призыв IV: Танатос" 700
+	{ id = 'g000ig5117', amount = 1, weight = 1 }, -- Свиток "Призыв IV: Вердант" 700
+	{ id = 'g001ig0079', amount = 1, weight = 1 }, -- Свиток "Призыв V: Вестник поглощения" 700
+	{ id = 'g001ig0080', amount = 1, weight = 1 }, -- Свиток "Призыв V: Вестник немощи" 700
+	{ id = 'g001ig0081', amount = 1, weight = 1 }, -- Свиток "Призыв V: Вестник перемен" 700
+}
+
 local scrollsT3 = {
 	{ id = 'g000ig5089', amount = 1, weight = 1 }, -- Свиток "Preces"
 	{ id = 'g001ig0165', amount = 1, weight = 1 }, -- Свиток "Плесень"
@@ -389,6 +559,7 @@ local scrollsT3 = {
 }
 
 local scrollsT5 = {
+	{ id = 'g001ig0078', amount = 1, weight = 1 }, -- Свиток "Призыв IV: Стихийный голем" 550
 	{ id = 'g000ig5091', amount = 1, weight = 1 }, -- Свиток "Tempus status" 700 -иня
 	{ id = 'g000ig5055', amount = 1, weight = 1 }, -- Свиток "Tortio menta" 700 -точность
 	{ id = 'g000ig5115', amount = 1, weight = 1 }, -- Свиток "Проклятие Галеана" 700 -урон
@@ -426,6 +597,13 @@ local staffT5 = {
 	{}, --
 	{}, --
 	{}, --
+	{}, --
+	{}, --
+}
+
+local relic_special = {
+	{ id = 'g001ig0610', min = 1, max = 1 }, -- Оковы долга (Реликвия)
+	{ id = 'g001ig0539', min = 1, max = 1 }, -- Тисовый лук (Реликвия)
 	{}, --
 	{}, --
 }
@@ -630,7 +808,6 @@ return {
 				yn({ id = 'g001ig0594', min = 1, max = 1 }), -- Щит телохранителя (Артефакт) 700
 
 				yn({ id = 'g001ig0421', min = 1, max = 1 }), -- Борода Имира (Реликвия)
-				yn({ id = 'g001ig0610', min = 1, max = 1 }), -- Оковы долга (Реликвия)
 				yn({ id = 'g001ig0426', min = 1, max = 1 }), -- Куртка капитана (Реликвия)
 
 				yn({ id = 'g001ig0104', min = 1, max = 1 }), -- зуб людоеда
@@ -765,6 +942,8 @@ return {
 				yn({ id = 'g002ig0002', min = 1, max = 1 }), -- Промасленная кольчуга (Реликвия) 700
 				yn({ id = 'g001ig0602', min = 1, max = 1 }), -- Доспех жатвы (Реликвия)800
 
+				getAndRemove(relic_special), -- спец.реликвия
+
 				rnd({ id = 'g001ig0114', min = 1, max = 1 }, { id = 'g001ig0111', min = 1, max = 1 }), -- сапоги тяж 500 / сапоги асс 500
 				rnd({ id = 'g001ig0115', min = 1, max = 1 }, { id = 'g001ig0112', min = 1, max = 1 }), -- сапоги жел. поступь1100 / сапоги ангел800
 
@@ -878,12 +1057,13 @@ function merchZone31()
 
 				yn({ id = 'g001ig0419', min = 1, max = 1 }), -- Шлем воителя (Реликвия)1000
 				yn({ id = 'g001ig0430', min = 1, max = 1 }), -- Роба убийцы (Реликвия)850
-				yn({ id = 'g001ig0539', min = 1, max = 1 }), -- Тисовый лук (Реликвия)900
 				yn({ id = 'g001ig0116', min = 1, max = 1 }), -- р.плас.досп1200
 				yn({ id = 'g000ig3005', min = 1, max = 1 }), -- р.кор.мьолн1200
 				yn({ id = 'g000ig7010', min = 1, max = 1 }), -- р.кор.имп1800
 				yn({ id = 'g001ig0038', min = 1, max = 1 }), -- р.тяж.латы1550
 				yn({ id = 'g002ig0015', min = 1, max = 1 }), -- Кираса Кровавого Ворона (Реликвия) 1500
+
+				getAndRemove(relic_special), -- спец.реликвия
 
 				rnd({ id = 'g001ig0501', min = 1, max = 1 }, { id = 'g000ig1010', min = 1, max = 1 }), -- Дары Галлеана (лес) 900 / эльфийские сапоги 700
 				rnd({ id = 'g000ig8003', min = 1, max = 1 }, { id = 'g001ig0606', min = 1, max = 1 }), -- Сапоги скорости 700 | Сапоги родных земель 1000
@@ -928,6 +1108,7 @@ function merchZone31()
 				rnd({ id = 'g000ig5110', min = 1, max = 1}, { id = 'g000ig5109', min = 1, max = 1}, { id = 'g001ig0165', min = 1, max = 1}, { id = 'g000ig5108', min = 1, max = 1}), -- Свиток "Излечение" / Свиток "Блуждающий Огонек"-40дмг / Свиток "Забвение"-перки / Свиток "Призыв III: Энт Большой"
 				rnd({ id = 'g000ig5089', min = 1, max = 1}, { id = 'g000ig5026', min = 1, max = 1}, { id = 'g000ig5013', min = 1, max = 1}, { id = 'g000ig5012', min = 1, max = 1}), -- Свиток "Preces"-точн.урон / Свиток "Гимн кланов"+ини / Свиток "Святая сила"+точн.урон / Свиток "Святая броня"+броня
 				{ id = getAndRemove(scrollsWard), min = 1, max = 1}, -- случайный свиток за защиту
+				yn(getAndRemove(scrollsSummon)), -- случайный свиток призыва т4-т5
 			}
 		}
 end
@@ -990,12 +1171,13 @@ return {
 
 				yn({ id = 'g001ig0419', min = 1, max = 1 }), -- Шлем воителя (Реликвия)1000
 				yn({ id = 'g001ig0430', min = 1, max = 1 }), -- Роба убийцы (Реликвия)850
-				yn({ id = 'g001ig0539', min = 1, max = 1 }), -- Тисовый лук (Реликвия)900
 				yn({ id = 'g001ig0116', min = 1, max = 1 }), -- р.плас.досп1200
 				yn({ id = 'g000ig3005', min = 1, max = 1 }), -- р.кор.мьолн1200
 				yn({ id = 'g000ig7010', min = 1, max = 1 }), -- р.кор.имп1800
 				yn({ id = 'g001ig0038', min = 1, max = 1 }), -- р.тяж.латы1550
 				yn({ id = 'g002ig0012', min = 1, max = 1 }), -- Доспех рыцаря Феникса (Реликвия) 2600
+
+				getAndRemove(relic_special), -- спец.реликвия
 
 				rnd({ id = 'g001ig0501', min = 1, max = 1 }, { id = 'g000ig1010', min = 1, max = 1 }), -- Дары Галлеана (лес) 900 / эльфийские сапоги 700
 				rnd({ id = 'g000ig8003', min = 1, max = 1 }, { id = 'g001ig0606', min = 1, max = 1 }), -- Сапоги скорости 700 | Сапоги родных земель 1000
@@ -1039,7 +1221,7 @@ return {
 				rnd({ id = 'g000ig5110', min = 1, max = 1}, { id = 'g000ig5109', min = 1, max = 1}, { id = 'g001ig0165', min = 1, max = 1}, { id = 'g000ig5108', min = 1, max = 1}), -- Свиток "Излечение" / Свиток "Блуждающий Огонек"-40дмг / Свиток "Забвение"-перки / Свиток "Призыв III: Энт Большой"
 				rnd({ id = 'g000ig5089', min = 1, max = 1}, { id = 'g000ig5026', min = 1, max = 1}, { id = 'g000ig5013', min = 1, max = 1}, { id = 'g000ig5012', min = 1, max = 1}), -- Свиток "Preces"-точн.урон / Свиток "Гимн кланов"+ини / Свиток "Святая сила"+точн.урон / Свиток "Святая броня"+броня
 				{ id = getAndRemove(scrollsWard), min = 1, max = 1}, -- случайный свиток за защиту
-
+				yn(getAndRemove(scrollsSummon)), -- случайный свиток призыва т4-т5
 			}
 		}
 end
@@ -1984,7 +2166,8 @@ return {
 		value = { min = 250, max = 250 },
 		itemValue = { min = 250, max = 250 },
 			items = {
-				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
+				{ id = 'g000ig0001', min = 1, max = 1 }, -- рес
+				{ id = 'g000ig0006', min = 1, max = 1 }, -- хил 100
 				rnd({ id = 'g001ig0180', min = 2, max = 2 }, { id = 'g000ig0005', min = 1, max = 1 }), --2хил25/хил50
 				{ id = d15(), min = 1, max = 1 },
 			}
@@ -2002,7 +2185,8 @@ return {
 		value = { min = 500, max = 500 },
 		itemValue = { min = 250, max = 500 },
 			items = {
-				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
+				{ id = 'g000ig0001', min = 1, max = 1 }, -- рес
+				{ id = 'g000ig0006', min = 1, max = 1 }, -- хил 100
 				rnd({ id = 'g001ig0180', min = 3, max = 3 }, { id = 'g001ig0378', min = 1, max = 1 }), --3хил25/хил75
 				{ id = e2(), min = 1, max = 1 },
 			}
@@ -2020,7 +2204,8 @@ return {
 		value = { min = 750, max = 750 },
 		itemValue = { min = 250, max = 750 },
 			items = {
-				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
+				{ id = 'g000ig0001', min = 1, max = 1 }, -- рес
+				{ id = 'g000ig0006', min = 1, max = 1 }, -- хил 100
 				rnd({ id = 'g000ig0005', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --2хил50/хил100
 				{ id = e4(), min = 1, max = 1 },
 			}
@@ -2110,11 +2295,13 @@ function gmm(what1, what2, what3)
 end
 
 -- Специальный режим карты
-function smm(whatever, what2, what3)
+function smm(whatever, what2, what3, what4)
 	if smode == 2 then
 		return what2
 	elseif smode == 3 then
 		return what3
+	elseif smode == 4 then
+		return what4
 	else
 		return whatever
 	end
@@ -2943,7 +3130,7 @@ function z3Stacks1(zshm)
 		loot = {
 			items = {
 				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес25%/хил100-75%
-				rnd({ id = 'g001ig0180', min = 2, max = 2 }, { id = 'g000ig0005', min = 1, max = 1 }), --2хил25/хил50
+				rnd({ id = 'g001ig0180', min = 4, max = 4 }, { id = 'g000ig0005', min = 2, max = 2 }), --4хил25/2хил50
 				rnd({ id = zshm, min = 1, max = 1 }, { id = 'g001ig0432', min = 1, max = 1 }), --шар манны / аметист125
 				rnd({ id = b15(), min = 1, max = 1 }, { id = w15(), min = 1, max = 1 }), --случ.банка15/случ.вард
 			}
@@ -2960,7 +3147,7 @@ function z3Stacks2(zb30)
 		loot = {
 			items = {
 				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес25%/хил100-75%
-				rnd({ id = 'g001ig0180', min = 2, max = 2 }, { id = 'g000ig0005', min = 1, max = 1 }), --2хил25/хил50
+				rnd({ id = 'g001ig0180', min = 4, max = 4 }, { id = 'g000ig0005', min = 2, max = 2 }), --4хил25/2хил50
 				rnd({ id = b30(), min = 1, max = 1 },{ id = 'g002ig0006', min = 1, max = 1 },{ id = 'g002ig0008', min = 1, max = 1 }), --случ. банка30 / Зелье бдительности -30воры / Эликсир скрытого потенциала 500
 				rnd({ id = 'g001ig0125', min = 1, max = 1 }, { id = 'g001ig0036', min = 1, max = 1 }, { id = d15(), min = 1, max = 1 }, { id = b15(), min = 1, max = 1 }, { id = w15(), min = 1, max = 1 }), -- разума/смерти | d15/b15|w15
 			}
@@ -2979,8 +3166,9 @@ function z3Stacks3(zusil200)
 			value = { min = 600, max = 600 },
 			itemValue = { min = 500, max = 600 },
 			items = {
+				{ id = 'g000ig0001', min = 1, max = 1 }, --рес
 				rnd({ id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0006', min = 1, max = 1 }), --рес/хил100
-				rnd({ id = 'g001ig0180', min = 3, max = 3 }, { id = 'g001ig0378', min = 1, max = 1 }), --3хил25/хил75
+				rnd({ id = 'g000ig0005', min = 3, max = 3 }, { id = 'g001ig0378', min = 2, max = 2 }), --3хил50/2хил75
 				{ id = zusil200, min = 1, max = 1 }, --усиление200
 			}
 		}
@@ -2996,7 +3184,7 @@ function z3Stacks4(zusil500, scroll)
 		loot = {
 			items = {
 				rnd({ id = 'g001ig0378', min = 2, max = 2 }, { id = 'g001ig0378', min = 2, max = 2 }, { id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0018', min = 1, max = 1 }), -- хил75-50%/рес-25%/мазь-25%
-				rnd({ id = 'g000ig0006', min = 1, max = 1 }, { id = 'g000ig0005', min = 2, max = 2 }), --хил100/2хил50
+				rnd({ id = 'g000ig0006', min = 2, max = 2 }, { id = 'g000ig0005', min = 4, max = 4 }), --2хил100/4хил50
 				{ id = zusil500, min = 1, max = 1 }, --усиление500
 				{ id = scroll, min = 1, max = 1 }, --свиток т3
 			}
@@ -3013,7 +3201,7 @@ function z3Stacks5(zperm)
 		loot = {
 			items = {
 				rnd({ id = 'g000ig0006', min = 1, max = 1 }, { id = 'g000ig0001', min = 1, max = 1 }, { id = 'g000ig0018', min = 1, max = 1 }, { id = 'g000ig0018', min = 1, max = 1 }), -- хил100-25%/рес25%/мазь-50%
-				rnd({ id = 'g001ig0378', min = 1, max = 1 }, { id = 'g000ig0005', min = 2, max = 2 }), --2хил75/3хил50
+				rnd({ id = 'g000ig0006', min = 2, max = 2 }, { id = 'g000ig0005', min = 4, max = 4 }), --2хил100/4хил50
 				{ id = zperm, min = 1, max = 1 }, --пермо400
 				rnd({ id = rms(), min = 1, max = 1 }, { id = getTalisman4(), min = 1, max = 1 }, { id = b15(), min = 1, max = 1 }, { id = w15(), min = 1, max = 1 }), -- сл.шар/талисман 1000/b15/w15
 			}
@@ -3029,8 +3217,8 @@ function z3StacksX()
 		value = { min = 1100*kef, max = 1100*kef*kr },
 		loot = {
 			items = {
-				{ id = 'g000ig0001', min = 1, max = 1 }, --рес
-				rnd({ id = 'g001ig0378', min = 2, max = 2 }, { id = 'g000ig0006', min = 1, max = 1 }), --хил75/хил100
+				{ id = 'g000ig0001', min = 2, max = 2 }, --рес
+				rnd({ id = 'g000ig0006', min = 1, max = 1 }, { id = 'g000ig0005', min = 2, max = 2 }), --хил100/2хил50
 				rnd({ id = 'g001ig0152', min = 1, max = 1 }, { id = 'g000ig0018', min = 1, max = 1 }), -- Эликсир избавления/мазь
 				{ id = rnd(p15(), getTalisman4()), min = 1, max = 1 }, --пермо 1200 / талисман 1000
 				rnd({ id = 'g001ig0151', min = 1, max = 1 }, { id = 'g000ig7003', min = 1, max = 1 }), -- Шар колдовства/Изумруд (Драгоценность) 150
@@ -3290,7 +3478,7 @@ function guard3n() -- зона3 наём.
 end
 
 function specialGuard1(race) --
-	if smm(false, true, false) then
+	if smm(false, true, true, false) then
 		return {
 			value = { min = 1, max = 1 },
 			aiPriority = 6,
@@ -3309,6 +3497,14 @@ function specialGuard1(race) --
 				g201um9045 = 1, -- regen up to 25%
 				g201um9130 = 1, -- +10 negotiation
 				g201um9139 = 1, -- 1 source - life
+
+				g070um0014 = 1, -- Некромант | Нежить
+				g070um0217 = 1, -- Шествие орд | Рыцарь Смерти
+				g070um0064 = 1, -- Боевое построение | Рыцарь на Пегасе
+				--g070um0130 = 1, -- Энергетическое эхо | Архимаг
+				g070um0069 = 1, -- Плечом к плечу | Королевский страж
+				--g070um0172 = 1, -- Путь страданий | Советник
+
 			}),
 			loot = {
 				items = {
@@ -3320,7 +3516,7 @@ function specialGuard1(race) --
 end
 
 function specialGuard2() --
-	if smm(false, true, false) then
+	if smm(false, true, true, false) then
 		return {
 			count = 1,
 			value = { min = 350, max = 350 },
@@ -3409,6 +3605,7 @@ function getPlayerZone0(zoneId, zoneSize, playerRace)
 		stacks = {z0Stacks1(), z0Stacks2(), z0Stacks3(), z0Stacks4(playerRace), z0Stacks5()},
 
 		capital = {
+			buildings = getBuildings(playerRace),
 			aiPriority = 0,
 			gapMask = 15,
 			garrison = { -- столица
@@ -3430,7 +3627,7 @@ function getPlayerZone0(zoneId, zoneSize, playerRace)
 						{ id = 'g000ig0002', min = 1, max = 1 }, --15
 						{ id = 'g000ig0014', min = 1, max = 1 }, --15
 						{ id = 'g000ig0011', min = 1, max = 1 }, --15
-						{ id = 'g000ig0008', min = 2, max = 2 }, --15
+						{ id = 'g000ig0008', min = 3, max = 3 }, --15
 						{ id = b15(), min = 1, max = 1}, -- случ. банка15
 						{ id = b15(), min = 1, max = 1}, -- случ. банка15
 
@@ -3441,7 +3638,10 @@ function getPlayerZone0(zoneId, zoneSize, playerRace)
 						{ id = w15(), min = 1, max = 1}, -- случ. вард
 						{ id = w15(), min = 1, max = 1}, -- случ. вард
 
-						rnd({ id = 'g001ig0125', min = 1, max = 1 }, { id = 'g001ig0036', min = 1, max = 1 }), --разума/смерти
+						{ id = 'g001ig0036', min = 1, max = 1 }, -- вард смерть
+						{ id = 'g001ig0125', min = 1, max = 1 }, -- вард разум
+						{ id = 'g001ig0128', min = 1, max = 1 }, -- Эликсир защиты от Оружия
+
 						rnd({ id = 'g001ig0355', min = 1, max = 1 }, { id = 'g001ig0128', min = 1, max = 1 }), --вардурон/вард оружия
 
 						{ id = d15(), min = 1, max = 1}, -- случ. дотвард
@@ -3804,6 +4004,10 @@ end
 function getScenarioVariables()
 	local result = {}
 
+	if smm(false, false, true, true) then
+		table.insert(result, { name = 'HIRE_UNIT_ANY_RACE', value = 1 })
+	end
+
 	local lords = { 'WARRIOR', 'MAGE', 'GUILDMASTER' }
 	local l_vars = {
 		{ name = '_GOLD_INCOME', value = {0, 0, 25} },
@@ -3835,16 +4039,6 @@ function getScenarioVariables()
 			},
 			-- бесит!
 			{
-				{ name = '_SCOUT_FLAT', value = 98 },
-				{ name = '_TIER_0_CITY_INCOME', value = t0 },
-				{ name = '_TIER_1_CITY_INCOME', value = t1 },
-				{ name = '_TIER_2_CITY_INCOME', value = t2 },
-				{ name = '_TIER_3_CITY_INCOME', value = t3 },
-				{ name = '_TIER_4_CITY_INCOME', value = t4 },
-				{ name = '_TIER_5_CITY_INCOME', value = t5 },
-			},
-			-- баланс
-			{
 				{ name = '_SCOUT_FLAT', value = 99 },
 				{ name = '_TIER_0_CITY_INCOME', value = t0 },
 				{ name = '_TIER_1_CITY_INCOME', value = t1 },
@@ -3852,6 +4046,25 @@ function getScenarioVariables()
 				{ name = '_TIER_3_CITY_INCOME', value = t3 },
 				{ name = '_TIER_4_CITY_INCOME', value = t4 },
 				{ name = '_TIER_5_CITY_INCOME', value = t5 },
+			},
+			-- котобесия
+			{
+				{ name = '_SCOUT_FLAT', value = 99 },
+				{ name = '_TIER_0_CITY_INCOME', value = t0-t0 },
+				{ name = '_TIER_1_CITY_INCOME', value = t1-t0 },
+				{ name = '_TIER_2_CITY_INCOME', value = t2-t0 },
+				{ name = '_TIER_3_CITY_INCOME', value = t3-t0 },
+				{ name = '_TIER_4_CITY_INCOME', value = t4-t0 },
+				{ name = '_TIER_5_CITY_INCOME', value = t5-t0 },
+			},
+			-- котовасия
+			{
+				{ name = '_TIER_0_CITY_INCOME', value = t0-t0 },
+				{ name = '_TIER_1_CITY_INCOME', value = t1-t0 },
+				{ name = '_TIER_2_CITY_INCOME', value = t2-t0 },
+				{ name = '_TIER_3_CITY_INCOME', value = t3-t0 },
+				{ name = '_TIER_4_CITY_INCOME', value = t4-t0 },
+				{ name = '_TIER_5_CITY_INCOME', value = t5-t0 },
 			}
 	)
 	for _, v in pairs(r_vars) do
@@ -3902,7 +4115,7 @@ end
 
 -- ШАБЛОН
 template = {
-	name = 'Bladerunner[Duo] 2.2',
+	name = 'Bladerunner[Duo] 2.3',
 	description = 'Шаблон для игры 1x1. 1 герой, 1 жезловик, 1 вор\nСиняя, т.синяя, оранжевая, желтая зоны должны касаться двух т.серых зон центра\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
 	minSize = 72,
 	maxSize = 72,
@@ -3919,7 +4132,8 @@ template = {
 			values = {
 				'1x1',
 				'1x1 [Бесит!]',
-				'1x1 [Баланс]',
+				'1x1 [КотоБесия]',
+				'1x1 [Котовасия]',
 			},
 			default = gmode
 		},
@@ -4200,6 +4414,7 @@ forbiddenItems = {
 'g000ig5057', --Свиток "Мerum Facies" Защита от полиморфа за 700 в ролле нафиг надо
 'g000ig5118', --Свиток "Ослепления" Уменьшает обзор противника на 3 в радиусе 5х5.
 'g000ig5057', --Свиток "Мerum Facies" Защита от полиморфа.
+'g001ig0078', --Свиток "Призыв IV: Стихийный голем"
 --на урон т4+
 'g000ig5090', --Potentia Ignis
 'g000ig5056', --Sinestra ignis
@@ -4230,6 +4445,10 @@ forbiddenItems = {
 'g001ig0529', -- Каталог магических сфер (сферы)
 'g001ig0530', -- Зелье посмертного зовы(талисманы)
 'g001ig0531', -- Зелье слова(свитки)
+
+--
+'g001ig0610', -- Оковы долга (Реликвия)
+'g001ig0539', -- Тисовый лук (Реликвия)
 },
 
 	getContents = getTemplateContents
