@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local version = '3.0 beta5'
+local version = '3.0 beta8'
 ------------------------------------------------------------------------------------------------------------------------
 --- Варианты режима шаблона
 local duo = 2
@@ -766,18 +766,24 @@ Pools.items.mana.racial = {
 -- Специальная мана
 Pools.items.mana.special = {
 	small = {
-		{ id = Items.mana.life.small, amount = 1, weight = 1, races = {Race.Undead, Race.Heretic} },
-		{ id = Items.mana.runic.small, amount = 1, weight = 1, races = {Race.Undead, Race.Heretic, Race.Elf} },
-		{ id = Items.mana.death.small, amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Elf} },
-		{ id = Items.mana.infernal.small, amount = 1, weight = 1, races = {Race.Human, Race.Dwarf} },
-		{ id = Items.mana.grove.small, amount = 0, weight = 0, races = {} },
+		priority = PoolPriority.UNLIMITED,
+		items = {
+			{ id = Items.mana.life.small, amount = 1, weight = 1, races = {Race.Undead, Race.Heretic} },
+			{ id = Items.mana.runic.small, amount = 1, weight = 1, races = {Race.Undead, Race.Heretic, Race.Elf} },
+			{ id = Items.mana.death.small, amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Elf} },
+			{ id = Items.mana.infernal.small, amount = 1, weight = 1, races = {Race.Human, Race.Dwarf} },
+			{ id = Items.mana.grove.small, amount = 0, weight = 0, races = {} },
+		}
 	},
 	normal = {
-		{ id = Items.mana.life.normal, amount = 1, weight = 1, races = {Race.Undead, Race.Heretic} },
-		{ id = Items.mana.runic.normal, amount = 1, weight = 1, races = {Race.Undead, Race.Heretic, Race.Elf} },
-		{ id = Items.mana.death.normal, amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Elf} },
-		{ id = Items.mana.infernal.normal, amount = 1, weight = 1, races = {Race.Human, Race.Dwarf} },
-		{ id = Items.mana.grove.normal, amount = 0, weight = 0, races = {} },
+		priority = PoolPriority.UNLIMITED,
+		items = {
+			{ id = Items.mana.life.normal, amount = 1, weight = 1, races = {Race.Undead, Race.Heretic} },
+			{ id = Items.mana.runic.normal, amount = 1, weight = 1, races = {Race.Undead, Race.Heretic, Race.Elf} },
+			{ id = Items.mana.death.normal, amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Elf} },
+			{ id = Items.mana.infernal.normal, amount = 1, weight = 1, races = {Race.Human, Race.Dwarf} },
+			{ id = Items.mana.grove.normal, amount = 0, weight = 0, races = {} },
+		}
 	},
 }
 
@@ -788,6 +794,7 @@ Pools.items.special_equip = {
 	items = {
 		{ id = 'g001ig0610', amount = 1, weight = 1 }, -- Оковы долга (Реликвия) 700
 		{ id = 'g001ig0539', amount = 1, weight = 1 }, -- Тисовый лук (Реликвия) 900
+		{ id = 'g001ig0501', amount = 1, weight = 1 }, -- Дары Галлеана (хождение по лесу) 750
 	}
 }
 
@@ -804,17 +811,17 @@ Pools.capital = {
 	fix_heal = {
 		priority = PoolPriority.UNLIMITED,
 		items = {
-			{ id = Items.heal.h25, amount = 7, weight = 1 },
-			{ id = Items.heal.h50, amount = 6, weight = 1 },
-			{ id = Items.heal.h75, amount = 5, weight = 1 },
-			{ id = Items.heal.h100, amount = 4, weight = 1 },
-			{ id = Items.heal.hres, amount = 3, weight = 1 },
+			{ id = Items.heal.h25, amount = 1, weight = 1, group_amount = 7 },
+			{ id = Items.heal.h50, amount = 1, weight = 1, group_amount = 6 },
+			{ id = Items.heal.h75, amount = 1, weight = 1, group_amount = 5 },
+			{ id = Items.heal.h100, amount = 1, weight = 1, group_amount = 4 },
+			{ id = Items.heal.hres, amount = 1, weight = 1, group_amount = 3 },
 		}
 	},
 	fix_buff_1 = {
 		priority = PoolPriority.UNLIMITED,
 		items = {
-			{ id = 'g000ig0008', amount = 3, weight = 1 }, -- Эликсир меткости 150
+			{ id = 'g000ig0008', amount = 3, weight = 1, group_amount = 3 }, -- Эликсир меткости 150
 			{ id = 'g000ig0002', amount = 1, weight = 1 }, -- Эликсир защиты 150
 			{ id = 'g000ig0014', amount = 1, weight = 1 }, -- Эликсир энергии 150
 			{ id = 'g000ig0011', amount = 1, weight = 1 }, -- Эликсир ловкости 150
@@ -897,7 +904,7 @@ Pools.capital = {
 			{ id = 'g001ig0473', amount = 1, weight = 1 }, -- Сфера Статического разряда 100
 		}
 	},
-	rnd_scroll_1 = {
+	rnd_scrolls_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5021', amount = 1, weight = 1 }, -- Свиток "Ледяной щит" 200
@@ -906,7 +913,7 @@ Pools.capital = {
 			{ id = 'g000ig5023', amount = 1, weight = 1 }, -- Свиток "Сила Витара" 200
 		}
 	},
-	rnd_scroll_2 = {
+	rnd_scrolls_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g001ig0248', amount = 1, weight = 1 }, -- Свиток "Устрашающий гимн" 200
@@ -928,17 +935,17 @@ Pools.capital = {
 	rnd_equip = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g000ig2001', amount = 1, weight = 3 }, -- Рунный камень 300
-			{ id = 'g000ig3001', amount = 1, weight = 3 }, -- Гномьи наручи 300
-			{ id = 'g001ig0100', amount = 1, weight = 3 }, -- Цепь Хана 300
-			{ id = 'g001ig0101', amount = 1, weight = 2 }, -- Череп Хана 350
-			{ id = 'g001ig0105', amount = 1, weight = 1 }, -- Литейные сапоги 300
-			{ id = 'g001ig0106', amount = 1, weight = 1 }, -- Сапоги каменщика 300
-			{ id = 'g001ig0107', amount = 1, weight = 1 }, -- Сапоги ветров 300
-			{ id = 'g001ig0108', amount = 1, weight = 1 }, -- Гномьи сапоги 300
-			{ id = 'g001ig0109', amount = 1, weight = 1 }, -- Сапоги жизни 300
-			{ id = 'g001ig0110', amount = 1, weight = 1 }, -- Легкие сапоги 300
-			{ id = 'g001ig0113', amount = 1, weight = 1 }, -- Укрепленные сапоги 300
+			{ id = 'g000ig2001', amount = 3, weight = 1, type = Item.Armor }, -- Рунный камень 300
+			{ id = 'g000ig3001', amount = 3, weight = 1, type = Item.Weapon }, -- Гномьи наручи 300
+			{ id = 'g001ig0100', amount = 3, weight = 1, type = Item.Weapon }, -- Цепь Хана 300
+			{ id = 'g001ig0101', amount = 2, weight = 1, type = Item.Jewel }, -- Череп Хана 350
+			{ id = 'g001ig0105', amount = 1, weight = 1, type = Item.Travel }, -- Литейные сапоги 300
+			{ id = 'g001ig0106', amount = 1, weight = 1, type = Item.Travel }, -- Сапоги каменщика 300
+			{ id = 'g001ig0107', amount = 1, weight = 1, type = Item.Travel }, -- Сапоги ветров 300
+			{ id = 'g001ig0108', amount = 1, weight = 1, type = Item.Travel }, -- Гномьи сапоги 300
+			{ id = 'g001ig0109', amount = 1, weight = 1, type = Item.Travel }, -- Сапоги жизни 300
+			{ id = 'g001ig0110', amount = 1, weight = 1, type = Item.Travel }, -- Легкие сапоги 300
+			{ id = 'g001ig0113', amount = 1, weight = 1, type = Item.Travel }, -- Укрепленные сапоги 300
 		}
 	},
 }
@@ -1028,6 +1035,12 @@ Pools.goods.t1 = {
 			{ id = 'g000ig4004', amount = 1, weight = 1 }, -- Книга Огня 500
 		}
 	},
+	relic_3 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g001ig0497', amount = 1, weight = 1 }, -- Книга колдовства 400
+		}
+	},
 	boots_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
@@ -1112,7 +1125,7 @@ Pools.goods.t1 = {
 	staff_summon = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0383', amount = 1, weight = 1 }, -- Посох первых побегов 200
+			{ id = 'g001ig0383', amount = 1, weight = 1, races = {} }, -- Посох первых побегов 200
 			{ id = 'g001ig0384', amount = 1, weight = 1 }, -- Посох демонической охоты 200
 			{ id = 'g001ig0385', amount = 1, weight = 1 }, -- Посох мании 200
 			{ id = 'g000ig6002', amount = 1, weight = 1 }, -- Посох некроманта 200
@@ -1307,6 +1320,7 @@ Pools.goods.t2 = {
 		items = {
 			{ id = 'g001ig0111', amount = 1, weight = 1 }, -- Сапоги ассасина 650
 			{ id = 'g001ig0114', amount = 1, weight = 1 }, -- Тяжелые сапоги 500
+			{ id = 'g002ig0022', amount = 1, weight = 1 }, -- Ботинки исследователя 500
 		}
 	},
 	boots_2 = {
@@ -1323,6 +1337,7 @@ Pools.goods.t2 = {
 			{ id = 'g000ig9128', amount = 1, weight = 1 }, -- Талисман молнии 800
 			{ id = 'g001ig0063', amount = 1, weight = 1 }, -- Талисман прилива 800
 			{ id = 'g000ig9116', amount = 1, weight = 1 }, -- Талисман святой земли 800
+			{ id = 'g000ig9124', amount = 1, weight = 1 }, -- Талисман мрака 1000
 		}
 	},
 	sphere_1 = {
@@ -1522,6 +1537,9 @@ Pools.goods.t3 = {
 			{ id = 'g001ig0325', amount = 1, weight = 1 }, -- Зелье здравомыслия 900 (разум)
 			{ id = 'g001ig0326', amount = 1, weight = 1 }, -- Зелье немертвых 900 (смерть)
 			{ id = 'g001ig0334', amount = 1, weight = 1 }, -- Эликсир безраздельности 800 (имитация)
+			{ id = 'g001ig0336', amount = 1, weight = 1 }, -- Эликсир павших оков 800 (окаменение)
+			{ id = 'g001ig0338', amount = 1, weight = 1 }, -- Эликсир непоколебимости 800 (паралич)
+			{ id = 'g001ig0340', amount = 1, weight = 1 }, -- Эликсир непорочности 800 (полиморф)
 			{ id = 'g001ig0352', amount = 1, weight = 1 }, -- Эликсир гонителя нечисти 800 (вамризм+тауматургия)
 			{ id = 'g001ig0354', amount = 1, weight = 1 }, -- Жидкий металл Уру 450 (РБ)
 		}
@@ -1560,19 +1578,22 @@ Pools.goods.t3 = {
 	artifact_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0585', amount = 1, weight = 1 }, -- Кольцо создателя (Артефакт) 1400
-			{ id = 'g001ig0411', amount = 1, weight = 1 }, -- Грань реальности (Артефакт) 1400
-			{ id = 'g001ig0046', amount = 1, weight = 1 }, -- Кровь Владыки (Артефакт) 1400
-			{ id = 'g001ig0488', amount = 1, weight = 1 }, -- Кольцо Несгибаемого стража (Артефакт) 1500
-			{ id = 'g001ig0410', amount = 1, weight = 1 }, -- Дьявольская булава (Артефакт) 1500
-			{ id = 'g002ig0011', amount = 1, weight = 1 }, -- Щит рыцаря Феникса (Артефакт) 1500
-			{ id = 'g002ig0014', amount = 1, weight = 1 }, -- Кама Кровавого Ворона (Артефакт) 1600
-			{ id = 'g002ig0010', amount = 1, weight = 1 }, -- Меч рыцаря Феникса (Артефакт) 1750
+			{ id = 'g001ig0585', amount = 1, weight = 2 }, -- Кольцо создателя (Артефакт) 1400
+			{ id = 'g001ig0411', amount = 1, weight = 2 }, -- Грань реальности (Артефакт) 1400
+			{ id = 'g001ig0046', amount = 1, weight = 2 }, -- Кровь Владыки (Артефакт) 1400
+			{ id = 'g001ig0155', amount = 1, weight = 1 }, -- Благословенный браслет (Артефакт) 1400
+			{ id = 'g001ig0488', amount = 1, weight = 2 }, -- Кольцо Несгибаемого стража (Артефакт) 1500
+			{ id = 'g001ig0410', amount = 1, weight = 2 }, -- Дьявольская булава (Артефакт) 1500
+			{ id = 'g002ig0011', amount = 1, weight = 2 }, -- Щит рыцаря Феникса (Артефакт) 1500
+			{ id = 'g002ig0014', amount = 1, weight = 2 }, -- Кама Кровавого Ворона (Артефакт) 1600
+			{ id = 'g002ig0010', amount = 1, weight = 2 }, -- Меч рыцаря Феникса (Артефакт) 1750
 			{ id = 'g002ig0017', amount = 1, weight = 1 }, -- Копье Ангела (Артефакт) 1750
-			{ id = 'g001ig0102', amount = 1, weight = 1 }, -- Коготь Пожирателя (Артефакт) 1800
-			{ id = 'g000ig2005', amount = 1, weight = 1 }, -- Гравированная диадема (Артефакт) 1800
-			{ id = 'g002ig0013', amount = 1, weight = 1 }, -- Серп Кровавого Ворона (Артефакт) 1850
-			{ id = 'g001ig0604', amount = 1, weight = 1 }, -- Кинжал жатвы (Артефакт) 1900
+			{ id = 'g001ig0179', amount = 1, weight = 1 }, -- Боевая коса (Артефакт) 1750
+			{ id = 'g001ig0102', amount = 1, weight = 2 }, -- Коготь Пожирателя (Артефакт) 1800
+			{ id = 'g000ig2005', amount = 1, weight = 2 }, -- Гравированная диадема (Артефакт) 1800
+			{ id = 'g002ig0013', amount = 1, weight = 2 }, -- Серп Кровавого Ворона (Артефакт) 1850
+			{ id = 'g001ig0604', amount = 1, weight = 2 }, -- Кинжал жатвы (Артефакт) 1900
+			{ id = 'g001ig0043', amount = 1, weight = 2 }, -- Мощь дракона (Артефакт) 2600
 		}
 	},
 	relic_1 = {
@@ -1623,7 +1644,7 @@ Pools.goods.t3 = {
 			{ id = 'g002ig0016', amount = 1, weight = 1 }, -- Стяг Кровавого Ворона 2250
 		}
 	},
-	talisman = {
+	talisman_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig9130', amount = 1, weight = 1 }, -- Талисман бури 1000
@@ -1632,6 +1653,7 @@ Pools.goods.t3 = {
 			{ id = 'g000ig9103', amount = 1, weight = 1 }, -- Талисман души героя 1200
 			{ id = 'g000ig9136', amount = 1, weight = 1 }, -- Талисман горы 1600
 			{ id = 'g001ig0185', amount = 1, weight = 1 }, -- Талисман землетрясения 1800
+			{ id = 'g000ig9119', amount = 1, weight = 1 }, -- Талисман Всевышнего 1000
 		}
 	},
 	sphere_1 = {
@@ -1817,7 +1839,7 @@ Pools.loot.t1 = {
 	gold = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.gold.g75, amount = 1, weight = 1 },
+			{ id = Items.gold.g125, amount = 1, weight = 1 },
 		}
 	},
 	ward_el = {
@@ -1871,12 +1893,17 @@ Pools.loot.t1 = {
 }
 --- Лут т2
 Pools.loot.t2 = {
-	heal = {
+	heal_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.heal.hres, amount = 6, weight = 1 },
-			{ id = Items.heal.h25, amount = 8, weight = 1, group_amount = 4 },
-			{ id = Items.heal.h50, amount = 6, weight = 1, group_amount = 2 },
+		}
+	},
+	heal_2 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = Items.heal.h25, amount = 2, weight = 1, group_amount = 4 },
+			{ id = Items.heal.h50, amount = 3, weight = 1, group_amount = 2 },
 			{ id = Items.heal.h75, amount = 1, weight = 1 },
 			{ id = Items.heal.h100, amount = 8, weight = 1 },
 		}
@@ -2003,7 +2030,7 @@ Pools.loot.t2 = {
 			{ id = 'g000ig9116', amount = 1, weight = 1 }, -- Талисман святой земли 800
 		}
 	},
-	scroll_1 = {
+	scrolls_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5014', amount = 1, weight = 1 }, -- Свиток "Гнев Богов" 550 (40 урона)
@@ -2030,7 +2057,7 @@ Pools.loot.t2 = {
 			{ id = 'g001ig0580', amount = 1, weight = 1 }, -- Свиток "Небесный молот 550" (-Воздух/РБ)
 		}
 	},
-	scroll_2 = {
+	scrolls_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5099', amount = 1, weight = 1 }, -- Свиток "Опутывание" 400
@@ -2050,15 +2077,15 @@ Pools.loot.t3 = {
 	heal_2 = { -- 100
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h25, amount = 12, weight = 1, group_amount = 4 },
-			{ id = Items.heal.h50, amount = 6, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h25, amount = 4, weight = 1, group_amount = 4 },
+			{ id = Items.heal.h50, amount = 4, weight = 1, group_amount = 2 },
 		}
 	},
 	heal_3 = { -- 150
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h50, amount = 6, weight = 1, group_amount = 3 },
-			{ id = Items.heal.h75, amount = 4, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h50, amount = 3, weight = 1, group_amount = 3 },
+			{ id = Items.heal.h75, amount = 3, weight = 1, group_amount = 2 },
 		}
 	},
 	heal_4 = { -- 200
@@ -2124,11 +2151,14 @@ Pools.loot.t3 = {
 	permo_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0307', amount = 2, weight = 1 }, -- Зелье стойкости 450 (+5 брони)
-			{ id = 'g001ig0309', amount = 2, weight = 1 }, -- Эликсир задиры 400 (+5% инициативы)
-			{ id = 'g001ig0311', amount = 2, weight = 1 }, -- Эликсир хладнокровия 400 (+5% точности)
-			{ id = 'g001ig0313', amount = 2, weight = 1 }, -- Эликсир совершенствования 400 (+5% урона)
-			{ id = 'g001ig0315', amount = 2, weight = 1 }, -- Зелье великана 400 (+5% ОЗ)
+			{ id = 'g001ig0307', amount = 2, weight = 3 }, -- Зелье стойкости 450 (+5 брони)
+			{ id = 'g001ig0309', amount = 2, weight = 3 }, -- Эликсир задиры 400 (+5% инициативы)
+			{ id = 'g001ig0311', amount = 2, weight = 3 }, -- Эликсир хладнокровия 400 (+5% точности)
+			{ id = 'g001ig0313', amount = 2, weight = 3 }, -- Эликсир совершенствования 400 (+5% урона)
+			{ id = 'g001ig0315', amount = 2, weight = 3 }, -- Зелье великана 400 (+5% ОЗ)
+			{ id = 'g001ig0336', amount = 1, weight = 1 }, -- Эликсир павших оков 800 (защита от окаменения)
+			{ id = 'g001ig0338', amount = 1, weight = 1 }, -- Эликсир непоколебимости 800 (паралич)
+      { id = 'g001ig0340', amount = 1, weight = 1 }, -- Эликсир непорочности 800 (полиморф)
 		}
 	},
 	permo_2 = {
@@ -2172,9 +2202,10 @@ Pools.loot.t3 = {
 	talisman = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0202', amount = 4, weight = 1 }, -- Талисман души чародея 1000
-			{ id = 'g000ig9130', amount = 4, weight = 1 }, -- Талисман бури 1000
-			{ id = 'g000ig9123', amount = 4, weight = 1 }, -- Талисман пожара 1000
+			{ id = 'g001ig0202', amount = 4, weight = 2 }, -- Талисман души чародея 1000
+			{ id = 'g000ig9130', amount = 4, weight = 2 }, -- Талисман бури 1000
+			{ id = 'g000ig9123', amount = 4, weight = 2 }, -- Талисман пожара 1000
+			{ id = 'g000ig9124', amount = 4, weight = 1 }, -- Талисман мрака 1000
 		}
 	},
 	misc_1 = {
@@ -2207,7 +2238,7 @@ Pools.loot.t4 = {
 	heal = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h50, amount = 2, weight = 1, group_amount = 2  },
+			{ id = Items.heal.h50, amount = 1, weight = 1, group_amount = 2  },
 			{ id = Items.heal.h100, amount = 3, weight = 1 },
 		}
 	},
@@ -2245,7 +2276,7 @@ Pools.loot.t5 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.heal.hres, amount = 6, weight = 1 },
-			{ id = Items.heal.h75, amount = 6, weight = 1, group_amount = 2  },
+			{ id = Items.heal.h75, amount = 3, weight = 1, group_amount = 2  },
 			{ id = Items.heal.h100, amount = 10, weight = 1 },
 			{ id = Items.heal.h200, amount = 2, weight = 1 },
 		}
@@ -2284,8 +2315,9 @@ Pools.loot.t5 = {
 	boots = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0111', amount = 1, weight = 1 }, -- Сапоги ассасина 500
+			{ id = 'g001ig0111', amount = 1, weight = 1 }, -- Сапоги ассасина 650
 			{ id = 'g001ig0114', amount = 1, weight = 1 }, -- Тяжелые сапоги 500
+			{ id = 'g002ig0022', amount = 1, weight = 1 }, -- Ботинки исследователя 500
 		}
 	},
 	banner = {
@@ -2322,7 +2354,6 @@ Pools.loot.t5 = {
 	aura_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0018', amount = 1, weight = 1 }, -- Великая аура тролля 700 (20% реген)
 			{ id = 'g001ig0022', amount = 1, weight = 1 }, -- Аура меткости 600 (10% точности)
 			{ id = 'g001ig0027', amount = 1, weight = 1 }, -- Аура брони 700 (5 брони)
 			{ id = 'g001ig0028', amount = 1, weight = 1 }, -- Аура выносливости 700 (5% ОЗ)
@@ -2381,6 +2412,8 @@ Pools.items.ruins.t0 = {
 		{ id = 'g001ig0495', amount = 1, weight = 1, type = Item.Jewel }, -- Книга наследия 400
 		{ id = 'g001ig0428', amount = 1, weight = 1, type = Item.Jewel }, -- Кожаные эльфийские доспехи (Реликвия) 400
 		{ id = 'g001ig0426', amount = 1, weight = 1, type = Item.Jewel }, -- Куртка капитана (Реликвия) 400
+		{ id = 'g000ig4007', amount = 1, weight = 1, type = Item.Jewel }, -- Медицинский трактат 500
+		{ id = 'g001ig0605', amount = 1, weight = 1, type = Item.Jewel }, -- Книга постижения 600
 		{ id = 'g001ig0114', amount = 1, weight = 1, type = Item.TravelItem }, -- Тяжелые сапоги 500
 		{ id = 'g002ig0022', amount = 1, weight = 1, type = Item.TravelItem }, -- Ботинки исследователя 500
 	}
@@ -2393,7 +2426,6 @@ Pools.items.ruins.t1 = {
 		{ id = 'g001ig0487', amount = 1, weight = 1, type = Item.Weapon }, -- Кольцо темных искуств (Артефакт) 800
 		{ id = 'g000ig2002', amount = 1, weight = 1, type = Item.Armor }, -- Святая чаша (Артефакт) 500
 		{ id = 'g001ig0582', amount = 1, weight = 1, type = Item.Armor }, -- Камень врат (Артефакт) 600
-		{ id = 'g001ig0605', amount = 1, weight = 1, type = Item.Jewel }, -- Книга постижения 600
 		{ id = 'g000ig3022', amount = 1, weight = 1, type = Item.Jewel }, -- Лютня Очарования (Реликвия) 650
 		{ id = 'g001ig0427', amount = 1, weight = 1, type = Item.Jewel }, -- Нагрудник Стража (Реликвия) 600
 		{ id = 'g001ig0370', amount = 1, weight = 1, type = Item.Banner }, -- Знамя искоренителя ереси 600
@@ -2445,7 +2477,7 @@ Pools.items.ruins.t2 = {
 		{ id = 'g001ig0365', amount = 1, weight = 1, type = Item.Banner }, -- Ловец Кошмаров 700
 		{ id = 'g001ig0292', amount = 1, weight = 1, type = Item.Banner }, -- Стяг концентрации 700
 		{ id = 'g001ig0367', amount = 1, weight = 1, type = Item.Banner }, -- Стяг чумных воинств 700
-		--{ id = 'g000ig1011', amount = 0, weight = 1, type = Item.TravelItem }, -- Сапоги мореплавателя 800
+		{ id = 'g000ig1011', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги мореплавателя 800
 		{ id = 'g000ig8003', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги скорости 700
 		{ id = 'g000ig1010', amount = 1, weight = 1, type = Item.TravelItem }, -- Эльфийские сапоги 700
 	}
@@ -2483,6 +2515,8 @@ Pools.items.ruins.t3 = {
 			{ id = 'g000ig3004', amount = 1, weight = 1 }, -- Рунический клинок (Артефакт) 1200
 			{ id = 'g000ig9035', amount = 1, weight = 1 }, -- Слеза Мортис (Артефакт) 1200
 			{ id = 'g001ig0657', amount = 1, weight = 1 }, -- Топор палача (Артефакт) 1000
+			{ id = 'g001ig0155', amount = 1, weight = 1 }, -- Благословенный браслет (Артефакт) 1400
+			{ id = 'g001ig0179', amount = 1, weight = 1 }, -- Боевая коса (Артефакт) 1750
 		}
 	},
 	r3 = {
@@ -2519,31 +2553,28 @@ Pools.items.ruins.t4 = {
 	r1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0174', amount = 1, weight = 1 }, -- Божественный потир (Артефакт) 1200
-			{ id = 'g001ig0411', amount = 1, weight = 1 }, -- Грань реальности (Артефакт) 1400
-			{ id = 'g001ig0410', amount = 1, weight = 1 }, -- Дьявольская булава (Артефакт) 1500
-			{ id = 'g000ig3019', amount = 1, weight = 1 }, -- Клинок Танатоса (Артефакт) 1150
-			{ id = 'g001ig0413', amount = 1, weight = 1 }, -- Корни триббога (Артефакт) 1200
-			{ id = 'g001ig0415', amount = 1, weight = 1 }, -- Руна кары Тьяцци (Артефакт) 1150
-			{ id = 'g000ig3004', amount = 1, weight = 1 }, -- Рунический клинок (Артефакт) 1200
-			{ id = 'g002ig0013', amount = 1, weight = 1 }, -- Серп Кровавого Ворона (Артефакт) 1850
-			{ id = 'g000ig9035', amount = 1, weight = 1 }, -- Слеза Мортис (Артефакт) 1200
-			{ id = 'g000ig9103', amount = 0, weight = 1 }, -- Талисман души героя 1200
-		}
-	},
-	r2 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			{ id = 'g001ig0604', amount = 1, weight = 1 }, -- Кинжал жатвы (Артефакт) 1900
-			{ id = 'g001ig0585', amount = 1, weight = 1 }, -- Кольцо создателя (Артефакт) 1400
-			{ id = 'g001ig0046', amount = 1, weight = 1 }, -- Кровь Владыки (Артефакт) 1400
-			{ id = 'g001ig0592', amount = 1, weight = 1 }, -- Монолитный щит (Артефакт) 1200
-			{ id = 'g000ig2004', amount = 1, weight = 1 }, -- Рог всеведенья (Артефакт) 1200
-			{ id = 'g001ig0060', amount = 1, weight = 1 }, -- Тысяча чешуек (Артефакт) 1200
-			{ id = 'g001ig0590', amount = 1, weight = 1 }, -- Щит Мизраэля (Артефакт) 1200
-			{ id = 'g002ig0015', amount = 1, weight = 1 }, -- Кираса Кровавого Ворона (Реликвия) 2100
-			{ id = 'g000ig3005', amount = 1, weight = 1 }, -- Корона Мьолнира (Реликвия) 1200
-			{ id = 'g001ig0116', amount = 1, weight = 1 }, -- Пластинчатый доспех (Реликвия) 1550
+			{ id = 'g001ig0174', amount = 1, weight = 2 }, -- Божественный потир (Артефакт) 1200
+			{ id = 'g001ig0411', amount = 1, weight = 2 }, -- Грань реальности (Артефакт) 1400
+			{ id = 'g001ig0410', amount = 1, weight = 2 }, -- Дьявольская булава (Артефакт) 1500
+			{ id = 'g000ig3019', amount = 1, weight = 2 }, -- Клинок Танатоса (Артефакт) 1150
+			{ id = 'g001ig0413', amount = 1, weight = 2 }, -- Корни триббога (Артефакт) 1200
+			{ id = 'g001ig0415', amount = 1, weight = 2 }, -- Руна кары Тьяцци (Артефакт) 1150
+			{ id = 'g000ig3004', amount = 1, weight = 2 }, -- Рунический клинок (Артефакт) 1200
+			{ id = 'g002ig0013', amount = 1, weight = 2 }, -- Серп Кровавого Ворона (Артефакт) 1850
+			{ id = 'g000ig9035', amount = 1, weight = 2 }, -- Слеза Мортис (Артефакт) 1200
+			{ id = 'g001ig0604', amount = 1, weight = 2 }, -- Кинжал жатвы (Артефакт) 1900
+			{ id = 'g001ig0585', amount = 1, weight = 2 }, -- Кольцо создателя (Артефакт) 1400
+			{ id = 'g001ig0046', amount = 1, weight = 2 }, -- Кровь Владыки (Артефакт) 1400
+			{ id = 'g001ig0592', amount = 1, weight = 2 }, -- Монолитный щит (Артефакт) 1200
+			{ id = 'g000ig2004', amount = 1, weight = 2 }, -- Рог всеведенья (Артефакт) 1200
+			{ id = 'g001ig0060', amount = 1, weight = 2 }, -- Тысяча чешуек (Артефакт) 1200
+			{ id = 'g001ig0590', amount = 1, weight = 2 }, -- Щит Мизраэля (Артефакт) 1200
+			{ id = 'g002ig0015', amount = 1, weight = 2 }, -- Кираса Кровавого Ворона (Реликвия) 2100
+			{ id = 'g000ig3005', amount = 1, weight = 2 }, -- Корона Мьолнира (Реликвия) 1200
+			{ id = 'g001ig0116', amount = 1, weight = 2 }, -- Пластинчатый доспех (Реликвия) 1550
+			{ id = 'g001ig0596', amount = 1, weight = 1 }, -- Линарет (Реликвия) 1250
+			{ id = 'g001ig0360', amount = 1, weight = 2 }, -- Стяг упырей 1300
+			{ id = 'g000ig9043', amount = 1, weight = 2 }, -- Сфера ярости 1000
 		}
 	},
 }
@@ -2557,7 +2588,7 @@ Pools.items.bags.t0 = {
 	heal_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h25, amount = 2, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h25, amount = 1, weight = 1, group_amount = 2 },
 			{ id = Items.heal.h50, amount = 1, weight = 1 },
 		}
 	},
@@ -2580,7 +2611,7 @@ Pools.items.bags.t1 = {
 	heal_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h25, amount = 3, weight = 1, group_amount = 3 },
+			{ id = Items.heal.h25, amount = 1, weight = 1, group_amount = 3 },
 			{ id = Items.heal.h75, amount = 1, weight = 1 },
 		}
 	},
@@ -2594,7 +2625,7 @@ Pools.items.bags.t1 = {
 	gold = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.gold.g50, amount = 2, weight = 1, group_amount = 2 },
+			{ id = Items.gold.g50, amount = 1, weight = 1, group_amount = 2 },
 			{ id = Items.gold.g100, amount = 1, weight = 1 },
 		}
 	},
@@ -2604,7 +2635,7 @@ Pools.items.bags.t2 = {
 	heal_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h50, amount = 2, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h50, amount = 1, weight = 1, group_amount = 2 },
 			{ id = Items.heal.h100, amount = 1, weight = 1 },
 		}
 	},
@@ -2618,8 +2649,8 @@ Pools.items.bags.t2 = {
 	gold = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.gold.g50, amount = 3, weight = 1, group_amount = 3 },
-			{ id = Items.gold.g75, amount = 2, weight = 1, group_amount = 2 },
+			{ id = Items.gold.g50, amount = 1, weight = 1, group_amount = 3 },
+			{ id = Items.gold.g75, amount = 1, weight = 1, group_amount = 2 },
 			{ id = Items.gold.g150, amount = 1, weight = 1 },
 		}
 	},
@@ -2629,7 +2660,7 @@ Pools.items.bags.t3 = {
 	heal_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h25, amount = 2, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h25, amount = 1, weight = 1, group_amount = 4 },
 			{ id = Items.heal.h100, amount = 1, weight = 1 },
 			{ id = Items.heal.hres, amount = 1, weight = 1 },
 		}
@@ -2637,7 +2668,7 @@ Pools.items.bags.t3 = {
 	gold = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.gold.g50, amount = 2, weight = 1, group_amount = 2 },
+			{ id = Items.gold.g50, amount = 1, weight = 1, group_amount = 2 },
 			{ id = Items.gold.g100, amount = 1, weight = 1 },
 		}
 	},
@@ -2654,7 +2685,7 @@ Pools.items.bags.t5 = {
 	gold = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.gold.g100, amount = 2, weight = 1, group_amount = 2 },
+			{ id = Items.gold.g100, amount = 1, weight = 1, group_amount = 2 },
 			{ id = Items.gold.g200, amount = 1, weight = 1 },
 		}
 	},
@@ -2677,6 +2708,7 @@ Pools.items.bags.t5 = {
 			{ id = 'g001ig0342', amount = 1, weight = 1 }, -- Эликсир норн 400 (страх)
 			{ id = 'g001ig0344', amount = 1, weight = 1 }, -- Эликсир предназначения 400 (замедление)
 			{ id = 'g001ig0346', amount = 1, weight = 1 }, -- Эликсир неудержимости 400 (ослабление)
+			{ id = 'g001ig0354', amount = 1, weight = 1 }, -- Жидкий металл Уру 450 (РБ)
 		}
 	}
 }
@@ -2862,12 +2894,7 @@ Pools.objects.ruins = {
 		items = {
 			{ data = { name = 'БИТВА ЗА КОСАРИК!' }, weight = 1 },
 			{ data = { name = 'УЛЬТРА ДРЕВНЕЕ КИТАЙСКОЕ ПРОКЛЯТИЕ НА ЗАЛИВКУ В ЭТИХ РУИНАХ' }, weight = 1 },
-		}
-	},
-	t5 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			{ data = { name = '' }, weight = 1 },
+			{ data = { name = "Неприступный данжен Reign'o'Van" }, weight = 1 },
 		}
 	},
 }
@@ -2909,6 +2936,7 @@ Pools.objects.merchants = {
 			{ data = { name = 'Лавка "Летящий дракон"', description = 'Мало что происходит в этом городе без моего ведома. Лао Чу' }, weight = 1 },
 			{ data = { name = 'Мельница Пешека', description = 'Сначала монеты, потом мораль' }, weight = 1 },
 			{ data = { name = 'Таверна РокВолка', description = 'У нас тут творческий коллектив. Можем спеть, сыграть, нарисовать... ну или нахер вас послать!' }, weight = 1 },
+			{ data = { name = "Kids'Staves", description = 'Заходи, найдешь посох по душе!' }, weight = 1 },
 		}
 	},
 	t2 = {
@@ -3167,6 +3195,7 @@ Pools.mercenaries.t3 = {
 			{ data = { id = 'g000uu5012', level = 1, unique = true }, weight = 1 }, -- Орк-багатур 750
 			{ data = { id = 'g000uu7607', level = 1, unique = true }, weight = 1 }, -- Черный ядозуб 825
 			{ data = { id = 'g000uu8043', level = 1, unique = true }, weight = 1 }, -- Жрица Безмясой 900
+			{ data = { id = 'g000uu8005', level = 1, unique = true }, weight = 1 }, -- Дух волка 990
 		}
 	},
 	m4 = {
@@ -3187,6 +3216,7 @@ Pools.mercenaries.t3 = {
 		items = {
 			{ data = { id = 'g002uu5026', level = 1, unique = true }, weight = 1 }, -- Элементаль Воды 1450
 			{ data = { id = 'g001uu7586', level = 1, unique = true }, weight = 1 }, -- Легат 1480
+			{ data = { id = 'g000uu6109', level = 1, unique = true }, weight = 1 }, -- Женщина-некромант 1500
 			{ data = { id = 'g000uu8277', level = 1, unique = true }, weight = 1 }, -- Уста Богов 1520
 			{ data = { id = 'g001uu7620', level = 1, unique = true }, weight = 1 }, -- Одержимый великан 1560
 			{ data = { id = 'g000uu8035', level = 1, unique = true }, weight = 1 }, -- Висильда 1620
@@ -3194,6 +3224,8 @@ Pools.mercenaries.t3 = {
 			{ data = { id = 'g000uu7567', level = 1, unique = true }, weight = 1 }, -- Первородная сущность 1800 (ожог)
 			{ data = { id = 'g000uu7566', level = 1, unique = true }, weight = 1 }, -- Первородная сущность 1800 (мороз)
 			{ data = { id = 'g000uu8237', level = 1, unique = true }, weight = 1 }, -- Первородная сущность 1800 (РБ)
+			{ data = { id = 'g000uu0190', level = 1, unique = true }, weight = 1 }, -- Дух Фенрира 2000
+			{ data = { id = 'g000uu5010', level = 1, unique = true }, weight = 1 }, -- Облачная Погибель 2370
 		}
 	},
 }
@@ -3345,8 +3377,8 @@ Pools.mines = {
 		t0 = { items = { { id = 'gold', amount = 0, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 		t1 = { items = { { id = 'gold', amount = 0, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 		t2 = { items = { { id = 'gold', amount = 0, weight = 1 } }, priority = PoolPriority.UNLIMITED },
-		t3 = { items = { { id = 'gold', amount = 1, weight = 1 } }, priority = PoolPriority.UNLIMITED },
-		t4 = { items = { { id = 'gold', amount = 0, weight = 1 } }, priority = PoolPriority.UNLIMITED },
+		t3 = { items = { { id = 'gold', amount = 0, weight = 1 } }, priority = PoolPriority.UNLIMITED },
+		t4 = { items = { { id = 'gold', amount = 2, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 		t5 = { items = { { id = 'gold', amount = 1, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 	},
 	-- Родная мана
@@ -3387,11 +3419,11 @@ Pools.mines = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'gold', amount = 1, weight = 1},
-			{ id = 'lifeMana', amount = 1, weight = 1},
-			{ id = 'runicMana', amount = 1, weight = 1},
-			{ id = 'deathMana', amount = 1, weight = 1},
-			{ id = 'infernalMana', amount = 1, weight = 1},
-			{ id = 'groveMana', amount = 1, weight = 1},
+			{ id = 'lifeMana', amount = 1, weight = 9999},
+			{ id = 'runicMana', amount = 1, weight = 9999},
+			{ id = 'deathMana', amount = 1, weight = 9999},
+			{ id = 'infernalMana', amount = 1, weight = 9999},
+			{ id = 'groveMana', amount = 1, weight = 9999},
 		}
 	}
 }
@@ -3814,28 +3846,6 @@ function DistributionSystem:getPoolInstance(pool_object, race)
 	return instance
 end
 
--- Получить доступное количество
-function DistributionSystem:getAvailableCount(pool_instance)
-	if not pool_instance then return 0 end
-
-	if pool_instance.priority == PoolPriority.UNLIMITED then
-		-- Для UNLIMITED пулов возвращаем общее количество предметов
-		local total = 0
-		for _, item in ipairs(pool_instance.items) do
-			if item.amount and item.amount > 0 then
-				total = total + item.amount
-			end
-		end
-		return total
-	end
-
-	local total = 0
-	for _, item in ipairs(pool_instance.items) do
-		total = total + item.available
-	end
-	return total
-end
-
 -- Распределить предметы из пула
 function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 	if not pool_instance then return {} end
@@ -3845,32 +3855,29 @@ function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 		return self:distributeFromUnlimitedPool(pool_instance, requested_count)
 	end
 
-	-- Для обычных пулов (ALL и AS_POSSIBLE)
 	local result = {}
 	local collected = {}
-	local selections_made = 0 -- Счетчик сделанных выборов
+	local selections_made = 0
 
-	-- Определяем сколько выборов можно сделать
+	-- Определяем максимальное количество выборов
 	local max_selections = requested_count
 
-	-- Для AS_POSSIBLE ограничиваем доступными предметами
 	if pool_instance.priority == PoolPriority.AS_POSSIBLE then
-		-- Подсчитываем максимальное количество выборов, которое можно сделать
-		-- с учетом доступного количества предметов и их group_amount
-		local total_possible_selections = 0
+		local total_available = 0
 		for _, item in ipairs(pool_instance.items) do
-			if item.available > 0 then
-				local group_amount = item.group_amount or 1
-				-- Если предмет доступен, он может быть выбран как минимум 1 раз
-				total_possible_selections = total_possible_selections + 1
+			if item.amount and item.amount > 0 then
+				total_available = total_available + item.amount
 			end
 		end
-		max_selections = math.min(requested_count, total_possible_selections)
+		max_selections = math.min(requested_count, total_available)
 	elseif pool_instance.priority == PoolPriority.ALL then
-		-- Для ALL берем столько выборов, сколько нужно для распределения всех предметов
-		-- или запрошенное количество, если оно меньше
-		local total_items = self:getAvailableCount(pool_instance)
-		max_selections = math.min(requested_count, total_items)
+		local total_available = 0
+		for _, item in ipairs(pool_instance.items) do
+			if item.amount and item.amount > 0 then
+				total_available = total_available + item.amount
+			end
+		end
+		max_selections = math.min(requested_count, total_available)
 	end
 
 	if max_selections <= 0 then return {} end
@@ -3879,10 +3886,10 @@ function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 		local total_weight = 0
 		local available_items = {}
 
-		-- Собираем доступные предметы (доступное количество >= 1)
+		-- Собираем доступные предметы (amount > 0)
 		for _, item in ipairs(pool_instance.items) do
-			if item.available > 0 then
-				total_weight = total_weight + item.weight
+			if item.amount and item.amount > 0 then
+				total_weight = total_weight + (item.weight or 1)
 				table.insert(available_items, item)
 			end
 		end
@@ -3895,7 +3902,7 @@ function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 		local selected_item = nil
 
 		for _, item in ipairs(available_items) do
-			accumulated = accumulated + item.weight
+			accumulated = accumulated + (item.weight or 1)
 			if random_value <= accumulated then
 				selected_item = item
 				break
@@ -3904,37 +3911,38 @@ function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 
 		if not selected_item then break end
 
-		-- Определяем сколько предметов выдать (с учетом group_amount и доступного количества)
+		-- Определяем сколько предметов выдать
 		local group_amount = selected_item.group_amount or 1
-		local to_issue = math.min(group_amount, selected_item.available)
-
-		if to_issue <= 0 then break end
+		local to_issue = group_amount
 
 		-- Записываем выданные предметы
 		if pool_instance.is_data_pool then
-			if not collected[selected_item.data] then collected[selected_item.data] = { data = selected_item.data, count = 0 } end
+			if not collected[selected_item.data] then
+				collected[selected_item.data] = { data = selected_item.data, count = 0 }
+			end
 			collected[selected_item.data].count = collected[selected_item.data].count + to_issue
 		else
-			if not collected[selected_item] then collected[selected_item] = 0 end
+			if not collected[selected_item] then
+				collected[selected_item] = 0
+			end
 			collected[selected_item] = collected[selected_item] + to_issue
 		end
 
-		-- Обновляем счетчики
-		selected_item.available = selected_item.available - to_issue
-		pool_instance.distributed_count = pool_instance.distributed_count + to_issue
-		selections_made = selections_made + 1  -- Увеличиваем счетчик выборов (не предметов!)
+		-- Уменьшаем amount на 1 (один выбор)
+		selected_item.amount = selected_item.amount - 1
+		pool_instance.distributed_count = pool_instance.distributed_count + 1
+		selections_made = selections_made + 1
 	end
 
 	-- Форматируем результат
 	if pool_instance.is_data_pool then
 		for _, data_info in pairs(collected) do
 			if type(data_info) == "table" and data_info.data then
-				local entry = {
+				table.insert(result, {
 					data = data_info.data,
 					min = data_info.count,
 					max = data_info.count
-				}
-				table.insert(result, entry)
+				})
 			end
 		end
 	else
@@ -3944,11 +3952,12 @@ function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 				min = amount,
 				max = amount
 			}
-
 			if item.modifiers then
 				entry.modifiers = item.modifiers
 			end
-
+			if item.name then
+				entry.name = item.name
+			end
 			table.insert(result, entry)
 		end
 	end
@@ -3958,145 +3967,98 @@ end
 
 -- Распределить предметы из UNLIMITED пула
 function DistributionSystem:distributeFromUnlimitedPool(pool_instance, requested_count)
-    if not pool_instance then return {} end
+	if not pool_instance then return {} end
 
-    local result = {}
+	local result = {}
+	local collected = {}
+	local selections_made = 0
 
-    if pool_instance.is_data_pool then
-        -- Для data-пулов (юниты, руины) – оставляем существующую логику,
-        -- но убедимся, что в temp_items поле available заполняется из item.amount (или 1)
-        local temp_items = {}
-        for _, item in ipairs(pool_instance.items) do
-            if item.weight and item.weight > 0 then
-                table.insert(temp_items, {
-                    data = item.data,
-                    weight = item.weight,
-                    available = item.amount or 1,
-                    group_amount = item.group_amount or 1
-                })
-            end
-        end
-        if #temp_items == 0 then return {} end
+	-- Создаём временную таблицу с лимитами (remaining) для этого запроса
+	local temp_items = {}
+	for _, item in ipairs(pool_instance.items) do
+		if item.weight and item.weight > 0 then
+			local initial_amount = item.amount or 1
+			if initial_amount > 0 then
+				table.insert(temp_items, {
+					id = item.id,
+					data = item.data,
+					weight = item.weight,
+					group_amount = item.group_amount or 1,
+					modifiers = item.modifiers,
+					remaining = initial_amount   -- сколько ещё выборов этого типа допустимо
+				})
+			end
+		end
+	end
 
-        local collected = {}
-        local selections_made = 0
+	if #temp_items == 0 then return {} end
+	local is_data_pool = pool_instance.is_data_pool
 
-        while selections_made < requested_count do
-            local total_weight = 0
-            local available_items = {}
-            for _, item in ipairs(temp_items) do
-                if item.available > 0 then
-                    total_weight = total_weight + item.weight
-                    table.insert(available_items, item)
-                end
-            end
-            if #available_items == 0 then break end
+	while selections_made < requested_count do
+		local total_weight = 0
+		for _, item in ipairs(temp_items) do
+			if item.remaining > 0 then
+				total_weight = total_weight + item.weight
+			end
+		end
+		if total_weight <= 0 then break end
 
-            local random_value = math.random() * total_weight
-            local accumulated = 0
-            local selected_item = nil
-            for _, item in ipairs(available_items) do
-                accumulated = accumulated + item.weight
-                if random_value <= accumulated then
-                    selected_item = item
-                    break
-                end
-            end
-            if not selected_item then break end
+		local random_value = math.random() * total_weight
+		local accumulated = 0
+		local selected_item = nil
 
-            local group_amount = selected_item.group_amount
-            local to_issue = math.min(group_amount, selected_item.available)
-            if to_issue <= 0 then break end
+		for _, item in ipairs(temp_items) do
+			if item.remaining > 0 then
+				accumulated = accumulated + item.weight
+				if random_value <= accumulated then
+					selected_item = item
+					break
+				end
+			end
+		end
 
-            if not collected[selected_item.data] then
-                collected[selected_item.data] = { data = selected_item.data, count = 0 }
-            end
-            collected[selected_item.data].count = collected[selected_item.data].count + to_issue
+		if not selected_item then break end
 
-            selected_item.available = selected_item.available - to_issue
-            selections_made = selections_made + 1
-        end
+		local to_issue = selected_item.group_amount
 
-        for _, data_info in pairs(collected) do
-            table.insert(result, {
-                data = data_info.data,
-                min = data_info.count,
-                max = data_info.count
-            })
-        end
+		if is_data_pool then
+			if not collected[selected_item.data] then
+				collected[selected_item.data] = { data = selected_item.data, count = 0 }
+			end
+			collected[selected_item.data].count = collected[selected_item.data].count + to_issue
+		else
+			if not collected[selected_item] then
+				collected[selected_item] = 0
+			end
+			collected[selected_item] = collected[selected_item] + to_issue
+		end
 
-    else
-        -- Обычные пулы (не data) – исправляем учёт amount
-        local temp_items = {}
-        for _, item in ipairs(pool_instance.items) do
-            if item.weight and item.weight > 0 then
-                local amount = item.amount or 1
-                if amount > 0 then
-                    table.insert(temp_items, {
-                        id = item.id,
-                        weight = item.weight,
-                        available = amount,
-                        group_amount = item.group_amount or 1,
-                        modifiers = item.modifiers
-                    })
-                end
-            end
-        end
-        if #temp_items == 0 then return {} end
+		selected_item.remaining = selected_item.remaining - 1
+		selections_made = selections_made + 1
+	end
 
-        local collected = {}
-        local selections_made = 0
+	-- Формирование результата
+	if is_data_pool then
+		for _, data_info in pairs(collected) do
+			table.insert(result, {
+				data = data_info.data,
+				min = data_info.count,
+				max = data_info.count
+			})
+		end
+	else
+		for item, amount in pairs(collected) do
+			local entry = {
+				id = item.id,
+				min = amount,
+				max = amount
+			}
+			if item.modifiers then entry.modifiers = item.modifiers end
+			table.insert(result, entry)
+		end
+	end
 
-        while selections_made < requested_count do
-            local total_weight = 0
-            local available_items = {}
-            for _, item in ipairs(temp_items) do
-                if item.available > 0 then
-                    total_weight = total_weight + item.weight
-                    table.insert(available_items, item)
-                end
-            end
-            if #available_items == 0 then break end
-
-            local random_value = math.random() * total_weight
-            local accumulated = 0
-            local selected_item = nil
-            for _, item in ipairs(available_items) do
-                accumulated = accumulated + item.weight
-                if random_value <= accumulated then
-                    selected_item = item
-                    break
-                end
-            end
-            if not selected_item then break end
-
-            local group_amount = selected_item.group_amount
-            local to_issue = math.min(group_amount, selected_item.available)
-            if to_issue <= 0 then break end
-
-            if not collected[selected_item] then
-                collected[selected_item] = 0
-            end
-            collected[selected_item] = collected[selected_item] + to_issue
-
-            selected_item.available = selected_item.available - to_issue
-            selections_made = selections_made + 1
-        end
-
-        for item, amount in pairs(collected) do
-            local entry = {
-                id = item.id,
-                min = amount,
-                max = amount
-            }
-            if item.modifiers then
-                entry.modifiers = item.modifiers
-            end
-            table.insert(result, entry)
-        end
-    end
-
-    return result
+	return result
 end
 
 -- Обновляем функцию получения доступного количества с учетом расы
@@ -4104,26 +4066,19 @@ function DistributionSystem:getAvailableCount(pool_instance)
 	if not pool_instance then return 0 end
 
 	if pool_instance.priority == PoolPriority.UNLIMITED then
-		-- Для UNLIMITED пулов проверяем, есть ли хотя бы один предмет с положительным весом
+		-- Для UNLIMITED пулов максимальное количество выборов за запрос
+		local total = 0
 		for _, item in ipairs(pool_instance.items) do
-			if item.weight and item.weight > 0 then
-				return math.huge  -- Очень большое число (бесконечно)
-			end
+			total = total + (item.amount or 0)
 		end
-		return 0
+		return total
 	end
 
-	-- Для обычных пулов считаем общее количество доступных выборов
-	-- с учетом того, что каждый тип можно выбирать многократно
+	-- Для обычных пулов: сумма amount (количество выборов)
 	local total_selections = 0
 	for _, item in ipairs(pool_instance.items) do
-		if item.available > 0 then
-			local group_amount = item.group_amount or 1
-			-- Сколько раз можно выбрать этот предмет, если каждый раз забирается group_amount
-			-- Например: available=7, group_amount=1 -> 7 выборов
-			-- available=5, group_amount=2 -> 3 выбора (2+2+1)
-			local selections_for_item = math.ceil(item.available / group_amount)
-			total_selections = total_selections + selections_for_item
+		if item.amount and item.amount > 0 then
+			total_selections = total_selections + item.amount
 		end
 	end
 	return total_selections
@@ -4133,38 +4088,28 @@ end
 function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 	if not pool_instance then return {} end
 
-	-- Для UNLIMITED пулов используем отдельную логику
 	if pool_instance.priority == PoolPriority.UNLIMITED then
 		return self:distributeFromUnlimitedPool(pool_instance, requested_count)
 	end
 
-	-- Для обычных пулов (ALL и AS_POSSIBLE)
 	local result = {}
 	local collected = {}
-	local selections_made = 0 -- Счетчик сделанных выборов
+	local selections_made = 0
 
-	-- Определяем сколько выборов можно сделать
+	-- Максимальное количество выборов для AS_POSSIBLE/ALL
 	local max_selections = requested_count
-
-	-- Для AS_POSSIBLE ограничиваем доступными предметами
 	if pool_instance.priority == PoolPriority.AS_POSSIBLE then
-		-- Используем ту же логику, что и в getAvailableCount
-		local total_possible_selections = 0
+		local total_available = 0
 		for _, item in ipairs(pool_instance.items) do
-			if item.available > 0 then
-				local group_amount = item.group_amount or 1
-				local selections_for_item = math.ceil(item.available / group_amount)
-				total_possible_selections = total_possible_selections + selections_for_item
-			end
+			total_available = total_available + (item.amount or 0)
 		end
-		max_selections = math.min(requested_count, total_possible_selections)
+		max_selections = math.min(requested_count, total_available)
 	elseif pool_instance.priority == PoolPriority.ALL then
-		-- Для ALL берем столько выборов, сколько нужно для распределения всех предметов
-		local total_items = 0
+		local total_available = 0
 		for _, item in ipairs(pool_instance.items) do
-			total_items = total_items + item.available
+			total_available = total_available + (item.amount or 0)
 		end
-		max_selections = math.min(requested_count, total_items)
+		max_selections = math.min(requested_count, total_available)
 	end
 
 	if max_selections <= 0 then return {} end
@@ -4173,23 +4118,21 @@ function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 		local total_weight = 0
 		local available_items = {}
 
-		-- Собираем доступные предметы (доступное количество >= 1)
 		for _, item in ipairs(pool_instance.items) do
-			if item.available > 0 then
-				total_weight = total_weight + item.weight
+			if item.amount and item.amount > 0 then
+				total_weight = total_weight + (item.weight or 1)
 				table.insert(available_items, item)
 			end
 		end
 
 		if total_weight <= 0 then break end
 
-		-- Выбираем предмет с учетом веса
 		local random_value = math.random() * total_weight
 		local accumulated = 0
 		local selected_item = nil
 
 		for _, item in ipairs(available_items) do
-			accumulated = accumulated + item.weight
+			accumulated = accumulated + (item.weight or 1)
 			if random_value <= accumulated then
 				selected_item = item
 				break
@@ -4198,38 +4141,33 @@ function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 
 		if not selected_item then break end
 
-		-- Определяем сколько предметов выдать (с учетом group_amount и доступного количества)
-		local group_amount = selected_item.group_amount or 1
-		local to_issue = math.min(group_amount, selected_item.available)
+		local to_issue = selected_item.group_amount or 1
 
-		if to_issue <= 0 then break end
-
-		-- Записываем выданные предметы
 		if pool_instance.is_data_pool then
-			if not collected[selected_item.data] then collected[selected_item.data] = { data = selected_item.data, count = 0 } end
+			if not collected[selected_item.data] then
+				collected[selected_item.data] = { data = selected_item.data, count = 0 }
+			end
 			collected[selected_item.data].count = collected[selected_item.data].count + to_issue
 		else
-			if not collected[selected_item] then collected[selected_item] = 0 end
+			if not collected[selected_item] then
+				collected[selected_item] = 0
+			end
 			collected[selected_item] = collected[selected_item] + to_issue
 		end
 
-		-- Обновляем счетчики
-		selected_item.available = selected_item.available - to_issue
-		pool_instance.distributed_count = pool_instance.distributed_count + to_issue
-		selections_made = selections_made + 1  -- Увеличиваем счетчик выборов
+		selected_item.amount = selected_item.amount - 1
+		pool_instance.distributed_count = pool_instance.distributed_count + 1
+		selections_made = selections_made + 1
 	end
 
-	-- Форматируем результат
+	-- Формирование результата (как было)
 	if pool_instance.is_data_pool then
 		for _, data_info in pairs(collected) do
-			if type(data_info) == "table" and data_info.data then
-				local entry = {
-					data = data_info.data,
-					min = data_info.count,
-					max = data_info.count
-				}
-				table.insert(result, entry)
-			end
+			table.insert(result, {
+				data = data_info.data,
+				min = data_info.count,
+				max = data_info.count
+			})
 		end
 	else
 		for item, amount in pairs(collected) do
@@ -4238,15 +4176,8 @@ function DistributionSystem:distributeFromPool(pool_instance, requested_count)
 				min = amount,
 				max = amount
 			}
-
-			if item.modifiers then
-				entry.modifiers = item.modifiers
-			end
-
-			if item.name then
-				entry.name = item.name
-			end
-
+			if item.modifiers then entry.modifiers = item.modifiers end
+			if item.name then entry.name = item.name end
 			table.insert(result, entry)
 		end
 	end
@@ -4258,14 +4189,12 @@ end
 function DistributionSystem:distributeRemaining()
 	for pool_key, instance in pairs(self.pool_instances) do
 		if instance.priority == PoolPriority.ALL then
-			-- Теперь считаем общее количество оставшихся предметов
-			local remaining_items = 0
+			local remaining_selections = 0
 			for _, item in ipairs(instance.items) do
-				remaining_items = remaining_items + item.available
+				remaining_selections = remaining_selections + (item.amount or 0)
 			end
 
-			if remaining_items > 0 then
-				-- Собираем всех получателей для этого конкретного экземпляра пула
+			if remaining_selections > 0 then
 				local recipients = {}
 				local recipient_types = {}
 
@@ -4278,15 +4207,14 @@ function DistributionSystem:distributeRemaining()
 					end
 				end
 
-				-- Преобразуем таблицу в массив
 				local recipient_list = {}
 				for recipient, _ in pairs(recipients) do
 					table.insert(recipient_list, recipient)
 				end
 
 				if #recipient_list > 0 then
-					local per_recipient = math.floor(remaining_items / #recipient_list)
-					local extra = remaining_items % #recipient_list
+					local per_recipient = math.floor(remaining_selections / #recipient_list)
+					local extra = remaining_selections % #recipient_list
 
 					for i, recipient in ipairs(recipient_list) do
 						local to_distribute = per_recipient
@@ -4295,10 +4223,7 @@ function DistributionSystem:distributeRemaining()
 						if to_distribute > 0 then
 							local items = self:distributeFromPool(instance, to_distribute)
 							if #items > 0 then
-								local req_type = recipient_types[recipient]
-								if req_type and RequestHandlers[req_type] then
-									RequestHandlers[req_type](recipient, items)
-								end
+								RequestHandlers[recipient_types[recipient]](recipient, items)
 							end
 						end
 					end
@@ -4326,15 +4251,13 @@ function DistributionSystem:requestItems(object, pool_object, count, race)
 		end
 	else
 		-- Для обычных пулов сохраняем запрос для последующего распределения
-		if count > 0 then
-			table.insert(self.requests, {
-				object = object,
-				pool_instance = pool_instance,
-				type = RequestType.ITEMS,
-				count = count,
-				race = race
-			})
-		end
+		table.insert(self.requests, {
+			object = object,
+			pool_instance = pool_instance,
+			type = RequestType.ITEMS,
+			count = count,
+			race = race
+		})
 	end
 end
 
@@ -4347,77 +4270,75 @@ end
 --   unique: boolean - если true, в ответе не будет дубликатов по id
 --   race: string - раса (опционально)
 function DistributionSystem:requestItemsAdvanced(object, pool_object, count, options)
-    options = options or {}
-    local allowed_types = options.types
-    local unique = options.unique
-    local race = options.race
+	options = options or {}
+	local allowed_types = options.types
+	local unique = options.unique
+	local race = options.race
 
-    -- Если типы не указаны, используем обычный requestItems
-    if not allowed_types or type(allowed_types) ~= "table" or #allowed_types == 0 then
-        self:requestItems(object, pool_object, count, race)
-        return
-    end
+	if not allowed_types or type(allowed_types) ~= "table" or #allowed_types == 0 then
+		self:requestItems(object, pool_object, count, race)
+		return
+	end
 
-    -- Быстрый поиск типов
-    local types_map = {}
-    for _, t in ipairs(allowed_types) do
-        types_map[t] = true
-    end
+	local types_map = {}
+	for _, t in ipairs(allowed_types) do
+		types_map[t] = true
+	end
 
-    local pool_instance = self:getPoolInstance(pool_object, race)
-    if not pool_instance then return end
+	local pool_instance = self:getPoolInstance(pool_object, race)
+	if not pool_instance then return end
 
-    -- Фильтруем по типу
-    local filtered_items = {}
-    for _, item in ipairs(pool_instance.items) do
-        if item.type and types_map[item.type] and item.available > 0 then
-            table.insert(filtered_items, item)
-        end
-    end
+	local filtered_items = {}
+	for _, item in ipairs(pool_instance.items) do
+		if item.type and types_map[item.type] and item.available > 0 then
+			table.insert(filtered_items, item)
+		end
+	end
 
-    if #filtered_items == 0 then return end
+	if #filtered_items == 0 then return end
 
-    local temp_pool = {
-        priority = pool_instance.priority,
-        items = filtered_items
-    }
-    local temp_instance = self:getPoolInstance(temp_pool, race)
-    if not temp_instance then return end
+	local temp_pool = {
+		priority = pool_instance.priority,
+		items = filtered_items
+	}
+	local temp_instance = self:getPoolInstance(temp_pool, race)
+	if not temp_instance then return end
 
-    if temp_instance.priority == PoolPriority.UNLIMITED then
-        local distributed = self:distributeFromPool(temp_instance, count)
-        if #distributed > 0 then
-            if unique then
-                local seen = {}
-                local dedup = {}
-                for _, entry in ipairs(distributed) do
-                    if not seen[entry.id] then
-                        seen[entry.id] = true
-                        table.insert(dedup, entry)
-                    end
-                end
-                distributed = dedup
-                if #distributed > count then
-                    local trimmed = {}
-                    for i = 1, count do
-                        trimmed[i] = distributed[i]
-                    end
-                    distributed = trimmed
-                end
-            end
-            RequestHandlers[RequestType.ITEMS](object, distributed)
-        end
-    else
-        -- Отложенная обработка
-        table.insert(self.requests, {
-            object = object,
-            pool_instance = temp_instance,
-            type = RequestType.ITEMS,
-            count = count,
-            race = race,
-            unique = unique,
-        })
-    end
+	if temp_instance.priority == PoolPriority.UNLIMITED then
+		local distributed = self:distributeFromPool(temp_instance, count)
+		if #distributed > 0 then
+			if unique then
+				local seen = {}
+				local unique_items = {}
+				for _, entry in ipairs(distributed) do
+					if not seen[entry.id] then
+						seen[entry.id] = true
+						table.insert(unique_items, entry)
+					end
+					-- Для UNLIMITED пулов возвращать дубликаты не нужно,
+					-- так как они не уменьшают глобальный пул.
+				end
+				if #unique_items > count then
+					local trimmed = {}
+					for i = 1, count do
+						trimmed[i] = unique_items[i]
+					end
+					unique_items = trimmed
+				end
+				distributed = unique_items
+			end
+			RequestHandlers[RequestType.ITEMS](object, distributed)
+		end
+	else
+		table.insert(self.requests, {
+			object = object,
+			pool_instance = temp_instance,
+			type = RequestType.ITEMS,
+			count = count,
+			race = race,
+			unique = unique,
+		})
+	end
 end
 
 -- Функция запроса заклинаний
@@ -4453,15 +4374,13 @@ function DistributionSystem:requestSpells(object, pool_object, count, race)
 		end
 	else
 		-- Для обычных пулов сохраняем запрос для последующего распределения
-		if count > 0 then
-			table.insert(self.requests, {
-				object = object,
-				pool_instance = pool_instance,
-				type = RequestType.SPELLS,
-				count = count,
-				race = race,
-			})
-		end
+		table.insert(self.requests, {
+			object = object,
+			pool_instance = pool_instance,
+			type = RequestType.SPELLS,
+			count = count,
+			race = race,
+		})
 	end
 end
 
@@ -4483,15 +4402,13 @@ function DistributionSystem:requestLeaders(stack, pool_object, count, race)
 		end
 	else
 		-- Для обычных пулов сохраняем запрос для последующего распределения
-		if count > 0 then
-			table.insert(self.requests, {
-				object = stack,
-				pool_instance = pool_instance,
-				type = RequestType.LEADERS,
-				count = count,
-				race = race
-			})
-		end
+		table.insert(self.requests, {
+			object = stack,
+			pool_instance = pool_instance,
+			type = RequestType.LEADERS,
+			count = count,
+			race = race
+		})
 	end
 end
 
@@ -4621,15 +4538,13 @@ function DistributionSystem:requestMercenaryUnits(mercenary, pool_object, count,
 		end
 	else
 		-- Для обычных пулов сохраняем запрос для последующего распределения
-		if count > 0 then
-			table.insert(self.requests, {
-				object = mercenary,
-				pool_instance = pool_instance,
-				type = RequestType.MERCENARY_UNITS,
-				count = count,
-				race = race
-			})
-		end
+		table.insert(self.requests, {
+			object = mercenary,
+			pool_instance = pool_instance,
+			type = RequestType.MERCENARY_UNITS,
+			count = count,
+			race = race
+		})
 	end
 end
 
@@ -4651,15 +4566,13 @@ function DistributionSystem:requestSubraces(stack, pool_object, count, race)
 		end
 	else
 		-- Для обычных пулов сохраняем запрос для последующего распределения
-		if count > 0 then
-			table.insert(self.requests, {
-				object = stack,
-				pool_instance = pool_instance,
-				type = RequestType.SUBRACES,
-				count = count,
-				race = race
-			})
-		end
+		table.insert(self.requests, {
+			object = stack,
+			pool_instance = pool_instance,
+			type = RequestType.SUBRACES,
+			count = count,
+			race = race
+		})
 	end
 end
 
@@ -4681,46 +4594,64 @@ function DistributionSystem:requestMines(zone, pool_object, count, race)
 		end
 	else
 		-- Для обычных пулов сохраняем запрос для последующего распределения
-		if count > 0 then
-			table.insert(self.requests, {
-				object = zone,
-				pool_instance = pool_instance,
-				type = RequestType.MINES,
-				count = count,
-				race = race
-			})
+		table.insert(self.requests, {
+			object = zone,
+			pool_instance = pool_instance,
+			type = RequestType.MINES,
+			count = count,
+			race = race
+		})
+	end
+end
+
+-- Возвращает один выбор предмета обратно в пул (увеличивает amount на 1)
+function DistributionSystem:returnSingleItem(pool_instance, entry)
+	for _, item in ipairs(pool_instance.items) do
+		if item.id == entry.id then
+			item.amount = item.amount + 1
+			if item.available then item.available = item.amount end
+			break
 		end
 	end
 end
 
 -- Выполнение распределения
 function DistributionSystem:distribute()
-    shake(self.requests)
-    for _, req in ipairs(self.requests) do
-        local distributed_items = self:distributeFromPool(req.pool_instance, req.count, req.race)
-        if #distributed_items > 0 then
-            if req.unique then
-                local seen = {}
-                local unique_items = {}
-                for _, entry in ipairs(distributed_items) do
-                    if not seen[entry.id] then
-                        seen[entry.id] = true
-                        table.insert(unique_items, entry)
-                    end
-                end
-                distributed_items = unique_items
-                if #distributed_items > req.count then
-                    local trimmed = {}
-                    for i = 1, req.count do
-                        trimmed[i] = distributed_items[i]
-                    end
-                    distributed_items = trimmed
-                end
-            end
-            RequestHandlers[req.type](req.object, distributed_items)
-        end
-    end
-    self:distributeRemaining()
+	shake(self.requests)
+	for _, req in ipairs(self.requests) do
+		local distributed_items = self:distributeFromPool(req.pool_instance, req.count, req.race)
+		if #distributed_items > 0 then
+			if req.unique then
+				local seen = {}
+				local unique_items = {}
+				for _, entry in ipairs(distributed_items) do
+					if not seen[entry.id] then
+						seen[entry.id] = true
+						table.insert(unique_items, entry)
+					else
+						-- дубликат — возвращаем обратно в пул
+						self:returnSingleItem(req.pool_instance, entry)
+					end
+				end
+				-- Если уникальных больше, чем запрошено, возвращаем лишние
+				if #unique_items > req.count then
+					shake(unique_items) -- случайный порядок
+					for i = req.count + 1, #unique_items do
+						self:returnSingleItem(req.pool_instance, unique_items[i])
+					end
+					-- оставляем первые req.count
+					local trimmed = {}
+					for i = 1, req.count do
+						trimmed[i] = unique_items[i]
+					end
+					unique_items = trimmed
+				end
+				distributed_items = unique_items
+			end
+			RequestHandlers[req.type](req.object, distributed_items)
+		end
+	end
+	self:distributeRemaining()
 end
 
 -- Функция запроса лидеров
@@ -4736,15 +4667,13 @@ function DistributionSystem:requestLeaders(stack, pool_object, count, race)
 		end
 	else
 		-- Для обычных пулов сохраняем запрос для последующего распределения
-		if count > 0 then
-			table.insert(self.requests, {
-				object = stack,
-				pool_instance = pool_instance,
-				type = RequestType.LEADERS,
-				count = count,
-				race = race
-			})
-		end
+		table.insert(self.requests, {
+			object = stack,
+			pool_instance = pool_instance,
+			type = RequestType.LEADERS,
+			count = count,
+			race = race
+		})
 	end
 end
 
@@ -4815,7 +4744,7 @@ function absTown()
 		aiPriority = 0,
 		gapMask = 15,
 		stack = absStack(),
-    garrison = {
+		garrison = {
 			subraceTypes = {},
 			value = {min = 0, max = 0},
 			loot = absLoot(),
@@ -4882,19 +4811,19 @@ function absMarket()
 			{ resource = Resource.RunicMana, value = { min = 0, max = 0 }, infinity = false},
 			{ resource = Resource.GroveMana, value = { min = 0, max = 0 }, infinity = false},
 		},
-    guard = absStack(),
+		guard = absStack(),
 	}
 end
 
 --- Шаблон:Руины
 function absRuin()
 	return {
-      name = '',
-      gold = { min = 0, max = 0 },
-      --- Максимум 1 предмет
-      loot = absLoot(),
-      guard = absStack(),
-  }
+		name = '',
+		gold = { min = 0, max = 0 },
+		--- Максимум 1 предмет
+		loot = absLoot(),
+		guard = absStack(),
+	}
 end
 
 --- Шаблон:Отряд
@@ -4908,7 +4837,7 @@ function absStack()
 		aiPriority = 0,
 		leaderIds = {},
 		leaderModifiers = {},
-		subraceTypes = {},
+		subraceTypes = rsub(),
 		loot = absLoot(),
 	}
 end
@@ -5109,7 +5038,7 @@ function getCapital0(race)
 	Distributor:requestTownData(capital, Pools.objects.capitals.t0, race)
 
 	Distributor:requestItems(capital.garrison, Pools.capital.fix_perk, 1, race)
-	Distributor:requestItems(capital.garrison, Pools.capital.fix_heal, 25, race)
+	Distributor:requestItems(capital.garrison, Pools.capital.fix_heal, 5, race)
 
 	Distributor:requestItems(capital.garrison, Pools.capital.fix_buff_1, 6, race)
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_buff_1, 2, race)
@@ -5125,8 +5054,8 @@ function getCapital0(race)
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_sphere_1, 1, race)
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_sphere_2, 1, race)
 
-	Distributor:requestItems(capital.garrison, Pools.capital.rnd_scroll_1, 1, race)
-	Distributor:requestItems(capital.garrison, Pools.capital.rnd_scroll_2, 1, race)
+	Distributor:requestItems(capital.garrison, Pools.capital.rnd_scrolls_1, 1, race)
+	Distributor:requestItems(capital.garrison, Pools.capital.rnd_scrolls_2, 1, race)
 
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_bonus, 1, race)
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_equip, 1, race)
@@ -5159,7 +5088,7 @@ function getTowns1(race)
 	Distributor:requestItems(towns[i].stack, rnd(Pools.items.perks.pool_2a, Pools.items.perks.pool_2b), 1, race)
 
 	Distributor:requestItems(towns[i].stack, Pools.loot.t1.res, 1, race)
-	Distributor:requestItems(towns[i].stack, Pools.loot.t1.heal, 1, race)
+	Distributor:requestItems(towns[i].stack, Pools.loot.t1.heal, 2, race)
 
 	Distributor:requestItems(towns[i].stack, rnd(Pools.items.mana.special.normal, Pools.loot.t1.gold), 1, race)
 
@@ -5187,12 +5116,13 @@ function getTowns2(race)
 	towns[i].stack.loot.itemTypes = {Item.Scroll, Item.Orb}
 	towns[i].stack.loot.value = {min = 500, max = 650}
 	towns[i].stack.loot.itemValue = {min = 450, max = 650}
-	--Distributor:requestItems(towns[i].stack, Pools.loot.t3.heal_1, 3, race)
-	--Distributor:requestItems(towns[i].stack, Pools.loot.t3.buff_3, 1, race)
+	Distributor:requestItems(towns[i].stack, Pools.loot.t2.heal_1, 1, race)
+	Distributor:requestItems(towns[i].stack, Pools.loot.t2.heal_2, 2, race)
+	Distributor:requestItems(towns[i].stack, Pools.loot.t2.buff_3, 1, race)
 	Distributor:requestItems(towns[i].stack, rnd(
 			Pools.items.buff_1,
 			Pools.items.ward_el,
-			Pools.loot.t3.buff_3
+			Pools.loot.t2.buff_3
 	), 1, race)
 	Distributor:requestItems(towns[i].stack, rnd(
 			Pools.items.mana.normal,
@@ -5200,7 +5130,7 @@ function getTowns2(race)
 			Pools.loot.t2.gold
 	), 1, race)
 	Distributor:requestItems(towns[i].stack, Pools.loot.t2.permo_2, 1, race)
-	Distributor:requestItems(towns[i].stack, Pools.loot.t2.scroll_2, 1, race)
+	Distributor:requestItems(towns[i].stack, Pools.loot.t2.scrolls_2, 1, race)
 	Distributor:requestItems(towns[i].stack, Pools.items.perks.pool_3, 1, race)
 
 	i = i + 1
@@ -5350,7 +5280,7 @@ function getRuins4()
 	ruins[i].guard.subraceTypes = rsub(true)
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 1400, 1500)
 	ruins[i].gold = {min = 450, max = 500}
-	Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r2, 1)
+	Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r1, 1)
 	i = i + 1
 
 	return ruins
@@ -5363,7 +5293,7 @@ function getRuins5()
 
 	--- 1600-1700 / 500-550
 	ruins[i] = absRuin()
-	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t5)
+	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t4)
 	ruins[i].guard = absStack()
 	ruins[i].guard.subraceTypes = rsub(true)
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 1600, 1700)
@@ -5373,12 +5303,12 @@ function getRuins5()
 
 	--- 1600-1700 / 480-540
 	ruins[i] = absRuin()
-	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t5)
+	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t4)
 	ruins[i].guard = absStack()
 	ruins[i].guard.subraceTypes = rsub(true)
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 1600, 1700)
 	ruins[i].gold = {min = 500, max = 550}
-	Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r2, 1)
+	Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r1, 1)
 	i = i + 1
 
 	return ruins
@@ -5448,6 +5378,7 @@ function getStacks0(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t0.res, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t0.heal, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t0.scroll, 1, race)
+	Distributor:requestItems(stacks[i], rnd(Pools.items.mana.special.small, Pools.items.mana.small), 1)
 	i = i + 1
 
 	--- 180*1
@@ -5476,7 +5407,7 @@ function getStacks1(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.heal, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.gold, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.ward_el, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t0.buff1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t0.buff_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.talisman, 1, race)
 	Distributor:requestItems(stacks[i], Pools.items.mana.small, 1)
 	i = i + 1
@@ -5487,7 +5418,7 @@ function getStacks1(race)
 	stacks[i].value = getStackValue(stacks[i], 220)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.heal, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.ward_el, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t0.buff1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t0.buff_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t0.orb, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.orb, 2, race)
 	i = i + 1
@@ -5502,10 +5433,10 @@ function getStacks1(race)
 
 	i = i + 1
 
-	--- 280*2
+	--- 280*1
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
-	stacks[i].count = 2
+	stacks[i].count = 1
 	stacks[i].value = getStackValue(stacks[i], 280)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.heal, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.ward_2, 1, race)
@@ -5520,7 +5451,7 @@ function getStacks1(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.heal, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.scrolls, 1, race)
 	Distributor:requestItems(stacks[i], Pools.items.ward_el, 1)
-	Distributor:requestItems(stacks[i], Pools.items.buff_e4, 1)
+	Distributor:requestItems(stacks[i], Pools.items.buff_e2, 1)
 	i = i + 1
 
 	--- 320*1
@@ -5549,7 +5480,8 @@ function getStacks2(race)
 	Distributor:requestItems(stacks[i], Pools.items.buff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.items.mana.normal, 1)
 
-	Distributor:requestItems(stacks[i], Pools.loot.t2.heal, 2, race)
+	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.heal_1, Pools.loot.t2.heal_2), 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.gold, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.ward_3, 1, race)
 	i = i + 1
@@ -5558,7 +5490,8 @@ function getStacks2(race)
 	stacks[i] = absStack()
 	stacks[i].count = 2
 	stacks[i].value = getStackValue(stacks[i], 400)
-	Distributor:requestItems(stacks[i], Pools.loot.t2.heal, 2, race)
+	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.heal_1, Pools.loot.t2.heal_2), 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.ward_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.buff_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.orb, 2)
@@ -5568,10 +5501,11 @@ function getStacks2(race)
 	stacks[i] = absStack()
 	stacks[i].count = 2
 	stacks[i].value = getStackValue(stacks[i], 500)
-	Distributor:requestItems(stacks[i], Pools.loot.t2.heal, 2, race)
+	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.heal_1, Pools.loot.t2.heal_2), 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.ward_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.perk, 1, race)
-	Distributor:requestItems(stacks[i], Pools.goods.t2.scroll_1, 2)
+	Distributor:requestItems(stacks[i], Pools.goods.t2.scrolls_1, 2)
 	Distributor:requestItems(stacks[i], Pools.items.mana.normal, 1)
 	i = i + 1
 
@@ -5579,7 +5513,7 @@ function getStacks2(race)
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 550)
-	Distributor:requestItems(stacks[i], Pools.loot.t2.heal, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.ward_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.permo_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.items.ward_el, 1)
@@ -5589,7 +5523,8 @@ function getStacks2(race)
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 575)
-	Distributor:requestItems(stacks[i], Pools.loot.t2.heal, 2, race)
+	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.heal_1, Pools.loot.t2.heal_2), 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.permo_2, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.buff_2, 1, race)
 	i = i + 1
@@ -5598,8 +5533,8 @@ function getStacks2(race)
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 600)
-	Distributor:requestItems(stacks[i], Pools.loot.t2.heal, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t2.talisman, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
+	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.talisman, Pools.loot.t2.gold), 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.permo_3, 1)
 	Distributor:requestItems(stacks[i], Pools.items.buff_1, 1)
 	i = i + 1
@@ -5651,6 +5586,7 @@ function getStacks3(race)
 	stacks[i].loot.value = { min = 600, max = 600 }
 	stacks[i].loot.itemValue = { min = 500, max = 600 }
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_3, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.buff_3, 1)
 	i = i + 1
@@ -5740,7 +5676,7 @@ function getStacks5(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.banner, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.orb, 2)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb, 1)
 	i = i + 1
 
 	--- 1300*1 -- 4
@@ -5751,7 +5687,8 @@ function getStacks5(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.relic, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
-	Distributor:requestItems(stacks[i], Pools.items.buff_e4, 1)
+	Distributor:requestItems(stacks[i], Pools.items.buff_e2, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb, 1)
 	i = i + 1
 
 	--- 1600*1
@@ -5825,7 +5762,7 @@ function getStacksW(id)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.relic, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
-	Distributor:requestItems(stacks[i], Pools.items.buff_e4, 1)
+	Distributor:requestItems(stacks[i], Pools.items.buff_e2, 1)
 	i = i + 1
 
 	return stacks
@@ -5898,8 +5835,8 @@ function getGuard34(race, id)
 		Distributor:requestItems(stack, rnd(
 				Pools.loot.t3.talisman,
 				Pools.items.mana.normal,
-				Pools.items.mana.buff_1,
-				Pools.items.mana.ward_el
+				Pools.items.buff_1,
+				Pools.items.ward_el
 		), 1)
 
 	elseif id == 3 and emd({false, true, true, false}) then
@@ -5945,10 +5882,11 @@ function getMerchants1(race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.permo_stat_1, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.permo_stat_2, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.permo_stat_3, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.artifact_1, 4, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.artifact_2, 4, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.relic_1, 5, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.artifact_1, 3, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.artifact_2, 3, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.relic_1, 4, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.relic_2, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.relic_3, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.boots_1, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.boots_2, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.banner, 3, race)
@@ -5962,10 +5900,9 @@ function getMerchants1(race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_1_debuff, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_heal, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_ward, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_3, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_2, 2)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_3, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_4, 1, race)
-
 	i = i + 1
 
 	return merchants
@@ -5982,7 +5919,6 @@ function getMerchants2(race)
 
 	Distributor:requestItems(merchants[i], Pools.items.special_equip, 1)
 	Distributor:requestItems(merchants[i], Pools.items.perks.pool_2a, 0, race)
-	Distributor:requestItems(merchants[i], Pools.items.perks.pool_2b, 0, race)
 	Distributor:requestItems(merchants[i], Pools.items.perks.pool_3, 1, race)
 
 	Distributor:requestItems(merchants[i], Pools.items.buff_1, 4)
@@ -6054,15 +5990,14 @@ function getMerchants3(id)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.boots, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.banner_1, 2)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.banner_2, 2)
-	Distributor:requestItems(merchants[i], Pools.goods.t3.talisman, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t3.talisman_1, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.sphere_1, 2)
-	Distributor:requestItems(merchants[i], Pools.goods.t3.sphere_1, 3)
-	Distributor:requestItems(merchants[i], Pools.goods.t3.sphere_1, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t3.sphere_2, 3)
+	Distributor:requestItems(merchants[i], Pools.goods.t3.sphere_3, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.staff_1, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.staff_2, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_1, 2)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_ward, 1)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_1, 2)
 
 	i = i + 1
 
@@ -6404,7 +6339,7 @@ end
 function getMines2(race)
 	local mines = absMines()
 	Distributor:requestMines(mines, Pools.mines.gold.t2, 0)
-	Distributor:requestMines(mines, Pools.mines.racial, 1, race)
+	Distributor:requestMines(mines, Pools.mines.racial, 0, race)
 	Distributor:requestMines(mines, Pools.mines.first, 0, race)
 	Distributor:requestMines(mines, Pools.mines.second, 1, race)
 
@@ -6456,7 +6391,7 @@ function getBags1(race)
 	local bags = absBags()
 	Distributor:requestItems(bags, Pools.items.bags.t1.heal_1, 1, race)
 	Distributor:requestItems(bags, Pools.items.bags.t1.heal_2, 2, race)
-	Distributor:requestItems(bags, Pools.items.buff_e2, 1)
+	Distributor:requestItems(bags, Pools.items.buff_e1, 1)
 	return bags
 end
 
@@ -6466,7 +6401,7 @@ function getBags2(race)
 	Distributor:requestItems(bags, Pools.items.bags.t2.heal_1, 1, race)
 	Distributor:requestItems(bags, Pools.items.bags.t2.heal_2, 2, race)
 	Distributor:requestItems(bags, Pools.items.bags.t2.gold, 1, race)
-	Distributor:requestItems(bags, Pools.items.buff_e4, 1)
+	Distributor:requestItems(bags, Pools.items.buff_e2, 1)
 	return bags
 end
 
@@ -6490,7 +6425,7 @@ function getBags5(race)
 	Distributor:requestItems(bags, Pools.items.bags.t5.gold, 1, race)
 	Distributor:requestItems(bags, Pools.items.bags.t5.permo_1, 1)
 	Distributor:requestItems(bags, Pools.items.bags.t5.permo_2, 1)
-	Distributor:requestItems(bags, Pools.items.buff_e4, 1)
+	Distributor:requestItems(bags, Pools.items.buff_e2, 1)
 	return bags
 end
 
@@ -6500,7 +6435,7 @@ end
 --- Зона:т0
 function getZone0(id, race)
 	local zone = absZone(id, getZoneSizes().z0)
-		zone.label = 0
+	zone.label = 0
 	zone.type = Zone.PlayerStart
 	zone.race = race
 	zone.capital = getCapital0(race)
@@ -7730,7 +7665,7 @@ template = {
 		'g000uu8266', -- Дроттар--
 		'g000uu8265', -- дева пламени--
 		'g000uu1001', -- двойник
-		'g000uu8217', -- Призрачный дракон л.
+		--'g000uu8217', -- Призрачный дракон л.
 		'g000uu8216', -- Призрачный дракон
 		'g000uu8269', -- Кровавый дракон л.
 		'g001uu8269', -- Кровавый дракон
