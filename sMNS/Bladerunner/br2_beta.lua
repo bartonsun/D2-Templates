@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local version = '3.0 beta8'
+local version = '3.0 beta9'
 ------------------------------------------------------------------------------------------------------------------------
 --- Варианты режима шаблона
 local duo = 2
@@ -821,10 +821,10 @@ Pools.capital = {
 	fix_buff_1 = {
 		priority = PoolPriority.UNLIMITED,
 		items = {
-			{ id = 'g000ig0008', amount = 3, weight = 1, group_amount = 3 }, -- Эликсир меткости 150
-			{ id = 'g000ig0002', amount = 1, weight = 1 }, -- Эликсир защиты 150
-			{ id = 'g000ig0014', amount = 1, weight = 1 }, -- Эликсир энергии 150
-			{ id = 'g000ig0011', amount = 1, weight = 1 }, -- Эликсир ловкости 150
+			{ id = 'g000ig0008', amount = 1, weight = 1, group_amount = 3 }, -- Эликсир меткости 150
+			{ id = 'g000ig0002', amount = 1, weight = 1, group_amount = 1 }, -- Эликсир защиты 150
+			{ id = 'g000ig0014', amount = 1, weight = 1, group_amount = 1 }, -- Эликсир энергии 150
+			{ id = 'g000ig0011', amount = 1, weight = 1, group_amount = 1 }, -- Эликсир ловкости 150
 		}
 	},
 	fix_ward_1 = {
@@ -1125,10 +1125,10 @@ Pools.goods.t1 = {
 	staff_summon = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0383', amount = 1, weight = 1, races = {} }, -- Посох первых побегов 200
-			{ id = 'g001ig0384', amount = 1, weight = 1 }, -- Посох демонической охоты 200
-			{ id = 'g001ig0385', amount = 1, weight = 1 }, -- Посох мании 200
-			{ id = 'g000ig6002', amount = 1, weight = 1 }, -- Посох некроманта 200
+			{ id = 'g001ig0383', amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Heretic, Race.Undead} }, -- Посох первых побегов 200
+			{ id = 'g001ig0384', amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Undead, Race.Elf} }, -- Посох демонической охоты 200
+			{ id = 'g001ig0385', amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Undead, Race.Elf} }, -- Посох мании 200
+			{ id = 'g000ig6002', amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Heretic, Race.Elf} }, -- Посох некроманта 200
 		}
 	},
 	scrolls_1_buff = {
@@ -2077,8 +2077,8 @@ Pools.loot.t3 = {
 	heal_2 = { -- 100
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h25, amount = 4, weight = 1, group_amount = 4 },
-			{ id = Items.heal.h50, amount = 4, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h25, amount = 5, weight = 1, group_amount = 4 },
+			{ id = Items.heal.h50, amount = 5, weight = 1, group_amount = 2 },
 		}
 	},
 	heal_3 = { -- 150
@@ -3228,6 +3228,30 @@ Pools.mercenaries.t3 = {
 			{ data = { id = 'g000uu5010', level = 1, unique = true }, weight = 1 }, -- Облачная Погибель 2370
 		}
 	},
+	m6 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ data = { id = 'g000uu2015', level = 3, unique = true }, weight = 1, races = { Race.Human } }, -- Страж Святости 695
+			{ data = { id = 'g000uu7562', level = 3, unique = true }, weight = 1, races = { Race.Human } }, -- Бореалис 805
+			{ data = { id = 'g000uu7595', level = 2, unique = true }, weight = 1, races = { Race.Human } }, -- Рефаим 915
+
+			{ data = { id = 'g001uu7571', level = 2, unique = true }, weight = 1, races = { Race.Dwarf } }, -- Белый волк 710
+			{ data = { id = 'g006uu1128', level = 3, unique = true }, weight = 1, races = { Race.Dwarf } }, -- Мастер печи 875
+			{ data = { id = 'g000uu8224', level = 3, unique = true }, weight = 1, races = { Race.Dwarf } }, -- Каменный великан 1880
+
+			{ data = { id = 'g000uu0088', level = 3, unique = true }, weight = 1, races = { Race.Undead } }, -- Скелет-воин 720
+			{ data = { id = 'g001uu7565', level = 2, unique = true }, weight = 1, races = { Race.Undead } }, -- Чумной оборотень 600
+			{ data = { id = 'g000uu0085', level = 3, unique = true }, weight = 1, races = { Race.Undead } }, -- Злой дух 810
+
+			{ data = { id = 'g000uu0054', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Черный паладин 630
+			{ data = { id = 'g000uu0064', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Демонолог 760
+			{ data = { id = 'g001uu7574', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Цитриновая гаргулья 1880
+
+			{ data = { id = 'g001uu7579', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Кентавр-гвардеец 905
+			{ data = { id = 'g000uu8028', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Тиург 730
+			{ data = { id = 'g000uu8020', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Стингер 830
+		}
+	}
 }
 --- т5
 Pools.mercenaries.t5 = {
@@ -5040,7 +5064,7 @@ function getCapital0(race)
 	Distributor:requestItems(capital.garrison, Pools.capital.fix_perk, 1, race)
 	Distributor:requestItems(capital.garrison, Pools.capital.fix_heal, 5, race)
 
-	Distributor:requestItems(capital.garrison, Pools.capital.fix_buff_1, 6, race)
+	Distributor:requestItems(capital.garrison, Pools.capital.fix_buff_1, 4, race)
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_buff_1, 2, race)
 
 	Distributor:requestItems(capital.garrison, Pools.capital.fix_ward_1, 3, race)
@@ -5567,16 +5591,17 @@ function getStacks3(race)
 
 	--- 700*1
 	stacks[i] = absStack()
+	stacks[i].count = 2
 	stacks[i].value = getStackValue(stacks[i], 700)
-	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_1, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_2, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_1, 2, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_2, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.buff_2, 1)
 	Distributor:requestItems(stacks[i], rnd(
 			Pools.items.buff_1,
 			Pools.items.ward_el,
 			Pools.items.ward_dot,
 			Pools.items.ward_1
-	), 2)
+	), 3)
 	i = i + 1
 
 	--- 750*1
@@ -5895,7 +5920,7 @@ function getMerchants1(race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.sphere_2, 2, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.staff_1, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.staff_2, 1)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.staff_summon, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.staff_summon, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_1_buff, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_1_debuff, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_heal, 1, race)
@@ -5918,6 +5943,7 @@ function getMerchants2(race)
 	Distributor:requestMerchantData(merchants[i], Pools.objects.merchants.t2)
 
 	Distributor:requestItems(merchants[i], Pools.items.special_equip, 1)
+	Distributor:requestItems(merchants[i], Pools.items.perks.pool_1, 1, race)
 	Distributor:requestItems(merchants[i], Pools.items.perks.pool_2a, 0, race)
 	Distributor:requestItems(merchants[i], Pools.items.perks.pool_3, 1, race)
 
@@ -6070,8 +6096,7 @@ function getMercenaries3(id)
 	Distributor:requestMercenaryData(mercenaries[i], Pools.objects.mercenaries.t3)
 
 	for _,race in ipairs(ALL_RACES) do
-		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t2.m4, 1, race)
-		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t2.m3, 1, race)
+		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m6, 1, race)
 	end
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m5, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m4, 1)
