@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local version = '3.0 beta9'
+local version = '3.0 beta10'
 ------------------------------------------------------------------------------------------------------------------------
 --- Варианты режима шаблона
 local duo = 2
@@ -1902,8 +1902,8 @@ Pools.loot.t2 = {
 	heal_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h25, amount = 2, weight = 1, group_amount = 4 },
-			{ id = Items.heal.h50, amount = 3, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h25, amount = 1, weight = 1, group_amount = 4 },
+			{ id = Items.heal.h50, amount = 4, weight = 1, group_amount = 2 },
 			{ id = Items.heal.h75, amount = 1, weight = 1 },
 			{ id = Items.heal.h100, amount = 8, weight = 1 },
 		}
@@ -2077,8 +2077,8 @@ Pools.loot.t3 = {
 	heal_2 = { -- 100
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h25, amount = 5, weight = 1, group_amount = 4 },
-			{ id = Items.heal.h50, amount = 5, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h25, amount = 2, weight = 1, group_amount = 4 },
+			{ id = Items.heal.h50, amount = 8, weight = 1, group_amount = 2 },
 		}
 	},
 	heal_3 = { -- 150
@@ -2887,6 +2887,7 @@ Pools.objects.ruins = {
 			{ data = { name = 'Старая пивоварня Ивана' }, weight = 1 },
 			{ data = { name = 'Без негатива' }, weight = 1 },
 			{ data = { name = 'Protoss Bone Nexus' }, weight = 1 },
+			{ data = { name = "Неприступный данжен Reign'o'Van" }, weight = 1 },
 		}
 	},
 	t4 = {
@@ -2894,7 +2895,12 @@ Pools.objects.ruins = {
 		items = {
 			{ data = { name = 'БИТВА ЗА КОСАРИК!' }, weight = 1 },
 			{ data = { name = 'УЛЬТРА ДРЕВНЕЕ КИТАЙСКОЕ ПРОКЛЯТИЕ НА ЗАЛИВКУ В ЭТИХ РУИНАХ' }, weight = 1 },
-			{ data = { name = "Неприступный данжен Reign'o'Van" }, weight = 1 },
+		}
+	},
+	t5 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ data = { name = '' }, weight = 1 },
 		}
 	},
 }
@@ -4707,6 +4713,13 @@ local Distributor = DistributionSystem
 ------------------------------------------------------------------------------------------------------------------------
 --- Шаблоны Сущностей
 ------------------------------------------------------------------------------------------------------------------------
+---- Шаблон:Локация
+function absLocation()
+	return {
+		--size = LocSize.x1,
+	}
+end
+
 --- Шаблон:Зона
 function absZone(id, size)
 	return {
@@ -4714,7 +4727,7 @@ function absZone(id, size)
 		size = size,
 		type = Zone.Junction,
 		--fill = Fill.Mountain,
-		border = Border.Close,
+		border = Border.Closed,
 		-------------------------
 		--- только для столицы
 		-------------------------
@@ -4741,6 +4754,7 @@ function absLoot()
 		value = {min = 0, max = 0},
 		itemValue = {min = 0, max = 0},
 		items = {},
+		forbiddenIds = {},
 	}
 end
 
@@ -4757,6 +4771,7 @@ function absCapital(race)
 			value = {min = 0, max = 0},
 			loot = absLoot(),
 		},
+		location = absLocation(),
 	}
 end
 
@@ -4772,7 +4787,13 @@ function absTown()
 			subraceTypes = {},
 			value = {min = 0, max = 0},
 			loot = absLoot(),
+			forbiddenIds = {},
 		},
+		regen = 0,
+		growthTurn = 0,
+		riotTurn = 0,
+		protectionId = '',
+		location = absLocation(),
 	}
 end
 
@@ -4783,6 +4804,7 @@ function absMerchant()
 		description = '',
 		goods = absLoot(),
 		guard = absStack(),
+		location = absLocation(),
 	}
 end
 
@@ -4796,6 +4818,8 @@ function absMage()
 		spellLevel = {min = 1, max = 5},
 		value = {min = 0, max = 0},
 		guard = absStack(),
+		forbiddenIds = {},
+		location = absLocation(),
 	}
 end
 
@@ -4809,6 +4833,10 @@ function absMercenary()
 		value = {min = 0, max = 0},
 		enrollValue = {min = 0, max = 0},
 		guard = absStack(),
+		unique = true,
+		duplicate = true,
+		forbiddenIds = {},
+		location = absLocation(),
 	}
 end
 
@@ -4818,6 +4846,7 @@ function absTrainer()
 		name = '',
 		description = '',
 		guard = absStack(),
+		location = absLocation(),
 	}
 end
 
@@ -4836,6 +4865,7 @@ function absMarket()
 			{ resource = Resource.GroveMana, value = { min = 0, max = 0 }, infinity = false},
 		},
 		guard = absStack(),
+		location = absLocation(),
 	}
 end
 
@@ -4847,6 +4877,7 @@ function absRuin()
 		--- Максимум 1 предмет
 		loot = absLoot(),
 		guard = absStack(),
+		location = absLocation(),
 	}
 end
 
@@ -4863,6 +4894,8 @@ function absStack()
 		leaderModifiers = {},
 		subraceTypes = rsub(),
 		loot = absLoot(),
+		forbiddenIds = {},
+		location = absLocation(),
 	}
 end
 
@@ -4872,6 +4905,7 @@ function absBags()
 		count = 1,
 		aiPriority = 0,
 		loot = absLoot(),
+		location = absLocation(),
 	}
 end
 
@@ -5317,7 +5351,7 @@ function getRuins5()
 
 	--- 1600-1700 / 500-550
 	ruins[i] = absRuin()
-	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t4)
+	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t5)
 	ruins[i].guard = absStack()
 	ruins[i].guard.subraceTypes = rsub(true)
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 1600, 1700)
@@ -5327,7 +5361,7 @@ function getRuins5()
 
 	--- 1600-1700 / 480-540
 	ruins[i] = absRuin()
-	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t4)
+	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t5)
 	ruins[i].guard = absStack()
 	ruins[i].guard.subraceTypes = rsub(true)
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 1600, 1700)
