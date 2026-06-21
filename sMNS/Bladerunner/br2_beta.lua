@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local version = '3.0 beta10'
+local version = '3.0 beta11'
 ------------------------------------------------------------------------------------------------------------------------
 --- Варианты режима шаблона
 local duo = 2
@@ -141,6 +141,12 @@ local Races = {}
 ------------------------------------------------------------------------------------------------------------------------
 --- Тип предметов для руин т0-т2
 local ruinsLootTypes = {Item.Weapon, Item.Armor, Item.Banner, Item.Jewel, Item.TravelItem}
+------------------------------------------------------------------------------------------------------------------------
+--- Статус сетовых предметов
+local setItemsStatus = {}
+------------------------------------------------------------------------------------------------------------------------
+--- День беса
+local iad = math.random(1,6)
 ------------------------------------------------------------------------------------------------------------------------
 --- Забаненные заклинания
 local ArrayForbiddenSpells = {}
@@ -470,6 +476,14 @@ function shake(array)
 	end
 end
 
+--- Проверка наличия значения в таблице
+function isTableContains(tbl, item)
+    for _, v in ipairs(tbl) do
+        if v == item then return true end
+    end
+    return false
+end
+
 ------------------------------------------------------------------------------------------------------------------------
 --- Функции:Соединение зон
 ------------------------------------------------------------------------------------------------------------------------
@@ -797,6 +811,40 @@ Pools.items.special_equip = {
 		{ id = 'g001ig0501', amount = 1, weight = 1 }, -- Дары Галлеана (хождение по лесу) 750
 	}
 }
+--- Предметы -> Сеты
+local setItemsConfig = {
+	--- Главарь наемников
+	['g002ig0001'] = { type = Item.Weapon, ruins = {'t0'}, shops = {'t1'} },        -- Потайной кинжал (Артефакт) 400
+	['g002ig0002'] = { type = Item.Armor,  ruins = {'t1'}, shops = {'t2'} },        -- Промасленная кольчуга (Реликвия) 700
+	['g002ig0003'] = { type = Item.Banner,  ruins = {'t3'}, shops = {} },           -- Стяг главаря наемников 1000
+	--- Жатва
+	['g001ig0602'] = { type = Item.Armor,  ruins = {'t1'}, shops = {'t2'} },        -- Доспех жатвы (Реликвия) 800
+	['g001ig0603'] = { type = Item.Jewel,  ruins = {'t2'}, shops = {'t2', 't3'} },  -- Чаша жатвы (Артефакт) 1000
+	['g001ig0604'] = { type = Item.Weapon, ruins = {'t4', 't5'}, shops = {'t3'} },  -- Кинжал жатвы (Артефакт) 1900
+	--- Наследие Феникса
+	['g002ig0010'] = { type = Item.Weapon, ruins = {'t3'}, shops = {'t3'} },        -- Меч рыцаря Феникса (Артефакт) 1750
+	['g002ig0011'] = { type = Item.Armor,  ruins = {'t3'}, shops = {'t3'} },        -- Щит рыцаря Феникса (Артефакт) 1500
+	['g002ig0012'] = { type = Item.Armor,  ruins = {'t4', 't5'}, shops = {'t3'} },  -- Доспех рыцаря Феникса (Реликвия) 2100
+	--- Кодекс крови
+	['g002ig0013'] = { type = Item.Weapon, ruins = {'t4', 't5'}, shops = {'t3'} },  -- Серп Кровавого Ворона (Артефакт) 1850
+	['g002ig0014'] = { type = Item.Weapon, ruins = {'t3'}, shops = {'t3'} },        -- Кама Кровавого Ворона (Артефакт) 1600
+	['g002ig0015'] = { type = Item.Armor,  ruins = {'t3'}, shops = {'t3'} },        -- Кираса Кровавого Ворона (Реликвия) 2100
+	['g002ig0016'] = { type = Item.Banner, ruins = {'t4', 't5'}, shops = {} },      -- Стяг Кровавого Ворона 2250+
+}
+
+function tryPlaceSetItem(ruin, setItemId, expectedType, chance)
+    local config = setItemsConfig[setItemId]
+    if not config then return false end
+    if expectedType and config.type ~= expectedType then return false end
+    if setItemsStatus[setItemId] then return false end
+    if math.random() < chance then
+        setItemsStatus[setItemId] = true
+        ruin.loot.items = ruin.loot.items or {}
+        table.insert(ruin.loot.items, { id = setItemId, min = 1, max = 1 })
+        return true
+    end
+    return false
+end
 
 ------------------------------------------------------------------------------------------------------------------------
 --- Предметы -> Столица
@@ -993,7 +1041,6 @@ Pools.goods.t1 = {
 		items = {
 			{ id = 'g001ig0611', amount = 1, weight = 1 }, -- Цепи жертвенности (Артефакт) 300
 			{ id = 'g001ig0048', amount = 1, weight = 1 }, -- Амулет Кракена (Артефакт) 375
-			{ id = 'g002ig0001', amount = 1, weight = 1 }, -- Потайной кинжал (Артефакт) 400
 			{ id = 'g001ig0609', amount = 1, weight = 1 }, -- Загробный фонарь (Артефакт) 400
 			{ id = 'g001ig0418', amount = 1, weight = 1 }, -- Руна защиты Фрейра (Артефакт) 400
 			{ id = 'g000ig2002', amount = 1, weight = 1 }, -- Святая чаша (Артефакт) 500
@@ -1281,8 +1328,6 @@ Pools.goods.t2 = {
 			{ id = 'g001ig0427', amount = 1, weight = 1 }, -- Нагрудник Стража (Реликвия)
 			{ id = 'g001ig0423', amount = 1, weight = 1 }, -- Латы Спасителя (Реликвия) 700
 			{ id = 'g001ig0156', amount = 1, weight = 1 }, -- Шкатулка предсказаний (Реликвия) 1050
-			{ id = 'g002ig0002', amount = 1, weight = 1 }, -- Промасленная кольчуга (Реликвия) 700
-			{ id = 'g001ig0602', amount = 1, weight = 1 }, -- Доспех жатвы (Реликвия) 800
 		}
 	},
 	relic_2 = {
@@ -1561,7 +1606,6 @@ Pools.goods.t3 = {
 			{ id = 'g001ig0591', amount = 1, weight = 1 }, -- Щит отражения (Артефакт) 900
 			{ id = 'g001ig0197', amount = 1, weight = 1 }, -- Проклятый пепел (Артефакт) 950
 			{ id = 'g001ig0071', amount = 1, weight = 1 }, -- Эльфийская брошь (Артефакт) 1000
-			{ id = 'g001ig0603', amount = 1, weight = 1 }, -- Чаша жатвы (Артефакт) 1000
 			{ id = 'g001ig0612', amount = 1, weight = 1 }, -- Кольцо небесной воли (Артефакт) 1000
 			{ id = 'g001ig0124', amount = 1, weight = 1 }, -- Клинок Возвышенного (Артефакт) 1000
 			{ id = 'g000ig3019', amount = 1, weight = 1 }, -- Клинок Танатоса (Артефакт) 1150
@@ -1584,15 +1628,10 @@ Pools.goods.t3 = {
 			{ id = 'g001ig0155', amount = 1, weight = 1 }, -- Благословенный браслет (Артефакт) 1400
 			{ id = 'g001ig0488', amount = 1, weight = 2 }, -- Кольцо Несгибаемого стража (Артефакт) 1500
 			{ id = 'g001ig0410', amount = 1, weight = 2 }, -- Дьявольская булава (Артефакт) 1500
-			{ id = 'g002ig0011', amount = 1, weight = 2 }, -- Щит рыцаря Феникса (Артефакт) 1500
-			{ id = 'g002ig0014', amount = 1, weight = 2 }, -- Кама Кровавого Ворона (Артефакт) 1600
-			{ id = 'g002ig0010', amount = 1, weight = 2 }, -- Меч рыцаря Феникса (Артефакт) 1750
 			{ id = 'g002ig0017', amount = 1, weight = 1 }, -- Копье Ангела (Артефакт) 1750
 			{ id = 'g001ig0179', amount = 1, weight = 1 }, -- Боевая коса (Артефакт) 1750
 			{ id = 'g001ig0102', amount = 1, weight = 2 }, -- Коготь Пожирателя (Артефакт) 1800
 			{ id = 'g000ig2005', amount = 1, weight = 2 }, -- Гравированная диадема (Артефакт) 1800
-			{ id = 'g002ig0013', amount = 1, weight = 2 }, -- Серп Кровавого Ворона (Артефакт) 1850
-			{ id = 'g001ig0604', amount = 1, weight = 2 }, -- Кинжал жатвы (Артефакт) 1900
 			{ id = 'g001ig0043', amount = 1, weight = 2 }, -- Мощь дракона (Артефакт) 2600
 		}
 	},
@@ -1605,13 +1644,6 @@ Pools.goods.t3 = {
 			{ id = 'g001ig0116', amount = 1, weight = 1 }, -- Пластинчатый доспех (Реликвия) 1550
 			{ id = 'g001ig0038', amount = 1, weight = 1 }, -- Тяжелые латы (Реликвия) 1550
 			{ id = 'g000ig7010', amount = 1, weight = 1 }, -- Корона Империи (Реликвия) 1800
-		}
-	},
-	relic_2 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			{ id = 'g002ig0015', amount = 1, weight = 1 }, -- Кираса Кровавого Ворона (Реликвия) 2100
-			{ id = 'g002ig0012', amount = 1, weight = 1 }, -- Доспех рыцаря Феникса (Реликвия) 2100
 		}
 	},
 	boots = {
@@ -1641,7 +1673,6 @@ Pools.goods.t3 = {
 			{ id = 'g000ig1017', amount = 1, weight = 1 }, -- Знамя Здоровья 1500
 			{ id = 'g001ig0290', amount = 1, weight = 1 }, -- Стяг непреклонности 1600
 			{ id = 'g001ig0291', amount = 1, weight = 1 }, -- Штандарт равновесия 1600
-			{ id = 'g002ig0016', amount = 1, weight = 1 }, -- Стяг Кровавого Ворона 2250
 		}
 	},
 	talisman_1 = {
@@ -2398,7 +2429,6 @@ Pools.items.ruins.t0 = {
 	items = {
 		{ id = 'g000ig3017', amount = 1, weight = 1, type = Item.Weapon }, -- Кинжал Вампиризма (Артефакт) 550
 		{ id = 'g001ig0182', amount = 1, weight = 1, type = Item.Weapon }, -- Счастливая кость (Артефакт) 500
-		{ id = 'g002ig0001', amount = 1, weight = 1, type = Item.Weapon }, -- Потайной кинжал (Артефакт) 400
 		{ id = 'g001ig0609', amount = 1, weight = 1, type = Item.Armor }, -- Загробный фонарь (Артефакт) 400
 		{ id = 'g000ig2002', amount = 1, weight = 1, type = Item.Armor }, -- Святая чаша (Артефакт) 500
 		{ id = 'g001ig0048', amount = 1, weight = 1, type = Item.Armor }, -- Амулет Кракена (Артефакт) 375
@@ -2454,11 +2484,9 @@ Pools.items.ruins.t2 = {
 		{ id = 'g001ig0589', amount = 1, weight = 1, type = Item.Armor }, -- Щит неведения (Артефакт) 800
 		{ id = 'g001ig0594', amount = 1, weight = 1, type = Item.Armor }, -- Щит телохранителя (Артефакт) 700
 		{ id = 'g001ig0420', amount = 1, weight = 1, type = Item.Jewel }, -- Вечные латы (Реликвия) 800
-		{ id = 'g001ig0602', amount = 1, weight = 1, type = Item.Jewel }, -- Доспех жатвы (Реликвия) 800
 		{ id = 'g001ig0104', amount = 1, weight = 1, type = Item.Jewel }, -- Зуб людоеда (Реликвия) 800
 		{ id = 'g001ig0422', amount = 1, weight = 1, type = Item.Jewel }, -- Кровавый покров (Реликвия) 700
 		{ id = 'g001ig0423', amount = 1, weight = 1, type = Item.Jewel }, -- Латы Спасителя (Реликвия) 700
-		{ id = 'g002ig0002', amount = 1, weight = 1, type = Item.Jewel }, -- Промасленная кольчуга (Реликвия) 700
 		{ id = 'g000ig2006', amount = 1, weight = 1, type = Item.Jewel }, -- Тиара чистоты (Реликвия) 800
 		{ id = 'g001ig0037', amount = 1, weight = 1, type = Item.Jewel }, -- Шлем проклятого (Реликвия) 800
 		{ id = 'g001ig0293', amount = 1, weight = 1, type = Item.Banner }, -- Баннер неудержимых 775
@@ -2497,7 +2525,6 @@ Pools.items.ruins.t3 = {
 			--{ id = 'g001ig0044', amount = 0, weight = 1 }, -- Сердце океана (Артефакт) 1200
 			--{ id = 'g001ig0060', amount = 0, weight = 1 }, -- Тысяча чешуек (Артефакт) 1200
 			--{ id = 'g001ig0158', amount = 0, weight = 1 }, -- Ужасающий топор (Артефакт) 1200
-			{ id = 'g001ig0603', amount = 1, weight = 1 }, -- Чаша жатвы (Артефакт) 1000
 			{ id = 'g001ig0041', amount = 1, weight = 1 }, -- Череп шамана (Артефакт) 1000
 			--{ id = 'g001ig0590', amount = 0, weight = 1 }, -- Щит Мизраэля (Артефакт) 1200
 			{ id = 'g001ig0591', amount = 1, weight = 1 }, -- Щит отражения (Артефакт) 900
@@ -2516,7 +2543,6 @@ Pools.items.ruins.t3 = {
 			{ id = 'g000ig9035', amount = 1, weight = 1 }, -- Слеза Мортис (Артефакт) 1200
 			{ id = 'g001ig0657', amount = 1, weight = 1 }, -- Топор палача (Артефакт) 1000
 			{ id = 'g001ig0155', amount = 1, weight = 1 }, -- Благословенный браслет (Артефакт) 1400
-			{ id = 'g001ig0179', amount = 1, weight = 1 }, -- Боевая коса (Артефакт) 1750
 		}
 	},
 	r3 = {
@@ -2544,7 +2570,6 @@ Pools.items.ruins.t3 = {
 			{ id = 'g001ig0358', amount = 1, weight = 1 }, -- Знамя ража 950
 			{ id = 'g000ig1006', amount = 1, weight = 1 }, -- Знамя скорости 925
 			{ id = 'g001ig0374', amount = 1, weight = 1 }, -- Знамя стального листопада 900
-			{ id = 'g002ig0003', amount = 1, weight = 1 }, -- Стяг главаря наемников 1000
 		}
 	},
 }
@@ -2560,16 +2585,14 @@ Pools.items.ruins.t4 = {
 			{ id = 'g001ig0413', amount = 1, weight = 2 }, -- Корни триббога (Артефакт) 1200
 			{ id = 'g001ig0415', amount = 1, weight = 2 }, -- Руна кары Тьяцци (Артефакт) 1150
 			{ id = 'g000ig3004', amount = 1, weight = 2 }, -- Рунический клинок (Артефакт) 1200
-			{ id = 'g002ig0013', amount = 1, weight = 2 }, -- Серп Кровавого Ворона (Артефакт) 1850
 			{ id = 'g000ig9035', amount = 1, weight = 2 }, -- Слеза Мортис (Артефакт) 1200
-			{ id = 'g001ig0604', amount = 1, weight = 2 }, -- Кинжал жатвы (Артефакт) 1900
 			{ id = 'g001ig0585', amount = 1, weight = 2 }, -- Кольцо создателя (Артефакт) 1400
 			{ id = 'g001ig0046', amount = 1, weight = 2 }, -- Кровь Владыки (Артефакт) 1400
 			{ id = 'g001ig0592', amount = 1, weight = 2 }, -- Монолитный щит (Артефакт) 1200
 			{ id = 'g000ig2004', amount = 1, weight = 2 }, -- Рог всеведенья (Артефакт) 1200
 			{ id = 'g001ig0060', amount = 1, weight = 2 }, -- Тысяча чешуек (Артефакт) 1200
 			{ id = 'g001ig0590', amount = 1, weight = 2 }, -- Щит Мизраэля (Артефакт) 1200
-			{ id = 'g002ig0015', amount = 1, weight = 2 }, -- Кираса Кровавого Ворона (Реликвия) 2100
+			{ id = 'g001ig0179', amount = 1, weight = 2 }, -- Боевая коса (Артефакт) 1750
 			{ id = 'g000ig3005', amount = 1, weight = 2 }, -- Корона Мьолнира (Реликвия) 1200
 			{ id = 'g001ig0116', amount = 1, weight = 2 }, -- Пластинчатый доспех (Реликвия) 1550
 			{ id = 'g001ig0596', amount = 1, weight = 1 }, -- Линарет (Реликвия) 1250
@@ -2787,6 +2810,12 @@ Pools.spells.t1 = {
 			{ id = Spells.g000ss0041, weight = 1, races = {Race.Human, Race.Dwarf, Race.Undead, Race.Elf} },
 			{ id = Spells.g000ss0098, weight = 1, races = {Race.Human, Race.Dwarf, Race.Undead, Race.Heretic} },
 		}
+	},
+	iad = {
+		priority = PoolPriority.UNLIMITED,
+		items = {
+			{ id = Spells.g000ss0188, weight = 1 },
+		}
 	}
 }
 --- Башня мага т3
@@ -2888,6 +2917,7 @@ Pools.objects.ruins = {
 			{ data = { name = 'Без негатива' }, weight = 1 },
 			{ data = { name = 'Protoss Bone Nexus' }, weight = 1 },
 			{ data = { name = "Неприступный данжен Reign'o'Van" }, weight = 1 },
+			{ data = { name = "Сокровищница НеВерМора (бота)" }, weight = 1 },
 		}
 	},
 	t4 = {
@@ -2918,13 +2948,14 @@ Pools.objects.towns = {
 	t1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ data = { name = '' }, weight = 1 },
+			{ data = { name = 'Гусь-Хрустальный' }, weight = 1 },
 		}
 	},
 	t2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'СУЗдаль' }, weight = 1 },
+			{ data = { name = 'деревня простых парней' }, weight = 1 },
 		}
 	},
 	t4 = {
@@ -3014,14 +3045,15 @@ Pools.objects.mercenaries = {
 	},
 	t3 = {
 		priority = PoolPriority.AS_POSSIBLE,
-		items = {}
+		items = {
+			{ data = { name = 'Обессатиренный заповедник', description = 'Козлят нет, забрал доктор', units = {} }, weight = 1 },
+		}
 	},
 	t5 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Бюро по трудоустройству населения №1', description = 'Шаманка здесь и сейчас!', units = { id = 'g000uu8046', level = 1, unique = true } }, weight = 1 },
 			{ data = { name = 'Бюро по трудоустройству населения №2', description = 'Шаманок нет, но есть кое кто..', units = { id = 'g000uu6104', level = 3, unique = true } }, weight = 1 },
-			{ data = { name = 'Обессатиренный заповедник', description = 'Козлят нет, забрал доктор', units = {} }, weight = 1 },
 		}
 	}
 }
@@ -3041,8 +3073,8 @@ Pools.mercenaries.t2 = {
 			{ data = { id = 'g000uu0036', level = 1, unique = false }, weight = 1, races = { Race.Dwarf } }, -- Гном 35
 			{ data = { id = 'g000uu0026', level = 1, unique = false }, weight = 1, races = { Race.Dwarf } }, -- Снежный волк 110
 
-			{ data = { id = 'g000uu0086', level = 2, unique = false }, weight = 1, races = { Race.Undead } }, -- Мертвец 35
-			{ data = { id = 'g001uu7539', level = 2, unique = false }, weight = 1, races = { Race.Undead } }, -- Колотун 35
+			{ data = { id = 'g000uu0086', level = 1, unique = false }, weight = 1, races = { Race.Undead } }, -- Мертвец 35
+			{ data = { id = 'g001uu7539', level = 1, unique = false }, weight = 1, races = { Race.Undead } }, -- Колотун 35
 
 			{ data = { id = 'g000uu0052', level = 1, unique = false }, weight = 1, races = { Race.Heretic } }, -- Одержимый 35
 			{ data = { id = 'g000uu0062', level = 1, unique = false }, weight = 1, races = { Race.Heretic } }, -- Сектант 35
@@ -4264,7 +4296,7 @@ function DistributionSystem:distributeRemaining()
 end
 
 -- Функция запроса предметов
-function DistributionSystem:requestItems(object, pool_object, count, race)
+function DistributionSystem:requestItems(object, pool_object, count, race, isRuin)
 	local pool_instance = self:getPoolInstance(pool_object, race)
 	if not pool_instance then return end
 
@@ -4286,7 +4318,8 @@ function DistributionSystem:requestItems(object, pool_object, count, race)
 			pool_instance = pool_instance,
 			type = RequestType.ITEMS,
 			count = count,
-			race = race
+			race = race,
+			isRuin = isRuin or false
 		})
 	end
 end
@@ -4709,6 +4742,15 @@ end
 
 -- Глобальный экземпляр
 local Distributor = DistributionSystem
+
+------------------------------------------------------------------------------------------------------------------------
+--- Бан-листы
+------------------------------------------------------------------------------------------------------------------------
+local forbidden = {}
+forbidden.ruins = {
+	'g000uu5025', -- Горгона
+	'g000uu6113', -- Оккультист
+}
 
 ------------------------------------------------------------------------------------------------------------------------
 --- Шаблоны Сущностей
@@ -5244,8 +5286,12 @@ function getRuins0(race)
 	ruins[i].guard = absStack()
 	ruins[i].guard.kef = zone_kef
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 160)
+	ruins[i].guard.forbiddenIds = forbidden.ruins
 	ruins[i].gold = {min = 225, max = 275}
-	Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t0, 1, {types = {ruinsLootTypes[1]}, race = race})
+	local placed = tryPlaceSetItem(ruins[i], 'g002ig0001', ruinsLootTypes[1], 0.5)
+	if not placed then
+		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t0, 1, {types = {ruinsLootTypes[1]}, race = race})
+	end
 	i = i + 1
 	--- 160 / 200-250
 	ruins[i] = absRuin()
@@ -5253,9 +5299,13 @@ function getRuins0(race)
 	ruins[i].guard = absStack()
 	ruins[i].guard.kef = zone_kef
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 160)
+	ruins[i].guard.forbiddenIds = forbidden.ruins
 	ruins[i].gold = {min = 225, max = 275}
 	ruins[i].loot.items = {}
-	Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t0, 1, {types = {ruinsLootTypes[2]}, race = race})
+	placed = tryPlaceSetItem(ruins[i], 'g002ig0001', ruinsLootTypes[2], 0.5)
+	if not placed then
+		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t0, 1, {types = {ruinsLootTypes[2]}, race = race})
+	end
 	i = i + 1
 
 	return ruins
@@ -5271,8 +5321,15 @@ function getRuins1(race)
 	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t1)
 	ruins[i].guard = absStack()
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 240)
+	ruins[i].guard.forbiddenIds = forbidden.ruins
 	ruins[i].gold = {min = 300, max = 350}
-	Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t1, 1, {types = {ruinsLootTypes[3]}, race = race})
+	local placed = tryPlaceSetItem(ruins[i], 'g002ig0002', ruinsLootTypes[3], 0.5)
+	if not placed then
+		placed = tryPlaceSetItem(ruins[i], 'g001ig0602', ruinsLootTypes[3], 0.5)
+	end
+	if not placed then
+		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t1, 1, {types = {ruinsLootTypes[3]}, race = race})
+	end
 	i = i + 1
 
 	return ruins
@@ -5289,8 +5346,12 @@ function getRuins2()
 	ruins[i].guard = absStack()
 	ruins[i].guard.subraceTypes = rsub(true)
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 400)
+	ruins[i].guard.forbiddenIds = forbidden.ruins
 	ruins[i].gold = {min = 350, max = 400}
-	Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t2, 1, {types = {ruinsLootTypes[4]}, race = race})
+	local placed = tryPlaceSetItem(ruins[i], 'g001ig0603', ruinsLootTypes[4], 0.5)
+	if not placed then
+		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t2, 1, {types = {ruinsLootTypes[4]}, race = race})
+	end
 	i = i + 1
 
 	return ruins
@@ -5301,15 +5362,37 @@ function getRuins3(types)
 	local ruins = {}
 	local i = 1
 
+	local availableSetItems = {}
+    for id, config in pairs(setItemsConfig) do
+        if not setItemsStatus[id] and config.ruins and isTableContains(config.ruins, 't3') then
+            table.insert(availableSetItems, id)
+        end
+    end
+
 	--- 900 / 400-450
-	for _,type in pairs(types) do
+	for _, typeName in ipairs(types) do
 		ruins[i] = absRuin()
 		Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t3)
 		ruins[i].guard = absStack()
 		ruins[i].guard.subraceTypes = rsub(true)
 		ruins[i].guard.value = getStackValue(ruins[i].guard, 900)
+		ruins[i].guard.forbiddenIds = forbidden.ruins
 		ruins[i].gold = {min = 400, max = 450}
-		Distributor:requestItems(ruins[i], Pools.items.ruins.t3[type], 1)
+
+		local placed = false
+		if #availableSetItems > 0 then
+			shake(availableSetItems)
+			for _, itemId in ipairs(availableSetItems) do
+				if tryPlaceSetItem(ruins[i], itemId, nil, 0.5) then
+					placed = true
+					break
+				end
+			end
+		end
+
+		if not placed then
+			Distributor:requestItems(ruins[i], Pools.items.ruins.t3[typeName], 1)
+		end
 		i = i + 1
 	end
 
@@ -5321,25 +5404,39 @@ function getRuins4()
 	local ruins = {}
 	local i = 1
 
-	--- 1400-1500 / 450-500
-	ruins[i] = absRuin()
-	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t4)
-	ruins[i].guard = absStack()
-	ruins[i].guard.subraceTypes = rsub(true)
-	ruins[i].guard.value = getStackValue(ruins[i].guard, 1400, 1500)
-	ruins[i].gold = {min = 450, max = 500}
-	Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r1, 1)
-	i = i + 1
+	local availableSetItems = {}
+	for id, config in pairs(setItemsConfig) do
+		if not setItemsStatus[id] and config.ruins and isTableContains(config.ruins, 't4') then
+			table.insert(availableSetItems, id)
+		end
+	end
 
 	--- 1400-1500 / 450-500
-	ruins[i] = absRuin()
-	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t4)
-	ruins[i].guard = absStack()
-	ruins[i].guard.subraceTypes = rsub(true)
-	ruins[i].guard.value = getStackValue(ruins[i].guard, 1400, 1500)
-	ruins[i].gold = {min = 450, max = 500}
-	Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r1, 1)
-	i = i + 1
+	for _ = 1, 2 do
+		ruins[i] = absRuin()
+		Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t4)
+		ruins[i].guard = absStack()
+		ruins[i].guard.subraceTypes = rsub(true)
+		ruins[i].guard.value = getStackValue(ruins[i].guard, 1400, 1500)
+		ruins[i].guard.forbiddenIds = forbidden.ruins
+		ruins[i].gold = {min = 450, max = 500}
+
+		local placed = false
+		if #availableSetItems > 0 then
+			shake(availableSetItems)
+			for _, itemId in ipairs(availableSetItems) do
+				if tryPlaceSetItem(ruins[i], itemId, nil, 0.5) then
+					placed = true
+					break
+				end
+			end
+		end
+
+		if not placed then
+			Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r1, 1)
+		end
+		i = i + 1
+	end
 
 	return ruins
 end
@@ -5349,25 +5446,39 @@ function getRuins5()
 	local ruins = {}
 	local i = 1
 
-	--- 1600-1700 / 500-550
-	ruins[i] = absRuin()
-	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t5)
-	ruins[i].guard = absStack()
-	ruins[i].guard.subraceTypes = rsub(true)
-	ruins[i].guard.value = getStackValue(ruins[i].guard, 1600, 1700)
-	ruins[i].gold = {min = 500, max = 550}
-	Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r1, 1)
-	i = i + 1
+	local availableSetItems = {}
+	for id, config in pairs(setItemsConfig) do
+		if not setItemsStatus[id] and config.ruins and isTableContains(config.ruins, 't5') then
+			table.insert(availableSetItems, id)
+		end
+	end
 
-	--- 1600-1700 / 480-540
-	ruins[i] = absRuin()
-	Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t5)
-	ruins[i].guard = absStack()
-	ruins[i].guard.subraceTypes = rsub(true)
-	ruins[i].guard.value = getStackValue(ruins[i].guard, 1600, 1700)
-	ruins[i].gold = {min = 500, max = 550}
-	Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r1, 1)
-	i = i + 1
+	--- 1600-1700 / 500-550
+	for _ = 1, 2 do
+		ruins[i] = absRuin()
+		Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t5)
+		ruins[i].guard = absStack()
+		ruins[i].guard.subraceTypes = rsub(true)
+		ruins[i].guard.value = getStackValue(ruins[i].guard, 1600, 1700)
+		ruins[i].guard.forbiddenIds = forbidden.ruins
+		ruins[i].gold = {min = 500, max = 550}
+
+		local placed = false
+		if #availableSetItems > 0 then
+			shake(availableSetItems)
+			for _, itemId in ipairs(availableSetItems) do
+				if tryPlaceSetItem(ruins[i], itemId, nil, 0.5) then
+					placed = true
+					break
+				end
+			end
+		end
+
+		if not placed then
+			Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r1, 1)
+		end
+		i = i + 1
+	end
 
 	return ruins
 end
@@ -5962,6 +6073,12 @@ function getMerchants1(race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_3, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_2, 2)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_3, 1, race)
+	for id, config in pairs(setItemsConfig) do
+		if not setItemsStatus[id] and config.shops and isTableContains(config.shops, 't1') then
+			table.insert(merchants[#merchants].goods.items, { id = id, min = 1, max = 1 })
+			setItemsStatus[id] = true
+		end
+	end
 	i = i + 1
 
 	return merchants
@@ -6015,7 +6132,12 @@ function getMerchants2(race)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_3, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_4, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_ward, 1)
-
+	for id, config in pairs(setItemsConfig) do
+		if not setItemsStatus[id] and config.shops and isTableContains(config.shops, 't2') then
+			table.insert(merchants[#merchants].goods.items, { id = id, min = 1, max = 1 })
+			setItemsStatus[id] = true
+		end
+	end
 	i = i + 1
 
 	return merchants
@@ -6046,7 +6168,6 @@ function getMerchants3(id)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.artifact_1, 4)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.artifact_2, 3)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.relic_1, 3)
-	Distributor:requestItems(merchants[i], Pools.goods.t3.relic_2, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.boots, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.banner_1, 2)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.banner_2, 2)
@@ -6058,7 +6179,12 @@ function getMerchants3(id)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.staff_2, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_1, 2)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_ward, 1)
-
+	for id, config in pairs(setItemsConfig) do
+		if not setItemsStatus[id] and config.shops and isTableContains(config.shops, 't3') then
+			table.insert(merchants[#merchants].goods.items, { id = id, min = 1, max = 1 })
+			setItemsStatus[id] = true
+		end
+	end
 	i = i + 1
 
 	return merchants
@@ -6077,6 +6203,9 @@ function getMages1(race)
 
 	Distributor:requestSpells(mages[i], Pools.spells.t1.summons, 1, race)
 	Distributor:requestSpells(mages[i], Pools.spells.t1.list, 14, race)
+	if iad == 6 then
+		Distributor:requestSpells(mages[i], Pools.spells.t1.iad, 1)
+	end
 	i = i + 1
 
 	return mages
@@ -7742,6 +7871,8 @@ template = {
 		'g000uu8138', -- Никса
 		'g000uu5126', -- Русалка
 		'g000uu7536', -- Элементаль воды
+		------------- Временно
+		'g000uu8263', -- Чернокнижница
 	},
 	forbiddenItems = {
 
