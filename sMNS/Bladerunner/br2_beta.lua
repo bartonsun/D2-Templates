@@ -2228,6 +2228,8 @@ Pools.loot.t3 = {
 			{ id = 'g001ig0398', amount = 1, weight = 1 }, -- Посох скальда 550
 			{ id = 'g001ig0400', amount = 1, weight = 1 }, -- Посох созыва шабаша 550
 			{ id = 'g000ig6006', amount = 1, weight = 1 }, -- Посох темноты 400
+			{ id = 'g001ig0379', amount = 1, weight = 1 }, -- Треснувший посох врат Бездны 100
+			{ id = 'g001ig0098', amount = 1, weight = 1 }, -- Посох морей 1000
 		}
 	},
 	scroll = {
