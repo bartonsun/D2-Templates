@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local version = '3.0 beta11'
+local version = '3.0 beta12'
 ------------------------------------------------------------------------------------------------------------------------
 --- Варианты режима шаблона
 local duo = 2
@@ -2202,9 +2202,32 @@ Pools.loot.t3 = {
 		}
 	},
 	permo_3 = {
-		priority = PoolPriority.AS_POSSIBLE,
+		priority = PoolPriority.UNLIMITED,
 		items = {
 			{ id = 'g001ig0519', amount = 1, weight = 1 }, -- Война престолов 600
+		}
+	},
+	staff_1 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g000ig6020', amount = 1, weight = 1 }, -- Посох Возни 550
+			{ id = 'g001ig0380', amount = 1, weight = 1 }, -- Посох врат Бездны 400
+			{ id = 'g001ig0381', amount = 1, weight = 1 }, -- Посох дурных знамений 400
+			{ id = 'g000ig6014', amount = 1, weight = 1 }, -- Посох защиты 550
+			{ id = 'g001ig0392', amount = 1, weight = 1 }, -- Посох знаний Фрегги 400
+			{ id = 'g000ig6021', amount = 1, weight = 1 }, -- Посох Зов Леса 400
+			{ id = 'g000ig6019', amount = 1, weight = 1 }, -- Посох Листвы 400
+			{ id = 'g001ig0403', amount = 1, weight = 1 }, -- Посох неизбежной кары 400
+			{ id = 'g001ig0382', amount = 1, weight = 1 }, -- Посох неусыпного стража 400
+			{ id = 'g001ig0404', amount = 1, weight = 1 }, -- Посох Ниграэля 400
+			{ id = 'g001ig0391', amount = 1, weight = 1 }, -- Посох оракула 550
+			{ id = 'g000ig6011', amount = 1, weight = 1 }, -- Посох повелителя драконов 550
+			{ id = 'g001ig0406', amount = 1, weight = 1 }, -- Посох провидицы 400
+			{ id = 'g001ig0401', amount = 1, weight = 1 }, -- Посох проклятой метки 400
+			{ id = 'g001ig0386', amount = 1, weight = 1 }, -- Посох семи ветров 400
+			{ id = 'g001ig0398', amount = 1, weight = 1 }, -- Посох скальда 550
+			{ id = 'g001ig0400', amount = 1, weight = 1 }, -- Посох созыва шабаша 550
+			{ id = 'g000ig6006', amount = 1, weight = 1 }, -- Посох темноты 400
 		}
 	},
 	scroll = {
@@ -2903,7 +2926,7 @@ Pools.objects.ruins = {
 	t2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ data = { name = '' }, weight = 1 },
+			{ data = { name = 'Логово Бехолдера.Вход без Хренотонометра запрещен!' }, weight = 1 },
 		}
 	},
 	t3 = {
@@ -3041,6 +3064,7 @@ Pools.objects.mercenaries = {
 			{ data = { name = 'Зоомагазин «Барсик»', description = 'Восьмое чудо света!', units = { id = 'g000uu5037', level = 1, unique = true } }, weight = 1 },
 			{ data = { name = 'Аквариум', description = 'Бульк!', units = { id = 'g000uu5028', level = 1, unique = true } }, weight = 1 },
 			{ data = { name = 'Вечнотренировочный лагерь "Новичок"', description = 'Наш говорящий пенистый паук все время зовет Наташу. Пожалуйста, найдите ее!', units = { id = 'g001uu8282', level = 1, unique = true } }, weight = 1 },
+			{ data = { name = 'High-skill наемники"', description = 'У нас лучшие педальные кони', units = { id = 'g000uu7588', level = 1, unique = true } }, weight = 1 },
 		}
 	},
 	t3 = {
@@ -5723,7 +5747,10 @@ function getStacks3(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_1, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_2, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.misc_1, 2, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t3.permo_3, 1, race)
+	Distributor:requestItems(stacks[i], rnd(
+			Pools.loot.t3.permo_3,
+			Pools.loot.t3.staff_1
+	), 1)
 	Distributor:requestItems(stacks[i], rnd(
 			Pools.items.buff_1,
 			Pools.items.ward_el
