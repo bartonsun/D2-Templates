@@ -3232,11 +3232,11 @@ Pools.mercenaries.t3 = {
 	m1 = {
 		priority = PoolPriority.UNLIMITED,
 		items = {
-			{ data = { id = 'g000uu7628', level = 1, unique = false }, weight = 1 }, -- Имперский Гвардеец 175
-			{ data = { id = 'g000uu7627', level = 1, unique = false }, weight = 1 }, -- Советник Витара 175
-			{ data = { id = 'g001uu7592', level = 1, unique = false }, weight = 1 }, -- Торхот 175
-			{ data = { id = 'g000uu7605', level = 1, unique = false }, weight = 1 }, -- Скульптор лжи 175
-			{ data = { id = 'g000uu7629', level = 1, unique = false }, weight = 1 }, -- Благородный эльф 175
+			{ data = { id = 'g000uu7628', level = 3, unique = false }, weight = 1 }, -- Имперский Гвардеец 175
+			{ data = { id = 'g000uu7627', level = 3, unique = false }, weight = 1 }, -- Советник Витара 175
+			{ data = { id = 'g001uu7592', level = 3, unique = false }, weight = 1 }, -- Торхот 175
+			{ data = { id = 'g000uu7605', level = 3, unique = false }, weight = 1 }, -- Скульптор лжи 175
+			{ data = { id = 'g000uu7629', level = 3, unique = false }, weight = 1 }, -- Благородный эльф 175
 		}
 	},
 	m2 = {
