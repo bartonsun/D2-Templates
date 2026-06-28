@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local version = '3.0'
+local version = '3.1'
 ------------------------------------------------------------------------------------------------------------------------
 --- Варианты режима шаблона
 local duo = 2
@@ -815,21 +815,21 @@ Pools.items.special_equip = {
 local setItemsConfig = {
 	--- Главарь наемников
 	['g002ig0001'] = { type = Item.Weapon, ruins = {'t0'}, shops = {'t1'} },        -- Потайной кинжал (Артефакт) 400
-	['g002ig0002'] = { type = Item.Armor,  ruins = {'t1'}, shops = {'t2'} },        -- Промасленная кольчуга (Реликвия) 700
+	['g002ig0002'] = { type = Item.Jewel,  ruins = {'t1'}, shops = {'t2'} },        -- Промасленная кольчуга (Реликвия) 700
 	['g002ig0003'] = { type = Item.Banner,  ruins = {'t3'}, shops = {} },           -- Стяг главаря наемников 1000
 	--- Жатва
-	['g001ig0602'] = { type = Item.Armor,  ruins = {'t1'}, shops = {'t2'} },        -- Доспех жатвы (Реликвия) 800
-	['g001ig0603'] = { type = Item.Jewel,  ruins = {'t2'}, shops = {'t2', 't3'} },  -- Чаша жатвы (Артефакт) 1000
-	['g001ig0604'] = { type = Item.Weapon, ruins = {'t4', 't5'}, shops = {'t3'} },  -- Кинжал жатвы (Артефакт) 1900
+	['g001ig0602'] = { type = Item.Jewel,  ruins = {'t1'}, shops = {'t2'} },        -- Доспех жатвы (Реликвия) 800
+	['g001ig0603'] = { type = Item.Armor,  ruins = {'t2'}, shops = {'t2', 't3'} },  -- Чаша жатвы (Артефакт) 1000
+	['g001ig0604'] = { type = Item.Armor, ruins = {'t4', 't5'}, shops = {'t3'} },   -- Кинжал жатвы (Артефакт) 1900
 	--- Наследие Феникса
 	['g002ig0010'] = { type = Item.Weapon, ruins = {'t3'}, shops = {'t3'} },        -- Меч рыцаря Феникса (Артефакт) 1750
 	['g002ig0011'] = { type = Item.Armor,  ruins = {'t3'}, shops = {'t3'} },        -- Щит рыцаря Феникса (Артефакт) 1500
-	['g002ig0012'] = { type = Item.Armor,  ruins = {'t4', 't5'}, shops = {'t3'} },  -- Доспех рыцаря Феникса (Реликвия) 2100
+	['g002ig0012'] = { type = Item.Jewel,  ruins = {'t4', 't5'}, shops = {'t3'} },  -- Доспех рыцаря Феникса (Реликвия) 2100
 	--- Кодекс крови
 	['g002ig0013'] = { type = Item.Weapon, ruins = {'t4', 't5'}, shops = {'t3'} },  -- Серп Кровавого Ворона (Артефакт) 1850
 	['g002ig0014'] = { type = Item.Weapon, ruins = {'t3'}, shops = {'t3'} },        -- Кама Кровавого Ворона (Артефакт) 1600
-	['g002ig0015'] = { type = Item.Armor,  ruins = {'t3'}, shops = {'t3'} },        -- Кираса Кровавого Ворона (Реликвия) 2100
-	['g002ig0016'] = { type = Item.Banner, ruins = {'t4', 't5'}, shops = {} },      -- Стяг Кровавого Ворона 2250+
+	['g002ig0015'] = { type = Item.Jewel,  ruins = {'t3'}, shops = {'t3'} },        -- Кираса Кровавого Ворона (Реликвия) 2100
+	['g002ig0016'] = { type = Item.Banner, ruins = {'t4', 't5'}, shops = {'t3'} },  -- Стяг Кровавого Ворона 2250+
 }
 
 function tryPlaceSetItem(ruin, setItemId, expectedType, chance)
@@ -1102,6 +1102,7 @@ Pools.goods.t1 = {
 		items = {
 			{ id = 'g001ig0110', amount = 1, weight = 1 }, -- Легкие сапоги 300
 			{ id = 'g001ig0113', amount = 1, weight = 1 }, -- Укрепленные сапоги 300
+			{ id = 'g002ig0022', amount = 1, weight = 1 }, -- Ботинки исследователя 500
 		}
 	},
 	banner = {
@@ -1240,9 +1241,6 @@ Pools.goods.t1 = {
 			{ id = 'g000ig5088', amount = 1, weight = 1 }, -- Свиток "Опыт ветеранов" 400
 			{ id = 'g000ig5118', amount = 1, weight = 1 }, -- Свиток "Ослепления" 400
 			{ id = 'g001ig0569', amount = 1, weight = 1 }, -- Свиток "Песнь Ансуз" 400
-			{ id = 'g000ig5008', amount = 0, weight = 1 }, -- Свиток "Призыв I: Живой доспех" 400
-			{ id = 'g000ig5066', amount = 0, weight = 1 }, -- Свиток "Призыв II: Хуорн" 400
-			{ id = 'g000ig5103', amount = 0, weight = 1 }, -- Свиток "Призыв II: Энт" 400
 			{ id = 'g000ig5020', amount = 1, weight = 1 }, -- Свиток "Приказ Сира Аллемона" 400
 			{ id = 'g001ig0253', amount = 1, weight = 1 }, -- Свиток "Проклятие Имира" 400
 			{ id = 'g000ig5069', amount = 1, weight = 1 }, -- Свиток "Проклятие Ниграэля" 400
@@ -1450,7 +1448,6 @@ Pools.goods.t2 = {
 	scrolls_summon = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g000ig5059', amount = 0, weight = 1 }, -- Свиток "Incantare Avenger Illudere" 550
 			{ id = 'g000ig5031', amount = 1, weight = 1 }, -- Свиток "Призыв II: Валькирия" 550
 			{ id = 'g001ig0076', amount = 1, weight = 1 }, -- Свиток "Призыв III: Каменная сущность" 550
 			{ id = 'g000ig5071', amount = 1, weight = 1 }, -- Свиток "Призыв III: Кошмар" 550
@@ -1458,7 +1455,6 @@ Pools.goods.t2 = {
 			{ id = 'g001ig0074', amount = 1, weight = 1 }, -- Свиток "Призыв III: Сущность бури" 550
 			{ id = 'g001ig0077', amount = 1, weight = 1 }, -- Свиток "Призыв III: Сущность пламени" 550
 			{ id = 'g000ig5108', amount = 1, weight = 1 }, -- Свиток "Призыв III: Энт Большой" 550
-			{ id = 'g001ig0078', amount = 0, weight = 1 }, -- Свиток "Призыв IV: Стихийный голем" 550
 		}
 	},
 	scrolls_1 = {
@@ -2073,14 +2069,6 @@ Pools.loot.t2 = {
 			{ id = 'g000ig5040', amount = 1, weight = 1 }, -- Свиток "Песнь Вотана" 550 (лечение 100)
 			{ id = 'g000ig5110', amount = 1, weight = 1 }, -- Свиток "Излечение" 550 (лечение 60 3x3)
 
-			{ id = 'g000ig5031', amount = 1, weight = 1 }, -- Свиток "Призыв II: Валькирия" 550
-			{ id = 'g000ig5071', amount = 1, weight = 1 }, -- Свиток "Призыв III: Кошмар" 550
-			{ id = 'g000ig5108', amount = 1, weight = 1 }, -- Свиток "Призыв III: Энт Большой" 550
-			{ id = 'g001ig0074', amount = 1, weight = 1 }, -- Свиток "Призыв III: Сущность бури" 550
-			{ id = 'g001ig0075', amount = 1, weight = 1 }, -- Свиток "Призыв III: Ледяная сущность" 550
-			{ id = 'g001ig0076', amount = 1, weight = 1 }, -- Свиток "Призыв III: Каменная сущность" 550
-			{ id = 'g001ig0077', amount = 1, weight = 1 }, -- Свиток "Призыв III: Сущность пламени" 550
-
 			{ id = 'g001ig0576', amount = 1, weight = 1 }, -- Свиток "Прах к праху" 550 (-Смерть/Вампиризм/Тауматургия)
 			{ id = 'g001ig0577', amount = 1, weight = 1 }, -- Свиток "Dominatum ignis" 550 (-Огонь/Ожог)
 			{ id = 'g001ig0578', amount = 1, weight = 1 }, -- Свиток "Пробирающий холод" 550 (-Вода/Обморожение)
@@ -2241,6 +2229,14 @@ Pools.loot.t3 = {
 			{ id = 'g000ig5026', amount = 1, weight = 1 }, -- Свиток "Гимн кланов" 550
 			{ id = 'g000ig5012', amount = 1, weight = 1 }, -- Свиток "Святая броня" 550
 			{ id = 'g000ig5013', amount = 1, weight = 1 }, -- Свиток "Святая сила" 550
+
+			{ id = 'g000ig5031', amount = 1, weight = 1 }, -- Свиток "Призыв II: Валькирия" 550
+			{ id = 'g000ig5071', amount = 1, weight = 1 }, -- Свиток "Призыв III: Кошмар" 550
+			{ id = 'g000ig5108', amount = 1, weight = 1 }, -- Свиток "Призыв III: Энт Большой" 550
+			{ id = 'g001ig0074', amount = 1, weight = 1 }, -- Свиток "Призыв III: Сущность бури" 550
+			{ id = 'g001ig0075', amount = 1, weight = 1 }, -- Свиток "Призыв III: Ледяная сущность" 550
+			{ id = 'g001ig0076', amount = 1, weight = 1 }, -- Свиток "Призыв III: Каменная сущность" 550
+			{ id = 'g001ig0077', amount = 1, weight = 1 }, -- Свиток "Призыв III: Сущность пламени" 550
 		}
 	},
 	orb = {
@@ -2373,7 +2369,6 @@ Pools.loot.t5 = {
 		items = {
 			{ id = 'g001ig0111', amount = 1, weight = 1 }, -- Сапоги ассасина 650
 			{ id = 'g001ig0114', amount = 1, weight = 1 }, -- Тяжелые сапоги 500
-			{ id = 'g002ig0022', amount = 1, weight = 1 }, -- Ботинки исследователя 500
 		}
 	},
 	banner = {
@@ -2438,7 +2433,6 @@ Pools.loot.t5 = {
 			{ id = 'g001ig0586', amount = 1, weight = 1 }, -- Свиток "Предательство" 700
 			{ id = 'g000ig5017', amount = 1, weight = 1 }, -- Свиток "Призыв к оружию" 700
 			{ id = 'g000ig5035', amount = 1, weight = 1 }, -- Свиток "Стойкость" 700
-			{ id = 'g000ig5017', amount = 1, weight = 1 }, -- Свиток "Призыв к оружию" 700
 			{ id = 'g000ig5114', amount = 1, weight = 1 }, -- Свиток "Знак Таладриэль" 700
 		}
 	},
@@ -2470,7 +2464,8 @@ Pools.items.ruins.t0 = {
 		{ id = 'g000ig4007', amount = 1, weight = 1, type = Item.Jewel }, -- Медицинский трактат 500
 		{ id = 'g001ig0605', amount = 1, weight = 1, type = Item.Jewel }, -- Книга постижения 600
 		{ id = 'g001ig0114', amount = 1, weight = 1, type = Item.TravelItem }, -- Тяжелые сапоги 500
-		{ id = 'g002ig0022', amount = 1, weight = 1, type = Item.TravelItem }, -- Ботинки исследователя 500
+		{ id = 'g000ig1010', amount = 1, weight = 1, type = Item.TravelItem }, -- Эльфийские сапоги 700
+		{ id = 'g000ig1011', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги мореплавателя 800
 	}
 }
 --- Руины т1
@@ -2479,14 +2474,28 @@ Pools.items.ruins.t1 = {
 	items = {
 		{ id = 'g000ig3002', amount = 1, weight = 1, type = Item.Weapon }, -- Дьявольская чаша (Артефакт) 650
 		{ id = 'g001ig0487', amount = 1, weight = 1, type = Item.Weapon }, -- Кольцо темных искуств (Артефакт) 800
-		{ id = 'g000ig2002', amount = 1, weight = 1, type = Item.Armor }, -- Святая чаша (Артефакт) 500
+		{ id = 'g001ig0417', amount = 1, weight = 1, type = Item.Weapon }, -- Руна верности Моккуркальфи (Артефакт) 800
 		{ id = 'g001ig0582', amount = 1, weight = 1, type = Item.Armor }, -- Камень врат (Артефакт) 600
+		{ id = 'g001ig0559', amount = 1, weight = 1, type = Item.Armor }, -- Руна благоволения Тиу (Артефакт) 700
+		{ id = 'g001ig0594', amount = 1, weight = 1, type = Item.Armor }, -- Щит телохранителя (Артефакт) 700
+		{ id = 'g001ig0557', amount = 1, weight = 1, type = Item.Armor }, -- Рог непреклонности (Артефакт) 700
+		{ id = 'g001ig0047', amount = 1, weight = 1, type = Item.Armor }, -- Руна Жизни (Артефакт) 800
+		{ id = 'g001ig0416', amount = 1, weight = 1, type = Item.Armor }, -- Руна предвидения Вотана (Артефакт) 800
 		{ id = 'g000ig3022', amount = 1, weight = 1, type = Item.Jewel }, -- Лютня Очарования (Реликвия) 650
 		{ id = 'g001ig0427', amount = 1, weight = 1, type = Item.Jewel }, -- Нагрудник Стража (Реликвия) 600
 		{ id = 'g001ig0370', amount = 1, weight = 1, type = Item.Banner }, -- Знамя искоренителя ереси 600
 		{ id = 'g001ig0369', amount = 1, weight = 1, type = Item.Banner }, -- Знамя снежной охоты 600
+		{ id = 'g001ig0142', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Воды 700
+		{ id = 'g001ig0140', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Воздуха 700
+		{ id = 'g001ig0141', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Земли 700
+		{ id = 'g001ig0139', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Огня 700
+		{ id = 'g001ig0145', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Разума 700
+		{ id = 'g001ig0143', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Смерти 700
+		{ id = 'g001ig0114', amount = 1, weight = 1, type = Item.TravelItem }, -- Тяжелые сапоги 500
 		{ id = 'g001ig0111', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги ассасина 650
 		{ id = 'g000ig1010', amount = 1, weight = 1, type = Item.TravelItem }, -- Эльфийские сапоги 700
+		{ id = 'g000ig8003', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги скорости 700
+		{ id = 'g001ig0606', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги родных земель 1000
 	}
 }
 --- Руины т2
@@ -2496,18 +2505,13 @@ Pools.items.ruins.t2 = {
 		{ id = 'g000ig3003', amount = 1, weight = 1, type = Item.Weapon }, -- Кольцо силы (Артефакт) 800
 		{ id = 'g001ig0487', amount = 1, weight = 1, type = Item.Weapon }, -- Кольцо темных искуств (Артефакт) 800
 		{ id = 'g001ig0173', amount = 1, weight = 1, type = Item.Weapon }, -- Пояс травницы (Артефакт) 800
-		{ id = 'g001ig0417', amount = 1, weight = 1, type = Item.Weapon }, -- Руна верности Моккуркальфи (Артефакт) 800
 		{ id = 'g001ig0196', amount = 1, weight = 1, type = Item.Weapon }, -- Рунный молот (Артефакт) 725
 		{ id = 'g000ig9137', amount = 1, weight = 1, type = Item.Weapon }, -- Сердце Имира (Артефакт) 800
 		{ id = 'g001ig0045', amount = 1, weight = 1, type = Item.Armor }, -- Кровь святого (Артефакт) 800
 		{ id = 'g000ig2003', amount = 1, weight = 1, type = Item.Armor }, -- Наручи с черепом (Артефакт) 800
 		{ id = 'g001ig0558', amount = 1, weight = 1, type = Item.Armor }, -- Рог возмездия (Артефакт) 700
-		{ id = 'g001ig0557', amount = 1, weight = 1, type = Item.Armor }, -- Рог непреклонности (Артефакт) 700
-		{ id = 'g001ig0559', amount = 1, weight = 1, type = Item.Armor }, -- Руна благоволения Тиу (Артефакт) 700
-		{ id = 'g001ig0047', amount = 1, weight = 1, type = Item.Armor }, -- Руна Жизни (Артефакт) 800
-		{ id = 'g001ig0416', amount = 1, weight = 1, type = Item.Armor }, -- Руна предвидения Вотана (Артефакт) 800
 		{ id = 'g001ig0589', amount = 1, weight = 1, type = Item.Armor }, -- Щит неведения (Артефакт) 800
-		{ id = 'g001ig0594', amount = 1, weight = 1, type = Item.Armor }, -- Щит телохранителя (Артефакт) 700
+		{ id = 'g001ig0591', amount = 1, weight = 1, type = Item.Armor }, -- Щит отражения (Артефакт) 900
 		{ id = 'g001ig0420', amount = 1, weight = 1, type = Item.Jewel }, -- Вечные латы (Реликвия) 800
 		{ id = 'g001ig0104', amount = 1, weight = 1, type = Item.Jewel }, -- Зуб людоеда (Реликвия) 800
 		{ id = 'g001ig0422', amount = 1, weight = 1, type = Item.Jewel }, -- Кровавый покров (Реликвия) 700
@@ -2518,21 +2522,15 @@ Pools.items.ruins.t2 = {
 		{ id = 'g000ig1004', amount = 1, weight = 1, type = Item.Banner }, -- Знамя битвы 700
 		{ id = 'g001ig0361', amount = 1, weight = 1, type = Item.Banner }, -- Знамя горна 700
 		{ id = 'g001ig0289', amount = 1, weight = 1, type = Item.Banner }, -- Знамя городских стражей 700
-		{ id = 'g001ig0142', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Воды 700
-		{ id = 'g001ig0140', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Воздуха 700
-		{ id = 'g001ig0141', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Земли 700
-		{ id = 'g001ig0139', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Огня 700
-		{ id = 'g001ig0145', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Разума 700
-		{ id = 'g001ig0143', amount = 1, weight = 1, type = Item.Banner }, -- Знамя магии Смерти 700
 		{ id = 'g001ig0363', amount = 1, weight = 1, type = Item.Banner }, -- Знамя отваги 750
-		--{ id = 'g001ig0588', amount = 0, weight = 1, type = Item.Banner }, -- Знамя тысячи битв 750
+		{ id = 'g001ig0588', amount = 0, weight = 1, type = Item.Banner }, -- Знамя тысячи битв 750
 		{ id = 'g000ig1008', amount = 1, weight = 1, type = Item.Banner }, -- Знамя энергии 700
 		{ id = 'g001ig0365', amount = 1, weight = 1, type = Item.Banner }, -- Ловец Кошмаров 700
 		{ id = 'g001ig0292', amount = 1, weight = 1, type = Item.Banner }, -- Стяг концентрации 700
 		{ id = 'g001ig0367', amount = 1, weight = 1, type = Item.Banner }, -- Стяг чумных воинств 700
-		{ id = 'g000ig1011', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги мореплавателя 800
+		{ id = 'g001ig0111', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги ассасина 650
 		{ id = 'g000ig8003', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги скорости 700
-		{ id = 'g000ig1010', amount = 1, weight = 1, type = Item.TravelItem }, -- Эльфийские сапоги 700
+		{ id = 'g001ig0606', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги родных земель 1000
 	}
 }
 --- Руины т3
@@ -2552,7 +2550,6 @@ Pools.items.ruins.t3 = {
 			--{ id = 'g001ig0158', amount = 0, weight = 1 }, -- Ужасающий топор (Артефакт) 1200
 			{ id = 'g001ig0041', amount = 1, weight = 1 }, -- Череп шамана (Артефакт) 1000
 			--{ id = 'g001ig0590', amount = 0, weight = 1 }, -- Щит Мизраэля (Артефакт) 1200
-			{ id = 'g001ig0591', amount = 1, weight = 1 }, -- Щит отражения (Артефакт) 900
 			{ id = 'g001ig0071', amount = 1, weight = 1 }, -- Эльфийская брошь (Артефакт) 1000
 		}
 	},
@@ -2974,6 +2971,7 @@ Pools.objects.towns = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Гусь-Хрустальный' }, weight = 1 },
+			{ data = { name = 'БээРБэГэйск' }, weight = 1 },
 		}
 	},
 	t2 = {
@@ -2981,6 +2979,7 @@ Pools.objects.towns = {
 		items = {
 			{ data = { name = 'СУЗдаль' }, weight = 1 },
 			{ data = { name = 'деревня простых парней' }, weight = 1 },
+			{ data = { name = 'ДвойноДонск' }, weight = 1 },
 		}
 	},
 	t4 = {
@@ -3230,7 +3229,7 @@ Pools.mercenaries.t2 = {
 --- т3
 Pools.mercenaries.t3 = {
 	m1 = {
-		priority = PoolPriority.UNLIMITED,
+		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { id = 'g000uu7628', level = 3, unique = false }, weight = 1 }, -- Имперский Гвардеец 175
 			{ data = { id = 'g000uu7627', level = 3, unique = false }, weight = 1 }, -- Советник Витара 175
@@ -3295,25 +3294,79 @@ Pools.mercenaries.t3 = {
 	m6 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ data = { id = 'g000uu2015', level = 3, unique = true }, weight = 1, races = { Race.Human } }, -- Страж Святости 695
-			{ data = { id = 'g000uu7562', level = 3, unique = true }, weight = 1, races = { Race.Human } }, -- Бореалис 805
-			{ data = { id = 'g000uu7595', level = 2, unique = true }, weight = 1, races = { Race.Human } }, -- Рефаим 915
-
-			{ data = { id = 'g001uu7571', level = 2, unique = true }, weight = 1, races = { Race.Dwarf } }, -- Белый волк 710
-			{ data = { id = 'g006uu1128', level = 3, unique = true }, weight = 1, races = { Race.Dwarf } }, -- Мастер печи 875
-			{ data = { id = 'g000uu8224', level = 3, unique = true }, weight = 1, races = { Race.Dwarf } }, -- Каменный великан 1880
-
-			{ data = { id = 'g000uu0088', level = 3, unique = true }, weight = 1, races = { Race.Undead } }, -- Скелет-воин 720
-			{ data = { id = 'g001uu7565', level = 2, unique = true }, weight = 1, races = { Race.Undead } }, -- Чумной оборотень 600
-			{ data = { id = 'g000uu0085', level = 3, unique = true }, weight = 1, races = { Race.Undead } }, -- Злой дух 810
-
-			{ data = { id = 'g000uu0054', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Черный паладин 630
-			{ data = { id = 'g000uu0064', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Демонолог 760
-			{ data = { id = 'g001uu7574', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Цитриновая гаргулья 1880
-
-			{ data = { id = 'g001uu7579', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Кентавр-гвардеец 905
-			{ data = { id = 'g000uu8028', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Тиург 730
-			{ data = { id = 'g000uu8020', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Стингер 830
+			--- Human
+			{ data = { id = 'g000uu7595', level = 2, unique = true }, weight = 3, races = { Race.Human } }, -- Рефаим 915
+			{ data = { id = 'g000uu0003', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Имперский рыцарь 715
+			{ data = { id = 'g000uu0005', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Инквизитор 775
+			{ data = { id = 'g000uu2015', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Страж Святости 695
+			{ data = { id = 'g003uu5003', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Ревнитель 765
+			{ data = { id = 'g003uu5003', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Ардет 855
+			{ data = { id = 'g000uu2030', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Детектив 715
+			--- Dwarf
+			{ data = { id = 'g000uu7583', level = 2, unique = true }, weight = 3, races = { Race.Dwarf } }, -- Йамму 1015
+			{ data = { id = 'g000uu0031', level = 3, unique = true }, weight = 3, races = { Race.Dwarf } }, -- Повелитель бурь 1880
+			{ data = { id = 'g000uu8224', level = 3, unique = true }, weight = 3, races = { Race.Dwarf } }, -- Каменный великан 1880
+			{ data = { id = 'g000uu0032', level = 3, unique = true }, weight = 3, races = { Race.Dwarf } }, -- Ледяной великан 1880
+			--- Undead
+			{ data = { id = 'g001uu7563', level = 2, unique = true }, weight = 3, races = { Race.Undead } }, -- Волколак 600
+			{ data = { id = 'g001uu7564', level = 2, unique = true }, weight = 3, races = { Race.Undead } }, -- Хорт 600
+			{ data = { id = 'g001uu7565', level = 2, unique = true }, weight = 3, races = { Race.Undead } }, -- Чумной оборотень 600
+			{ data = { id = 'g000uu0088', level = 3, unique = true }, weight = 3, races = { Race.Undead } }, -- Скелет-воин 720
+			{ data = { id = 'g000uu0091', level = 3, unique = true }, weight = 3, races = { Race.Undead } }, -- Лорд Тьмы 770
+			{ data = { id = 'g003uu5012', level = 3, unique = true }, weight = 3, races = { Race.Undead } }, -- Орк-палач 880
+			--- Heretic
+			{ data = { id = 'g000uu7577', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Сатир 915
+			{ data = { id = 'g000uu0167', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Ониксовая гаргулья 1880
+			{ data = { id = 'g001uu7574', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Цитриновая гаргулья 1880
+			{ data = { id = 'g001uu8272', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Азуритовая гаргулья 1880
+			{ data = { id = 'g001uu7573', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Чароитовая гаргулья 1880
+			--- Elf
+			{ data = { id = 'g000uu8030', level = 2, unique = true }, weight = 3, races = { Race.Elf } }, -- Владыка Небес 925
+			{ data = { id = 'g003uu8038', level = 2, unique = true }, weight = 3, races = { Race.Elf } }, -- Энт-целитель 700
+			{ data = { id = 'g000uu8017', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Кентавр-дикарь 855
+			{ data = { id = 'g001uu7579', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Кентавр-гвардеец 905
+		}
+	},
+	m7 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			--- Human
+			{ data = { id = 'g000uu0154', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Ассасин 805
+			{ data = { id = 'g000uu7562', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Бореалис 805
+			{ data = { id = 'g000uu2009', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Клинок в тени 805
+			{ data = { id = 'g000uu0010', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Маг 705
+			{ data = { id = 'g001uu7581', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Заклинатель 705
+			{ data = { id = 'g000uu0153', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Ученик-элементалист 705
+			--- Dwarf
+			{ data = { id = 'g000uu0038', level = 3, unique = true }, weight = 2, races = { Race.Dwarf } }, -- Ветеран 795
+			{ data = { id = 'g000uu0041', level = 3, unique = true }, weight = 2, races = { Race.Dwarf } }, -- Горец 795
+			{ data = { id = 'g000uu0162', level = 3, unique = true }, weight = 1, races = { Race.Dwarf } }, -- Защитник горна 875
+			{ data = { id = 'g006uu1128', level = 3, unique = true }, weight = 2, races = { Race.Dwarf } }, -- Мастер печи 875
+			{ data = { id = 'g000uu7568', level = 3, unique = true }, weight = 1, races = { Race.Dwarf } }, -- Сотрясатель 875
+			{ data = { id = 'g001uu7571', level = 2, unique = true }, weight = 2, races = { Race.Dwarf } }, -- Белый волк 710
+			{ data = { id = 'g004uu8005', level = 2, unique = true }, weight = 2, races = { Race.Dwarf } }, -- Гарм 710
+			--- Undead
+			{ data = { id = 'g000uu0082', level = 3, unique = true }, weight = 3, races = { Race.Undead } }, -- Некромант 710
+			{ data = { id = 'g001uu7598', level = 3, unique = true }, weight = 3, races = { Race.Undead } }, -- Теневидец 710
+			{ data = { id = 'g000uu0085', level = 3, unique = true }, weight = 3, races = { Race.Undead } }, -- Злой дух 810
+			{ data = { id = 'g000uu2007', level = 3, unique = true }, weight = 3, races = { Race.Undead } }, -- Мумификатор 860
+			{ data = { id = 'g000uu0095', level = 3, unique = true }, weight = 1, races = { Race.Undead } }, -- Дракон Смерти 1630
+			--- Heretic
+			{ data = { id = 'g000uu0054', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Черный паладин 630
+			{ data = { id = 'g000uu2003', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Мучитель 630
+			{ data = { id = 'g000uu0064', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Демонолог 760
+			{ data = { id = 'g000uu0171', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Подражатель 1200
+			{ data = { id = 'g000uu0067', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Ведьма 210
+			{ data = { id = 'g004uu6101', level = 2, unique = true }, weight = 1, races = { Race.Heretic } }, -- Дьяволенок 916
+			--- Elf
+			{ data = { id = 'g000uu2012', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Кентавр Стрелок 855
+			{ data = { id = 'g000uu8021', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Бандит 830
+			{ data = { id = 'g000uu8020', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Стингер 830
+			{ data = { id = 'g000uu8020', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Стражник 780
+			{ data = { id = 'g000uu8020', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Часовой 780
+			{ data = { id = 'g000uu8028', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Тиург 730
+			{ data = { id = 'g000uu8227', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Знахарь 730
+			{ data = { id = 'g000uu8027', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Архонт 730
 		}
 	}
 }
@@ -6271,7 +6324,7 @@ function getMercenaries2(race)
 	Distributor:requestMercenaryData(mercenaries[i], Pools.objects.mercenaries.t2)
 
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t2.m1, 2, race)
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t2.m2, 3, race)
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t2.m2, 6, race)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t2.m3, 1, race)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t2.m4, 1, race)
 	i = i + 1
@@ -6289,8 +6342,9 @@ function getMercenaries3(id)
 
 	for _,race in ipairs(ALL_RACES) do
 		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m6, 1, race)
+		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m7, 1, race)
 	end
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m5, 1)
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m5, 2)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m4, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m3, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m2, 1)
@@ -6317,7 +6371,7 @@ function getMercenaries5()
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t5.m3, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t5.m2, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t5.m1, 1)
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m5, 1)
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m5, 2)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m4, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m3, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m2, 1)
@@ -7986,7 +8040,27 @@ template = {
 		'g000ig5057', --Свиток "Мerum Facies" Защита от полиморфа за 700 в ролле нафиг надо
 		'g000ig5118', --Свиток "Ослепления" Уменьшает обзор противника на 3 в радиусе 5х5.
 		'g000ig5057', --Свиток "Мerum Facies" Защита от полиморфа.
+		'g000ig5008', --Свиток "Призыв I: Живой доспех"
+		'g000ig5025', --Свиток "Призыв I: Рух"
+		'g000ig5061', --Свиток "Призыв I: Скелет"
+		'g000ig5098', --Свиток "Призыв I: Энт Малый"
+		'g000ig5031', --Свиток "Призыв II: Валькирия"
+		'g000ig5015', --Свиток "Призыв II: Голем"
+		'g000ig5066', --Свиток "Призыв II: Хуорн"
+		'g000ig5103', --Свиток "Призыв II: Энт"
+		'g001ig0076', --Свиток "Призыв III: Каменная сущность"
+		'g000ig5038', --Свиток "Призыв III: Каменный Предок"
+		'g000ig5071', --Свиток "Призыв III: Кошмар"
+		'g001ig0075', --Свиток "Призыв III: Ледяная сущность"
+		'g001ig0074', --Свиток "Призыв III: Сущность бури"
+		'g001ig0077', --Свиток "Призыв III: Сущность пламени"
+		'g000ig5108', --Свиток "Призыв III: Энт Большой"
+		'g000ig5117', --Свиток "Призыв IV: Вердант"
 		'g001ig0078', --Свиток "Призыв IV: Стихийный голем"
+		'g000ig5078', --Свиток "Призыв IV: Танатос"
+		'g001ig0080', --Свиток "Призыв V: Вестник немощи"
+		'g001ig0081', --Свиток "Призыв V: Вестник перемен"
+		'g001ig0079', --Свиток "Призыв V: Вестник поглощения"
 		--на урон т4+
 		'g000ig5090', --Potentia Ignis
 		'g000ig5056', --Sinestra ignis
