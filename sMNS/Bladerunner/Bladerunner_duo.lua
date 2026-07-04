@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local version = '3.1'
+local ver = '3.2'
 ------------------------------------------------------------------------------------------------------------------------
 --- Варианты режима шаблона
 local duo = 2
@@ -36,10 +36,14 @@ local event_mode = 1
 --- 2. одинаковые-случайно
 --- 3. зеркально-случайно
 --- 4. открытые
---- 5. Водные
+--- 5. водные
 --- 6. полуоткрытые
+--- 7. Острова -- особый режим с дополнительными настройками для всех зон
 
 local border_mode = 3
+------------------------------------------------------------------------------------------------------------------------
+--- Включение дополнительных параметров для режима "Острова"
+local is_island_mode = false
 ------------------------------------------------------------------------------------------------------------------------
 --- коэффициент сложности (<0.9 легко; 0.9-1.1 средне; >1.1 сложно) - не применяется к Т0
 local kef = 1.0
@@ -147,9 +151,6 @@ local setItemsStatus = {}
 ------------------------------------------------------------------------------------------------------------------------
 --- День беса
 local iad = math.random(1,6)
-------------------------------------------------------------------------------------------------------------------------
---- Забаненные заклинания
-local ArrayForbiddenSpells = {}
 ------------------------------------------------------------------------------------------------------------------------
 --- Заклинания
 ------------------------------------------------------------------------------------------------------------------------
@@ -863,7 +864,7 @@ Pools.capital = {
 			{ id = Items.heal.h50, amount = 1, weight = 1, group_amount = 6 },
 			{ id = Items.heal.h75, amount = 1, weight = 1, group_amount = 5 },
 			{ id = Items.heal.h100, amount = 1, weight = 1, group_amount = 4 },
-			{ id = Items.heal.hres, amount = 1, weight = 1, group_amount = 3 },
+			{ id = Items.heal.hres, amount = 1, weight = 1, group_amount = 4 },
 		}
 	},
 	fix_buff_1 = {
@@ -1414,6 +1415,13 @@ Pools.goods.t2 = {
 			{ id = 'g001ig0295', amount = 1, weight = 1 }, -- Сфера Замедления 400
 		}
 	},
+	sphere_3 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g001ig0458', amount = 1, weight = 1 }, -- Сфера Каменного проклятия 100
+			{ id = 'g001ig0478', amount = 1, weight = 1 }, -- Сфера Переохлаждения 500
+		}
+	},
 	staff_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
@@ -1609,7 +1617,7 @@ Pools.goods.t3 = {
 			{ id = 'g001ig0060', amount = 1, weight = 1 }, -- Тысяча чешуек (Артефакт) 1200
 			{ id = 'g000ig2004', amount = 1, weight = 1 }, -- Рог всеведенья (Артефакт) 1200
 			{ id = 'g001ig0590', amount = 1, weight = 1 }, -- Щит Мизраэля (Артефакт) 1200
-			{ id = 'g000ig3004', amount = 1, weight = 1 }, -- Рунический клинок (Артефакт) 1200
+			--{ id = 'g000ig3004', amount = 1, weight = 1 }, -- Рунический клинок (Артефакт) 1200
 			{ id = 'g000ig9035', amount = 1, weight = 1 }, -- Слеза Мортис (Артефакт) 1200
 			{ id = 'g001ig0413', amount = 1, weight = 1 }, -- Корни триббога (Артефакт) 1200
 			{ id = 'g001ig0158', amount = 1, weight = 1 }, -- Ужасающий топор (Артефакт) 1200
@@ -2083,28 +2091,35 @@ Pools.loot.t2 = {
 			{ id = 'g002ig0023', amount = 1, weight = 1 }, -- Свиток "Забвение" 400
 		}
 	},
+	scrolls_3 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g001ig0085', amount = 1, weight = 1 }, -- Свиток "Потоп" 450
+		}
+	},
 }
 --- Лут т3
 Pools.loot.t3 = {
 	heal_1 = { -- res / 100
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.hres, amount = 3, weight = 1 },
-			{ id = Items.heal.h100, amount = 3, weight = 1 },
+			{ id = Items.heal.hres, amount = 2, weight = 1 },
+			{ id = Items.heal.h100, amount = 4, weight = 1 },
 		}
 	},
 	heal_2 = { -- 100
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.heal.h25, amount = 2, weight = 1, group_amount = 4 },
-			{ id = Items.heal.h50, amount = 8, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h50, amount = 5, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h100, amount = 3, weight = 1, group_amount = 1 },
 		}
 	},
 	heal_3 = { -- 150
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.heal.h50, amount = 3, weight = 1, group_amount = 3 },
-			{ id = Items.heal.h75, amount = 3, weight = 1, group_amount = 2 },
+			{ id = Items.heal.h50, amount = 2, weight = 1, group_amount = 3 },
+			{ id = Items.heal.h75, amount = 2, weight = 1, group_amount = 2 },
 		}
 	},
 	heal_4 = { -- 200
@@ -2324,7 +2339,7 @@ Pools.loot.t4 = {
 }
 --- Лут т5
 Pools.loot.t5 = {
-	heal = {
+	heal_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.heal.hres, amount = 6, weight = 1 },
@@ -2357,28 +2372,28 @@ Pools.loot.t5 = {
 			{ id = Items.gold.g500, amount = 1, weight = 1 },
 		}
 	},
-	art = {
+	art_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g001ig0182', amount = 1, weight = 1 }, -- Счастливая кость (Артефакт) 500
 			{ id = 'g000ig2002', amount = 1, weight = 1 }, -- Святая чаша (Артефакт) 500
 		}
 	},
-	boots = {
+	boots_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g001ig0111', amount = 1, weight = 1 }, -- Сапоги ассасина 650
 			{ id = 'g001ig0114', amount = 1, weight = 1 }, -- Тяжелые сапоги 500
 		}
 	},
-	banner = {
+	banner_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig1001', amount = 1, weight = 1 }, -- Знамя защиты 500
 			{ id = 'g000ig1003', amount = 1, weight = 1 }, -- Знамя сражения 400
 		}
 	},
-	relic = {
+	relic_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g001ig0099', amount = 1, weight = 1 }, -- Перчатки дуэлянта (Реликвия) 500
@@ -2386,7 +2401,7 @@ Pools.loot.t5 = {
 			{ id = 'g001ig0421', amount = 1, weight = 1 }, -- Борода Имира (Реликвия) 500
 		}
 	},
-	staff = {
+	staff_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig6008', amount = 1, weight = 1 }, -- Посох невидимости 550
@@ -2411,7 +2426,15 @@ Pools.loot.t5 = {
 			{ id = 'g001ig0029', amount = 1, weight = 1 }, -- Аура силы 600 (5% урона)
 		}
 	},
-	orb = {
+	orb_1 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g001ig0136', amount = 1, weight = 1 }, -- Сфера Брони III 800
+			{ id = 'g000ig9021', amount = 1, weight = 1 }, -- Сфера Вампиризма III 700
+			{ id = 'g001ig0131', amount = 1, weight = 1 }, -- Сфера Урона III 700
+		}
+	},
+	orb_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig9025', amount = 1, weight = 1 }, -- Сфера Алчности 900
@@ -2423,7 +2446,7 @@ Pools.loot.t5 = {
 			{ id = 'g000ig9039', amount = 1, weight = 1 }, -- Сфера Паралича 1200
 		}
 	},
-	scroll = {
+	scroll_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g001ig0078', amount = 1, weight = 1 }, -- Свиток "Призыв IV: Стихийный голем" 550
@@ -2507,6 +2530,7 @@ Pools.items.ruins.t2 = {
 		{ id = 'g001ig0173', amount = 1, weight = 1, type = Item.Weapon }, -- Пояс травницы (Артефакт) 800
 		{ id = 'g001ig0196', amount = 1, weight = 1, type = Item.Weapon }, -- Рунный молот (Артефакт) 725
 		{ id = 'g000ig9137', amount = 1, weight = 1, type = Item.Weapon }, -- Сердце Имира (Артефакт) 800
+		{ id = 'g001ig0415', amount = 1, weight = 1, type = Item.Weapon }, -- Руна кары Тьяцци (Артефакт) 1150
 		{ id = 'g001ig0045', amount = 1, weight = 1, type = Item.Armor }, -- Кровь святого (Артефакт) 800
 		{ id = 'g000ig2003', amount = 1, weight = 1, type = Item.Armor }, -- Наручи с черепом (Артефакт) 800
 		{ id = 'g001ig0558', amount = 1, weight = 1, type = Item.Armor }, -- Рог возмездия (Артефакт) 700
@@ -2523,7 +2547,7 @@ Pools.items.ruins.t2 = {
 		{ id = 'g001ig0361', amount = 1, weight = 1, type = Item.Banner }, -- Знамя горна 700
 		{ id = 'g001ig0289', amount = 1, weight = 1, type = Item.Banner }, -- Знамя городских стражей 700
 		{ id = 'g001ig0363', amount = 1, weight = 1, type = Item.Banner }, -- Знамя отваги 750
-		{ id = 'g001ig0588', amount = 0, weight = 1, type = Item.Banner }, -- Знамя тысячи битв 750
+		--{ id = 'g001ig0588', amount = 0, weight = 1, type = Item.Banner }, -- Знамя тысячи битв 750
 		{ id = 'g000ig1008', amount = 1, weight = 1, type = Item.Banner }, -- Знамя энергии 700
 		{ id = 'g001ig0365', amount = 1, weight = 1, type = Item.Banner }, -- Ловец Кошмаров 700
 		{ id = 'g001ig0292', amount = 1, weight = 1, type = Item.Banner }, -- Стяг концентрации 700
@@ -2549,7 +2573,7 @@ Pools.items.ruins.t3 = {
 			--{ id = 'g001ig0060', amount = 0, weight = 1 }, -- Тысяча чешуек (Артефакт) 1200
 			--{ id = 'g001ig0158', amount = 0, weight = 1 }, -- Ужасающий топор (Артефакт) 1200
 			{ id = 'g001ig0041', amount = 1, weight = 1 }, -- Череп шамана (Артефакт) 1000
-			--{ id = 'g001ig0590', amount = 0, weight = 1 }, -- Щит Мизраэля (Артефакт) 1200
+			{ id = 'g001ig0590', amount = 1, weight = 1 }, -- Щит Мизраэля (Артефакт) 1200
 			{ id = 'g001ig0071', amount = 1, weight = 1 }, -- Эльфийская брошь (Артефакт) 1000
 		}
 	},
@@ -2561,7 +2585,7 @@ Pools.items.ruins.t3 = {
 			{ id = 'g001ig0413', amount = 1, weight = 1 }, -- Корни триббога (Артефакт) 1200
 			{ id = 'g001ig0197', amount = 1, weight = 1 }, -- Проклятый пепел (Артефакт) 950
 			{ id = 'g001ig0415', amount = 1, weight = 1 }, -- Руна кары Тьяцци (Артефакт) 1150
-			{ id = 'g000ig3004', amount = 1, weight = 1 }, -- Рунический клинок (Артефакт) 1200
+			--{ id = 'g000ig3004', amount = 0, weight = 1 }, -- Рунический клинок (Артефакт) 1200
 			{ id = 'g000ig9035', amount = 1, weight = 1 }, -- Слеза Мортис (Артефакт) 1200
 			{ id = 'g001ig0657', amount = 1, weight = 1 }, -- Топор палача (Артефакт) 1000
 			{ id = 'g001ig0155', amount = 1, weight = 1 }, -- Благословенный браслет (Артефакт) 1400
@@ -2572,11 +2596,11 @@ Pools.items.ruins.t3 = {
 		items = {
 			{ id = 'g001ig0424', amount = 1, weight = 1 }, -- Длани ангела (Реликвия) 1000
 			{ id = 'g001ig0425', amount = 1, weight = 1 }, -- Кафтан первооткрывателя (Реликвия) 900
-			{ id = 'g001ig0597', amount = 0, weight = 1 }, -- Кираса резонанса (Реликвия) 1000
-			{ id = 'g000ig3005', amount = 1, weight = 1 }, -- Корона Мьолнира (Реликвия) 1200
+			--{ id = 'g000ig3005', amount = 0, weight = 1 }, -- Корона Мьолнира (Реликвия) 1200
 			--{ id = 'g001ig0539', amount = 0, weight = 1 }, -- Тисовый лук (Реликвия) 900
 			{ id = 'g001ig0156', amount = 1, weight = 1 }, -- Шкатулка предсказаний (Реликвия) 1050
 			{ id = 'g001ig0419', amount = 1, weight = 1 }, -- Шлем воителя (Реликвия) 1000
+			{ id = 'g001ig0115', amount = 1, weight = 1 }, -- Железная поступь 1100
 		}
 	},
 	r4 = {
@@ -2600,26 +2624,27 @@ Pools.items.ruins.t4 = {
 	r1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0174', amount = 1, weight = 2 }, -- Божественный потир (Артефакт) 1200
-			{ id = 'g001ig0411', amount = 1, weight = 2 }, -- Грань реальности (Артефакт) 1400
-			{ id = 'g001ig0410', amount = 1, weight = 2 }, -- Дьявольская булава (Артефакт) 1500
-			{ id = 'g000ig3019', amount = 1, weight = 2 }, -- Клинок Танатоса (Артефакт) 1150
-			{ id = 'g001ig0413', amount = 1, weight = 2 }, -- Корни триббога (Артефакт) 1200
-			{ id = 'g001ig0415', amount = 1, weight = 2 }, -- Руна кары Тьяцци (Артефакт) 1150
-			{ id = 'g000ig3004', amount = 1, weight = 2 }, -- Рунический клинок (Артефакт) 1200
-			{ id = 'g000ig9035', amount = 1, weight = 2 }, -- Слеза Мортис (Артефакт) 1200
-			{ id = 'g001ig0585', amount = 1, weight = 2 }, -- Кольцо создателя (Артефакт) 1400
-			{ id = 'g001ig0046', amount = 1, weight = 2 }, -- Кровь Владыки (Артефакт) 1400
-			{ id = 'g001ig0592', amount = 1, weight = 2 }, -- Монолитный щит (Артефакт) 1200
-			{ id = 'g000ig2004', amount = 1, weight = 2 }, -- Рог всеведенья (Артефакт) 1200
-			{ id = 'g001ig0060', amount = 1, weight = 2 }, -- Тысяча чешуек (Артефакт) 1200
-			{ id = 'g001ig0590', amount = 1, weight = 2 }, -- Щит Мизраэля (Артефакт) 1200
-			{ id = 'g001ig0179', amount = 1, weight = 2 }, -- Боевая коса (Артефакт) 1750
-			{ id = 'g000ig3005', amount = 1, weight = 2 }, -- Корона Мьолнира (Реликвия) 1200
-			{ id = 'g001ig0116', amount = 1, weight = 2 }, -- Пластинчатый доспех (Реликвия) 1550
+			{ id = 'g001ig0174', amount = 1, weight = 4 }, -- Божественный потир (Артефакт) 1200
+			{ id = 'g001ig0411', amount = 1, weight = 4 }, -- Грань реальности (Артефакт) 1400
+			{ id = 'g001ig0410', amount = 1, weight = 4 }, -- Дьявольская булава (Артефакт) 1500
+			{ id = 'g000ig3019', amount = 1, weight = 4 }, -- Клинок Танатоса (Артефакт) 1150
+			{ id = 'g001ig0413', amount = 1, weight = 4 }, -- Корни триббога (Артефакт) 1200
+			{ id = 'g000ig3004', amount = 1, weight = 4 }, -- Рунический клинок (Артефакт) 1200
+			{ id = 'g001ig0585', amount = 1, weight = 4 }, -- Кольцо создателя (Артефакт) 1400
+			{ id = 'g001ig0046', amount = 1, weight = 4 }, -- Кровь Владыки (Артефакт) 1400
+			{ id = 'g001ig0592', amount = 1, weight = 4 }, -- Монолитный щит (Артефакт) 1200
+			{ id = 'g000ig2004', amount = 1, weight = 4 }, -- Рог всеведенья (Артефакт) 1200
+			{ id = 'g001ig0060', amount = 1, weight = 4 }, -- Тысяча чешуек (Артефакт) 1200
+			{ id = 'g001ig0158', amount = 1, weight = 4 }, -- Ужасающий топор (Артефакт) 1200
+			{ id = 'g001ig0179', amount = 1, weight = 4 }, -- Боевая коса (Артефакт) 1750
+			{ id = 'g001ig0597', amount = 1, weight = 1 }, -- Кираса резонанса (Реликвия) 1000
+			{ id = 'g001ig0424', amount = 1, weight = 4 }, -- Длани ангела (Реликвия) 1000
+			{ id = 'g000ig3005', amount = 1, weight = 4 }, -- Корона Мьолнира (Реликвия) 1200
+			{ id = 'g001ig0116', amount = 1, weight = 4 }, -- Пластинчатый доспех (Реликвия) 1550
 			{ id = 'g001ig0596', amount = 1, weight = 1 }, -- Линарет (Реликвия) 1250
-			{ id = 'g001ig0360', amount = 1, weight = 2 }, -- Стяг упырей 1300
-			{ id = 'g000ig9043', amount = 1, weight = 2 }, -- Сфера ярости 1000
+			{ id = 'g001ig0360', amount = 1, weight = 4 }, -- Стяг упырей 1300
+			{ id = 'g000ig9043', amount = 1, weight = 1 }, -- Сфера ярости 1000
+			{ id = 'g001ig0115', amount = 1, weight = 4 }, -- Железная поступь 1100
 		}
 	},
 }
@@ -3743,7 +3768,7 @@ local RequestHandlers = {
 				-- entry.modifiers - это таблица {modifier_id = количество, ...}
 				for modifier_id, count in pairs(entry.modifiers) do
 					-- Добавляем модификатор указанное количество раз
-					for i = 1, count do
+					for _ = 1, count do
 						table.insert(stack.leaderModifiers, modifier_id)
 					end
 				end
@@ -4328,7 +4353,7 @@ end
 
 -- Распределение остатков для пулов с приоритетом ALL
 function DistributionSystem:distributeRemaining()
-	for pool_key, instance in pairs(self.pool_instances) do
+	for _, instance in pairs(self.pool_instances) do
 		if instance.priority == PoolPriority.ALL then
 			local remaining_selections = 0
 			for _, item in ipairs(instance.items) do
@@ -4849,6 +4874,7 @@ function absZone(id, size)
 		type = Zone.Junction,
 		--fill = Fill.Mountain,
 		border = Border.Closed,
+		gapChange = 50,
 		-------------------------
 		--- только для столицы
 		-------------------------
@@ -5311,7 +5337,9 @@ function getTowns2(race)
 	Distributor:requestItems(towns[i].stack, Pools.loot.t2.permo_2, 1, race)
 	Distributor:requestItems(towns[i].stack, Pools.loot.t2.scrolls_2, 1, race)
 	Distributor:requestItems(towns[i].stack, Pools.items.perks.pool_3, 1, race)
-
+	if is_island_mode then
+		Distributor:requestItems(towns[i].stack, Pools.loot.t2.scrolls_3, 1, race)
+	end
 	i = i + 1
 
 	return towns
@@ -5532,8 +5560,13 @@ function getRuins5()
 		end
 	end
 
+	local r = 2
+	if is_island_mode then
+		r = 4
+	end
+
 	--- 1600-1700 / 500-550
-	for _ = 1, 2 do
+	for _ = 1, r do
 		ruins[i] = absRuin()
 		Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t5)
 		ruins[i].guard = absStack()
@@ -5902,10 +5935,11 @@ function getStacks5(race)
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 1300)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.heal, 3, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.art, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.art_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_1, 1)
 	Distributor:requestItems(stacks[i], Pools.items.mana.normal, 1)
 	i = i + 1
 
@@ -5913,41 +5947,42 @@ function getStacks5(race)
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 1300)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.heal, 3, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.boots, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.scroll, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.boots_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.scroll_1, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_1, 1)
 	i = i + 1
 
 	--- 1300*1 -- 3
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 1300)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.heal, 3, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.banner, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.orb, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.banner_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_2, 1)
 	i = i + 1
 
 	--- 1300*1 -- 4
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 1300)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.heal, 3, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.relic, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.relic_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_2, 1)
 	Distributor:requestItems(stacks[i], Pools.items.buff_e2, 1)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.orb, 1)
 	i = i + 1
 
 	--- 1600*1
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 1600)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.heal, 7, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 7, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_3, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.aura_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.aura_2, 1)
@@ -5968,10 +6003,11 @@ function getStacksW(id)
 	stacks[i].leaderIds = {'g000uu8138'} -- Русалка
 	stacks[i].value = getStackValue(stacks[i], 1300)
 
-	Distributor:requestItems(stacks[i], Pools.loot.t5.heal, 3, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.art, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.art_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_1, 1)
 	Distributor:requestItems(stacks[i], Pools.items.mana.normal, 1)
 	i = i + 1
 
@@ -5982,11 +6018,12 @@ function getStacksW(id)
 	stacks[i].leaderIds = {'g000uu5126'} -- Русалка
 	stacks[i].value = getStackValue(stacks[i], 1300)
 
-	Distributor:requestItems(stacks[i], Pools.loot.t5.heal, 3, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.boots, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.scroll, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.boots_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.scroll_1, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_1, 1)
 	i = i + 1
 
 	--- 1300*1 waterOnly
@@ -5996,11 +6033,11 @@ function getStacksW(id)
 	stacks[i].leaderIds = {'g000uu5127'} -- Кракен
 	stacks[i].value = getStackValue(stacks[i], 1300)
 
-	Distributor:requestItems(stacks[i], Pools.loot.t5.heal, 3, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.banner, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.orb, 2)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.banner_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_2, 1)
 	i = i + 1
 
 	--- 1300*1 waterOnly
@@ -6010,11 +6047,12 @@ function getStacksW(id)
 	stacks[i].leaderIds = {'g000uu5129'} -- Морской змей
 	stacks[i].value = getStackValue(stacks[i], 1300)
 
-	Distributor:requestItems(stacks[i], Pools.loot.t5.heal, 3, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.relic, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.staff, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.relic_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.items.buff_e2, 1)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_2, 1)
 	i = i + 1
 
 	return stacks
@@ -6106,6 +6144,135 @@ function getGuard34(race, id)
 
 	return stack
 end
+
+function getGuardWater03(race, id)
+	if border_mode ~= 7 then
+		return
+	end
+	local stack = absStack()
+	if id == 1 then
+		--- 280*1 waterOnly
+		stack.value = getStackValue(stack, 280)
+		stack.order = Order.Bezerk
+		stack.leaderIds = {
+			'g000uu7522', -- Наяда 80
+			'g000uu5126', -- Русалка 100
+			'g000uu8138', -- Никса 105
+		}
+		Distributor:requestItems(stack, Pools.loot.t1.heal, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t1.ward_2, 1, race)
+		Distributor:requestItems(stack, Pools.items.buff_1, 1)
+		Distributor:requestItems(stack, Pools.items.ward_dot, 1)
+	elseif id == 2 then
+		--- 300*1 waterOnly
+		stack.order = Order.Bezerk
+		stack.leaderIds = {
+			'g000uu7522', -- Наяда 80
+			'g000uu5126', -- Русалка 100
+			'g000uu8138', -- Никса 105
+		}
+		stack.value = getStackValue(stack, 300)
+		Distributor:requestItems(stack, Pools.loot.t1.heal, 2, race)
+		Distributor:requestItems(stack, Pools.items.ward_el, 1)
+		Distributor:requestItems(stack, Pools.items.buff_e2, 1)
+	end
+
+	return stack
+end
+
+function getGuardWater23(race, id)
+	if border_mode ~= 7 then
+		return
+	end
+	local stack = absStack()
+	if id == 1 then
+		--- 750*1 waterOnly
+		stack.value = getStackValue(stack, 750)
+		stack.order = Order.Bezerk
+		stack.leaderIds = {
+			'g000uu5126', -- Русалка 100
+			'g000uu5127', -- Кракен 310
+		}
+		Distributor:requestItems(stack, Pools.loot.t3.heal_1, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t3.heal_2, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t3.heal_3, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t3.buff_3, 1)
+		Distributor:requestItems(stack, Pools.items.buff_e1, 1)
+	elseif id == 2 then
+		--- 800*1 waterOnly
+		stack.value = getStackValue(stack, 800)
+		stack.order = Order.Bezerk
+		stack.leaderIds = {
+			'g000uu8138', -- Никса 105
+			'g000uu5129', -- Морской змей 400
+		}
+		Distributor:requestItems(stack, Pools.loot.t3.heal_3, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t3.heal_4, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t3.buff_4, 1)
+		Distributor:requestItems(stack, Pools.loot.t3.staff_1, 1)
+		Distributor:requestItems(stack, Pools.items.ward_1, 1)
+	end
+
+	return stack
+end
+
+function getGuardWater35(race, id)
+	if border_mode ~= 7 then
+		return
+	end
+	local stack = absStack()
+	if id == 1 then
+		--- 1300*1 waterOnly
+		stack.subraceTypes = rsub(true)
+		stack.order = Order.Bezerk
+		stack.leaderIds = {'g000uu8138'} -- Русалка
+		stack.value = getStackValue(stack, 1300)
+	
+		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
+		Distributor:requestItems(stack, Pools.loot.t5.gold_1, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t5.art_1, 1, race)
+		Distributor:requestItems(stack, Pools.items.mana.normal, 1)
+		Distributor:requestItems(stack, Pools.items.ward_el, 2)
+	elseif id == 2 then
+		--- 1300*1 waterOnly
+		stack.subraceTypes = rsub(true)
+		stack.order = Order.Bezerk
+		stack.leaderIds = {'g000uu5126'} -- Русалка
+		stack.value = getStackValue(stack, 1300)
+	
+		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
+		Distributor:requestItems(stack, Pools.loot.t5.gold_1, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t5.boots_1, 1, race)
+		Distributor:requestItems(stack, Pools.items.ward_1, 2)
+	elseif id == 3 then
+		--- 1300*1 waterOnly
+		stack.subraceTypes = rsub(true)
+		stack.order = Order.Bezerk
+		stack.leaderIds = {'g000uu5127'} -- Кракен
+		stack.value = getStackValue(stack, 1300)
+	
+		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
+		Distributor:requestItems(stack, Pools.loot.t5.gold_2, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t5.banner_1, 1, race)
+		Distributor:requestItems(stack, Pools.items.ward_dot, 2)
+	elseif id == 4 then
+		--- 1300*1 waterOnly
+		stack.subraceTypes = rsub(true)
+		stack.order = Order.Bezerk
+		stack.leaderIds = {'g000uu5129'} -- Морской змей
+		stack.value = getStackValue(stack, 1300)
+	
+		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
+		Distributor:requestItems(stack, Pools.loot.t5.gold_2, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t5.relic_1, 1, race)
+		Distributor:requestItems(stack, Pools.items.buff_e2, 1)
+		Distributor:requestItems(stack, Pools.items.mana.small, 2)
+	end
+
+	return stack
+end
+
+
 
 ------------------------------------------------------------------------------------------------------------------------
 --- Контент:Лавка торговца
@@ -6204,6 +6371,7 @@ function getMerchants2(race)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.talisman, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.sphere_1, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.sphere_2, 3)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.sphere_3, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.staff_1, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.staff_2, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_heal_1, 1, race)
@@ -6714,6 +6882,10 @@ function getZone0(id, race)
 	zone.bags = getBags0(race)
 	zone.stacks = getStacks0(race)
 	zone.ruins = getRuins0(race)
+	if is_island_mode then
+		zone.border = Border.SemiOpen
+		zone.gapChance = 40
+	end
 	return zone
 end
 ------------------------------------------------------------------------------------------------------------------------
@@ -6728,6 +6900,9 @@ function getZone1(id, race)
 	zone.ruins = getRuins1(race)
 	zone.merchants = getMerchants1(race)
 	zone.mages = getMages1(race)
+	if is_island_mode then
+		zone.border = Border.Open
+	end
 	return zone
 end
 ------------------------------------------------------------------------------------------------------------------------
@@ -6742,6 +6917,9 @@ function getZone2(id, race)
 	zone.ruins = getRuins2(race)
 	zone.merchants = getMerchants2(race)
 	zone.mercenaries = getMercenaries2(race)
+	if is_island_mode then
+		zone.border = Border.Open
+	end
 	return zone
 end
 ------------------------------------------------------------------------------------------------------------------------
@@ -6822,6 +7000,8 @@ function getBorderType(id)
 		return Border.Water
 	elseif border_mode == 6 then -- полуоткрытые
 		return Border.SemiOpen
+	elseif border_mode == 7 then -- водные
+		return Border.Water
 	end
 end
 
@@ -6863,6 +7043,9 @@ function getZone4(id)
 	zone.stacks = getStacks4(id)
 	zone.ruins = getRuins4()
 	zone.resourceMarkets = getMarkets4()
+	if is_island_mode then
+		zone.border = Border.Water
+	end
 	return zone
 end
 
@@ -6878,6 +7061,9 @@ function getZone5(id)
 	zone.ruins = getRuins5()
 	if template_mode == trinity and treasure_mode then
 		zone.mercenaries = getMercenaries5()
+	end
+	if is_island_mode then
+		zone.border = Border.Water
 	end
 	return zone
 end
@@ -6909,7 +7095,10 @@ end
 function getZoneE(id)
 	local zone = absZone(id, getZoneSizes().ze)
 	zone.label = ''
+	--zone.type = Zone.Junction
 	zone.type = Zone.Water
+	zone.pathWidth = 0
+	--zone.border = Border.Water
 	return zone
 end
 
@@ -7065,6 +7254,9 @@ function getConnections_duo()
 	local p24 = 1
 	local p45 = 1
 
+	local p23_used = is_island_mode and 2 or p23
+	local p35_used = is_island_mode and 2 or p35
+
 	local zones0 = {c0_1, c0_2}
 	local zones1 = {c1_1, c1_2}
 	local zones2 = {c2_1, c2_2}
@@ -7088,44 +7280,80 @@ function getConnections_duo()
 	end
 	-- т1 -> т2
 	addPairwise(connections, zones1, zones2, 1, nil, p12)
-	-- т2 -> т3
+
+	-- т2 -> т3 (используем p23_used)
 	local pairs23 = {
 		{c2_1, {c3_1, c3_2}},
 		{c2_2, {c3_3, c3_4}},
 	}
-	for _ = 1, p23 do
-		for _, pair in ipairs(pairs23) do
-			for _, toZone in ipairs(pair[2]) do
-				addConn(connections, pair[1], toZone, 1, nil)
+	for _, pair in ipairs(pairs23) do
+		local toZone = pair[1]
+		for i = 1, p23_used do
+			local guard_id = (i % 2 == 1) and 1 or 2  -- чередуем 1,2
+			for _, fromZone in ipairs(pair[2]) do
+				local race = fromZone + toZone
+				addConn(connections, fromZone, toZone, 1, getGuardWater23(race, guard_id))
 			end
 		end
 	end
+
 	-- т3 -> т4
 	for id = 1, p34 do
 		for _, toZone in ipairs(zones3) do
 			addConn(connections, c4_1, toZone, 1, getGuard34(toZone, id))
 		end
 	end
-	-- т3 -> т5
+
+	-- т3 -> т5 (используем p35_used, по 2 прохода от каждой т3 к каждой т5)
+	-- Сначала сгруппируем пары (т3, т5) по целевой т5
+	local targets = {}
+	for _, t5 in ipairs(zones5) do
+		targets[t5] = {}
+	end
+	-- Заполняем связи: для каждой т5, какие т3 с ней соединены
 	local pairs35 = {
 		{c3_1, zones5[1]}, {c3_4, zones5[1]},
 		{c3_2, zones5[2]}, {c3_3, zones5[2]},
 	}
-	for _ = 1, p35 do
-		for _, pair in ipairs(pairs35) do
-			addConn(connections, pair[1], pair[2], 1, nil)
+	for _, pair in ipairs(pairs35) do
+		local from3 = pair[1]
+		local to5 = pair[2]
+		if not targets[to5] then targets[to5] = {} end
+		table.insert(targets[to5], from3)
+	end
+
+	-- Для каждой т5 создаём 4 соединения (по 2 от каждой т3) с уникальными id 1-4
+	for _, t5 in ipairs(zones5) do
+		local from3_list = targets[t5]  -- список т3, соединённых с этой т5
+		-- Генерируем случайную перестановку id {1,2,3,4}
+		local ids = {1,2,3,4}
+		shake(ids)  -- перемешиваем
+		local id_index = 1
+		for _, to3 in ipairs(from3_list) do
+			local race = to3 + t5
+			for i = 1, p35_used do
+				local guard_id = ids[id_index]
+				id_index = id_index + 1
+				addConn(connections, t5, to3,1, getGuardWater35(race, guard_id))
+			end
 		end
 	end
-	-- т0 -> т3
+
+	-- т0 -> т3 (используем p03=2, чередуем id 1 и 2)
 	local pairs03 = {
 		{c0_1, c3_1},
 		{c0_2, c3_3},
 	}
-	for _ = 1, p03 do
-		for _, pair in ipairs(pairs03) do
-			addConn(connections, pair[1], pair[2], 1, nil)
+	for _, pair in ipairs(pairs03) do
+		local to0 = pair[1]
+		local from3 = pair[2]
+		local race = from3 + to0
+		for i = 1, p03 do
+			local guard_id = (i % 2 == 1) and 1 or 2
+			addConn(connections, from3, to0, 1, getGuardWater03(race, guard_id))
 		end
 	end
+
 	-- т0 -> т5
 	local pairs05 = {
 		{c0_1, zones5[1]},
@@ -7136,6 +7364,7 @@ function getConnections_duo()
 			addConn(connections, pair[1], pair[2], 0, nil)
 		end
 	end
+
 	-- тE -> тE
 	local pairsEE = {
 		{ce_1, ce_2},
@@ -7146,6 +7375,7 @@ function getConnections_duo()
 			addConn(connections, pair[1], pair[2], 0, nil)
 		end
 	end
+
 	-- тE -> т2
 	local pairsE2 = {
 		{ce_1, c2_1},
@@ -7156,6 +7386,7 @@ function getConnections_duo()
 			addConn(connections, pair[1], pair[2], 0, nil)
 		end
 	end
+
 	-- тE -> т5
 	local pairsE5 = {
 		{ce_2, zones5[2]},
@@ -7166,13 +7397,15 @@ function getConnections_duo()
 			addConn(connections, pair[1], pair[2], 0, nil)
 		end
 	end
-	--- т3 -> т3
+
+	-- т3 -> т3 (кольцо)
 	for _ = 1, p33 do
 		for i = 1, #zones3 do
 			local next = i % #zones3 + 1
 			addConn(connections, zones3[i], zones3[next], 0, nil, false)
 		end
 	end
+
 	-- т2 -> т4
 	addCartesian(connections, zones2, zones4, 0, nil, p24, false)
 	-- т4 -> т5
@@ -7330,6 +7563,9 @@ function getConnections_clover()
 	local p00 = 0
 	local p22 = 0
 
+	local p23_used = is_island_mode and 2 or p23
+	local p03_used = is_island_mode and 2 or p03
+
 	local zones0 = {c0_1, c0_2, c0_3, c0_4}
 	local zones1 = {c1_1, c1_2, c1_3, c1_4}
 	local zones2 = {c2_1, c2_2, c2_3, c2_4}
@@ -7350,28 +7586,47 @@ function getConnections_clover()
 	end
 	-- т1 -> т2
 	addPairwise(connections, zones1, zones2, 1, nil, p12)
+
 	-- т3 -> т4
 	for id = 1, p34 do
 		for _, toZone in ipairs(zones3) do
 			addConn(connections, c4_1, toZone, 1, getGuard34(toZone, id))
 		end
 	end
-	-- т0 -> т3
-	addPairwise(connections, zones0, zones3, 1, nil, p03)
+
+	-- т0 -> т3 (прямые) – исправлено: попарно по индексу
+	for i = 1, #zones0 do
+		local from0 = zones0[i]
+		local to3 = zones3[i]
+		local race = (from0 == c0_1) and Races[1] or
+		             (from0 == c0_2) and Races[2] or
+		             (from0 == c0_3) and Races[3] or
+		             Races[4]
+		for j = 1, p03_used do
+			local guard_id = (j % 2 == 1) and 1 or 2
+			local guard = is_island_mode and getGuardWater03(race, guard_id) or nil
+			addConn(connections, from0, to3, 1, guard)
+		end
+	end
 
 	if game_mode == 1 then
-
 		local pairs23 = {
 			{c2_1, {c3_4, c3_1}},
 			{c2_2, {c3_1, c3_2}},
 			{c2_3, {c3_2, c3_3}},
 			{c2_4, {c3_3, c3_4}},
 		}
-		for _ = 1, p23 do
-			for _, pair in ipairs(pairs23) do
-				local fromZone = pair[1]
+		for _, pair in ipairs(pairs23) do
+			local fromZone = pair[1]
+			local race = (fromZone == c2_1) and Races[1] or
+			             (fromZone == c2_2) and Races[2] or
+			             (fromZone == c2_3) and Races[3] or
+			             Races[4]
+			for i = 1, p23_used do
+				local guard_id = (i % 2 == 1) and 1 or 2
+				local guard = is_island_mode and getGuardWater23(race, guard_id) or nil
 				for _, toZone in ipairs(pair[2]) do
-					addConn(connections, fromZone, toZone, 1, nil)
+					addConn(connections, fromZone, toZone, 1, guard)
 				end
 			end
 		end
@@ -7386,7 +7641,6 @@ function getConnections_clover()
 		addCartesian(connections, zones2, zones4, 0, nil, p24, false)
 
 	elseif game_mode == 2 or game_mode == 3 then
-		-- т0 -> т0
 		p00 = 5
 		p22 = 1
 		p33 = 0
@@ -7394,13 +7648,24 @@ function getConnections_clover()
 			addConn(connections, c0_1, c0_2, 1, nil)
 			addConn(connections, c0_3, c0_4, 1, nil)
 		end
-		-- т2 -> т2
 		for _ = 1, p22 do
 			addConn(connections, c2_1, c2_4, 0, nil)
 			addConn(connections, c2_2, c2_3, 0, nil)
 		end
-		-- Обычные связи т2 -> т3 (каждый к своему лепестку)
-		addPairwise(connections, zones2, zones3, 1, nil, p23)
+		-- т2 -> т3 (каждый к своему лепестку)
+		for i = 1, #zones2 do
+			local fromZone = zones2[i]
+			local toZone = zones3[i]
+			local race = (fromZone == c2_1) and Races[1] or
+			             (fromZone == c2_2) and Races[2] or
+			             (fromZone == c2_3) and Races[3] or
+			             Races[4]
+			for j = 1, p23_used do
+				local guard_id = (j % 2 == 1) and 1 or 2
+				local guard = is_island_mode and getGuardWater23(race, guard_id) or nil
+				addConn(connections, fromZone, toZone, 1, guard)
+			end
+		end
 
 		if market_mode then
 			connM1 = {c0_1, c0_2, c3_1, c3_2}
@@ -7411,17 +7676,28 @@ function getConnections_clover()
 		p00 = 1
 		p22 = 5
 		p33 = 0
-		-- т0 -> т0
 		for _ = 1, p00 do
 			addConn(connections, c0_1, c0_4, 0, nil)
 			addConn(connections, c0_2, c0_3, 0, nil)
 		end
-		-- Связи между т2 зонами
 		for _ = 1, p22 do
 			addConn(connections, c2_1, c2_2, 1, nil)
 			addConn(connections, c2_3, c2_4, 1, nil)
 		end
-		addPairwise(connections, zones2, zones3, 1, nil, p23)
+		-- т2 -> т3 (каждый к своему лепестку)
+		for i = 1, #zones2 do
+			local fromZone = zones2[i]
+			local toZone = zones3[i]
+			local race = (fromZone == c2_1) and Races[1] or
+			             (fromZone == c2_2) and Races[2] or
+			             (fromZone == c2_3) and Races[3] or
+			             Races[4]
+			for j = 1, p23_used do
+				local guard_id = (j % 2 == 1) and 1 or 2
+				local guard = is_island_mode and getGuardWater23(race, guard_id) or nil
+				addConn(connections, fromZone, toZone, 1, guard)
+			end
+		end
 
 		if market_mode then
 			connM1 = {c0_4, c0_1, c3_4, c3_1}
@@ -7475,8 +7751,8 @@ function getScenarioVariables()
 	local races = { 'EMPIRE', 'LEGIONS', 'CLANS', 'HORDES', 'ELVES' }
 	local t0 = 50
 	local t1 = 50
-	local t2 = 50
-	local t3 = 100
+	local t2 = 75
+	local t3 = 115
 	local t4 = 175
 	local t5 = 250
 	local r_vars = emd({
@@ -7597,6 +7873,7 @@ function getCustomParameters()
 			'Открытые',
 			'Водные',
 			'Полуоткрытые',
+			'Острова',
 		},
 		default = border_mode
 	}
@@ -7636,6 +7913,7 @@ function readCustomParameters(parameters)
 		end
 		if parameters[4] then
 			border_mode = parameters[4]
+			is_island_mode = (border_mode == 7)
 		end
 		if parameters[5] then
 			kef = parameters[5] / 100
@@ -7648,14 +7926,14 @@ end
 function getDiplomacyRelations()
 	if template_mode == trinity then
 		if game_mode > 1 then
-			--- игрок 2
-			c0_2 = 209 -- оранжевый
-			c1_2 = 210 -- т.зелёный
-			c2_2 = 211 -- т.синий
-			--- игрок 3
-			c0_3 = 309 -- оранжевый
-			c1_3 = 310 -- т.зелёный
-			c2_3 = 311 -- т.синий
+			----- игрок 2
+			--c0_2 = 209 -- оранжевый
+			--c1_2 = 210 -- т.зелёный
+			--c2_2 = 211 -- т.синий
+			----- игрок 3
+			--c0_3 = 309 -- оранжевый
+			--c1_3 = 310 -- т.зелёный
+			--c2_3 = 311 -- т.синий
 			return
 			{
 				{
@@ -7683,14 +7961,14 @@ function getDiplomacyRelations()
 		end
 	elseif template_mode == clover then
 		if game_mode > 1 then
-			--- игрок 3
-			c0_3 = 309 -- оранжевый
-			c1_3 = 310 -- т.зелёный
-			c2_3 = 311 -- т.синий
-			--- игрок 4
-			c0_4 = 409 -- оранжевый
-			c1_4 = 410 -- т.зелёный
-			c2_4 = 411 -- т.синий
+			----- игрок 3
+			--c0_3 = 309 -- оранжевый
+			--c1_3 = 310 -- т.зелёный
+			--c2_3 = 311 -- т.синий
+			----- игрок 4
+			--c0_4 = 409 -- оранжевый
+			--c1_4 = 410 -- т.зелёный
+			--c2_4 = 411 -- т.синий
 			return {
 				{
 					raceA = Races[1],
@@ -7786,7 +8064,7 @@ function getTemplateContents(races, size, parameters)
 end
 ---
 template = {
-	name = 'Bladerunner['..tmd('Duo', 'Trinity', 'Clover')..'] '..version,
+	name = 'Bladerunner['..tmd('Duo', 'Trinity', 'Clover')..'] '..ver,
 	description = 'Шаблон для игры 1x1. 1 герой, 1 жезловик, 1 вор\nСиняя, т.синяя, оранжевая, желтая зоны должны касаться двух т.серых зон центра\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
 	minSize = tmd(72, 72, 72),
 	maxSize = tmd(96, 96, 96),
@@ -8061,6 +8339,13 @@ template = {
 		'g001ig0080', --Свиток "Призыв V: Вестник немощи"
 		'g001ig0081', --Свиток "Призыв V: Вестник перемен"
 		'g001ig0079', --Свиток "Призыв V: Вестник поглощения"
+		'g001ig0407', --Свиток "Incantare Adipem Diaboli"
+		'g000ig5059', --Свиток "Incantare Avenger Illudere"
+		'g000ig5058', --Свиток "Incantare Avenger"
+		'g000ig5047', --Свиток "Incantare Beliarh Illudere"
+		'g000ig5046', --Свиток "Incantare Beliarh"
+		'g000ig5042', --Свиток "Incantare Hellhound Illudere"
+		'g000ig5041', --Свиток "Incantare Hellhound"
 		--на урон т4+
 		'g000ig5090', --Potentia Ignis
 		'g000ig5056', --Sinestra ignis
