@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.2'
+local ver = '3.3'
 ------------------------------------------------------------------------------------------------------------------------
 --- Варианты режима шаблона
 local duo = 2
@@ -18,6 +18,9 @@ local trinity = 3
 local clover = 4
 --- Режим шаблона:
 local template_mode = duo
+------------------------------------------------------------------------------------------------------------------------
+--- Размер карты
+local map_size = 72
 ------------------------------------------------------------------------------------------------------------------------
 --- Режим игры:
 local game_mode = 1
@@ -44,6 +47,12 @@ local border_mode = 3
 ------------------------------------------------------------------------------------------------------------------------
 --- Включение дополнительных параметров для режима "Острова"
 local is_island_mode = false
+------------------------------------------------------------------------------------------------------------------------
+--- Включение дополнительных параметров для режима "Чилл"
+local is_chill_mode = false
+------------------------------------------------------------------------------------------------------------------------
+--- Включение дополнительных параметров для режима "+10 мтк"
+local is_no_miss_mode = false
 ------------------------------------------------------------------------------------------------------------------------
 --- коэффициент сложности (<0.9 легко; 0.9-1.1 средне; >1.1 сложно) - не применяется к Т0
 local kef = 1.0
@@ -94,57 +103,18 @@ local cw_3 = 224 -- серый
 --- рынок союзников (1x2 / 2x2)
 local cm_1 = 60 -- белый
 local cm_2 = 137 -- белый
------ игрок 1
---local c0_1 = 100 -- красный
---local c1_1 = 101 -- зелёный
---local c2_1 = 102 -- синий
------ игрок 2
---local c0_2 = 200 -- красный
---local c1_2 = 201 -- зелёный
---local c2_2 = 202 -- синий
------ игрок 3
---local c0_3 = 300 -- красный
---local c1_3 = 301 -- зелёный
---local c2_3 = 302 -- синий
------ игрок 4
---local c0_4 = 400 -- красный
---local c1_4 = 401 -- зелёный
---local c2_4 = 402 -- синий
------ предбанники к центру
---local c3_1 = 113 -- т.серый
---local c3_2 = 213 -- т.серый
---local c3_3 = 313 -- т.серый
---local c3_4 = 413 -- т.серый
---local c3_5 = 513 -- т.серый
---local c3_6 = 613 -- т.серый
------ центр
---local c4_1 = 104 -- чёрный
------ сокровищницы
---local c5_1 = 125 -- серый
---local c5_2 = 225 -- серый
---local c5_3 = 325 -- серый
------ пустота
---local ce_1 = 105 -- cветло-серый
---local ce_2 = 205 -- cветло-серый
---local ce_3 = 305 -- cветло-серый
---local ce_4 = 405 -- cветло-серый
------ вода
---local cw_1 = 140 -- серый
---local cw_2 = 150 -- серый
---local cw_3 = 325 -- серый
------ рынок союзников (1x2 / 2x2)
---local cm_1 = 103 -- белый
---local cm_2 = 203 -- белый
 
 ------------------------------------------------------------------------------------------------------------------------
 --- Технические переменные и константы
 ------------------------------------------------------------------------------------------------------------------------
 --- Расы
-local ALL_RACES = {Race.Human, Race.Dwarf, Race.Undead, Race.Heretic, Race.Elf}
+local ALL_RACES = { Race.Human, Race.Dwarf, Race.Undead, Race.Heretic, Race.Elf }
 local Races = {}
 ------------------------------------------------------------------------------------------------------------------------
 --- Тип предметов для руин т0-т2
-local ruinsLootTypes = {Item.Weapon, Item.Armor, Item.Banner, Item.Jewel, Item.TravelItem}
+local ruinsLootTypes1 = { Item.Weapon, Item.Armor, Item.Banner, Item.Jewel, Item.TravelItem }
+--- Тип предметов для руин т0-т2
+local ruinsLootTypes2 = { Item.Weapon, Item.Armor, Item.Banner, Item.Jewel }
 ------------------------------------------------------------------------------------------------------------------------
 --- Статус сетовых предметов
 local setItemsStatus = {}
@@ -492,6 +462,9 @@ function addConn(connections, fromId, toId, size, guard, required)
 	local conn = {from = fromId, to = toId, size = size}
 	if guard then
 		conn.guard = guard
+		conn.distance = 1
+	else
+		conn.distance = 0
 	end
 	if required ~= nil then
 		conn.required = required
@@ -552,12 +525,12 @@ function getStackValue(stack, min_value, max_value)
 end
 
 --- Получить список рас за отсутствующих в матче
-local function getMissingRaces()
+function getMissingRaces()
 	local missing_races = {}
 
-	for _, race in ipairs(ALL_RACES) do
+	for _, race in pairs(ALL_RACES) do
 		local found = false
-		for _, present_race in ipairs(Races) do
+		for _, present_race in pairs(Races) do
 			if present_race == race then
 				found = true
 				break
@@ -568,7 +541,6 @@ local function getMissingRaces()
 			table.insert(missing_races, race)
 		end
 	end
-
 	return missing_races
 end
 
@@ -984,17 +956,17 @@ Pools.capital = {
 	rnd_equip = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g000ig2001', amount = 3, weight = 1, type = Item.Armor }, -- Рунный камень 300
-			{ id = 'g000ig3001', amount = 3, weight = 1, type = Item.Weapon }, -- Гномьи наручи 300
-			{ id = 'g001ig0100', amount = 3, weight = 1, type = Item.Weapon }, -- Цепь Хана 300
-			{ id = 'g001ig0101', amount = 2, weight = 1, type = Item.Jewel }, -- Череп Хана 350
-			{ id = 'g001ig0105', amount = 1, weight = 1, type = Item.Travel }, -- Литейные сапоги 300
-			{ id = 'g001ig0106', amount = 1, weight = 1, type = Item.Travel }, -- Сапоги каменщика 300
-			{ id = 'g001ig0107', amount = 1, weight = 1, type = Item.Travel }, -- Сапоги ветров 300
-			{ id = 'g001ig0108', amount = 1, weight = 1, type = Item.Travel }, -- Гномьи сапоги 300
-			{ id = 'g001ig0109', amount = 1, weight = 1, type = Item.Travel }, -- Сапоги жизни 300
-			{ id = 'g001ig0110', amount = 1, weight = 1, type = Item.Travel }, -- Легкие сапоги 300
-			{ id = 'g001ig0113', amount = 1, weight = 1, type = Item.Travel }, -- Укрепленные сапоги 300
+			{ id = 'g000ig2001', amount = 1, weight = 3, type = Item.Armor }, -- Рунный камень 300
+			{ id = 'g000ig3001', amount = 1, weight = 3, type = Item.Weapon }, -- Гномьи наручи 300
+			{ id = 'g001ig0100', amount = 1, weight = 3, type = Item.Weapon }, -- Цепь Хана 300
+			{ id = 'g001ig0101', amount = 1, weight = 2, type = Item.Jewel }, -- Череп Хана 350
+			{ id = 'g001ig0105', amount = 1, weight = 1, type = Item.TravelItem }, -- Литейные сапоги 300
+			{ id = 'g001ig0106', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги каменщика 300
+			{ id = 'g001ig0107', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги ветров 300
+			{ id = 'g001ig0108', amount = 1, weight = 1, type = Item.TravelItem }, -- Гномьи сапоги 300
+			{ id = 'g001ig0109', amount = 1, weight = 1, type = Item.TravelItem }, -- Сапоги жизни 300
+			{ id = 'g001ig0110', amount = 1, weight = 1, type = Item.TravelItem }, -- Легкие сапоги 300
+			{ id = 'g001ig0113', amount = 1, weight = 1, type = Item.TravelItem }, -- Укрепленные сапоги 300
 		}
 	},
 }
@@ -1626,17 +1598,19 @@ Pools.goods.t3 = {
 	artifact_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0585', amount = 1, weight = 2 }, -- Кольцо создателя (Артефакт) 1400
-			{ id = 'g001ig0411', amount = 1, weight = 2 }, -- Грань реальности (Артефакт) 1400
-			{ id = 'g001ig0046', amount = 1, weight = 2 }, -- Кровь Владыки (Артефакт) 1400
-			{ id = 'g001ig0155', amount = 1, weight = 1 }, -- Благословенный браслет (Артефакт) 1400
-			{ id = 'g001ig0488', amount = 1, weight = 2 }, -- Кольцо Несгибаемого стража (Артефакт) 1500
-			{ id = 'g001ig0410', amount = 1, weight = 2 }, -- Дьявольская булава (Артефакт) 1500
-			{ id = 'g002ig0017', amount = 1, weight = 1 }, -- Копье Ангела (Артефакт) 1750
-			{ id = 'g001ig0179', amount = 1, weight = 1 }, -- Боевая коса (Артефакт) 1750
-			{ id = 'g001ig0102', amount = 1, weight = 2 }, -- Коготь Пожирателя (Артефакт) 1800
-			{ id = 'g000ig2005', amount = 1, weight = 2 }, -- Гравированная диадема (Артефакт) 1800
-			{ id = 'g001ig0043', amount = 1, weight = 2 }, -- Мощь дракона (Артефакт) 2600
+			{ id = 'g001ig0585', amount = 1, weight = 4 }, -- Кольцо создателя (Артефакт) 1400
+			{ id = 'g001ig0411', amount = 1, weight = 4 }, -- Грань реальности (Артефакт) 1400
+			{ id = 'g001ig0046', amount = 1, weight = 4 }, -- Кровь Владыки (Артефакт) 1400
+			{ id = 'g001ig0155', amount = 1, weight = 2 }, -- Благословенный браслет (Артефакт) 1400
+			{ id = 'g001ig0488', amount = 1, weight = 4 }, -- Кольцо Несгибаемого стража (Артефакт) 1500
+			{ id = 'g001ig0410', amount = 1, weight = 4 }, -- Дьявольская булава (Артефакт) 1500
+			{ id = 'g000ig3018', amount = 1, weight = 1 }, -- Клинок Сущего (Артефакт) 1500
+			{ id = 'g002ig0017', amount = 1, weight = 2 }, -- Копье Ангела (Артефакт) 1750
+			{ id = 'g001ig0179', amount = 1, weight = 2 }, -- Боевая коса (Артефакт) 1750
+			{ id = 'g001ig0102', amount = 1, weight = 4 }, -- Коготь Пожирателя (Артефакт) 1800
+			{ id = 'g000ig2005', amount = 1, weight = 4 }, -- Гравированная диадема (Артефакт) 1800
+			{ id = 'g001ig0043', amount = 1, weight = 4 }, -- Мощь дракона (Артефакт) 2600
+			{ id = 'g001ig0412', amount = 1, weight = 1 }, -- Лезвие греха (Артефакт) 3000
 		}
 	},
 	relic_1 = {
@@ -1849,7 +1823,7 @@ Pools.loot.t0 = {
 			{ id = 'g001ig0265', amount = 2, weight = 1, races = {Race.Dwarf} }, -- Талисман кузнеца 200
 			{ id = 'g001ig0264', amount = 2, weight = 1, races = {Race.Undead} }, -- Талисман мертвеца 200
 			{ id = 'g001ig0267', amount = 2, weight = 1, races = {Race.Heretic} }, -- Талисман еретика 200
-			{ id = 'g001ig0266', amount = 2, weight = 1, races = {Race.Elf} }, -- Талисман лесного воина - 200
+			{ id = 'g001ig0266', amount = 2, weight = 1, races = {Race.Elf} }, -- Талисман лесного воина 200
 			{ id = 'g000ig9105', amount = 2, weight = 1 }, -- Талисман костра 200
 			{ id = 'g000ig9131', amount = 2, weight = 1 }, -- Талисман ливня 200
 		}
@@ -1896,33 +1870,39 @@ Pools.loot.t1 = {
 	permo_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0533', amount = 1, weight = 1 }, -- Зелье ясного взора - 400
-			{ id = 'g001ig0026', amount = 1, weight = 1 }, -- Аура регенерации - 400
+			{ id = 'g001ig0533', amount = 1, weight = 1 }, -- Зелье ясного взора 400
+			{ id = 'g001ig0026', amount = 1, weight = 1 }, -- Аура регенерации 400
+		}
+	},
+	permo_2 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g001ig0034', amount = 1, weight = 1 }, -- Аура жизненной силы - 400
 		}
 	},
 	orb = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0133', amount = 1, weight = 1 }, -- Сфера Брони I - 200
-			{ id = 'g001ig0446', amount = 1, weight = 1 }, -- Сфера Вампиризма I - 200
-			{ id = 'g000ig9017', amount = 1, weight = 1 }, -- Сфера Восстановления - 200
+			{ id = 'g001ig0133', amount = 1, weight = 1 }, -- Сфера Брони I 200
+			{ id = 'g001ig0446', amount = 1, weight = 1 }, -- Сфера Вампиризма I 200
+			{ id = 'g000ig9017', amount = 1, weight = 1 }, -- Сфера Восстановления 200
 			{ id = 'g001ig0471', amount = 1, weight = 1 }, -- Сфера Охотника - 200
-			{ id = 'g001ig0464', amount = 1, weight = 1 }, -- Сфера Разрушения доспеха I - 200
-			{ id = 'g001ig0450', amount = 1, weight = 1 }, -- Сфера Урона I - 200
+			{ id = 'g001ig0464', amount = 1, weight = 1 }, -- Сфера Разрушения доспеха I 200
+			{ id = 'g001ig0450', amount = 1, weight = 1 }, -- Сфера Урона I 200
 		}
 	},
 	talisman = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g001ig0184', amount = 1, weight = 1 }, -- Талисман восстановления - 400
-			{ id = 'g000ig9109', amount = 1, weight = 1 }, -- Талисман души создата - 450
-			{ id = 'g000ig9120', amount = 1, weight = 1 }, -- Талисман щита стихий - 500
+			{ id = 'g001ig0184', amount = 1, weight = 1 }, -- Талисман восстановления 400
+			{ id = 'g000ig9109', amount = 1, weight = 1 }, -- Талисман души создата 450
+			{ id = 'g000ig9120', amount = 1, weight = 1 }, -- Талисман щита стихий 500
 		}
 	},
 	scrolls = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = 'g000ig5084', amount = 1, weight = 1 }, -- Свиток "Дар" - 200
+			{ id = 'g000ig5084', amount = 1, weight = 1 }, -- Свиток "Дар" 200
 		}
 	},
 }
@@ -2460,6 +2440,23 @@ Pools.loot.t5 = {
 		}
 	},
 }
+--- Доп.лут водных отрядов т3-т5
+Pools.loot.w35 = {
+	ward_mix = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g000ig0021', amount = 1, weight = 1 }, -- Эликсир защиты от магии Воздуха 250
+			{ id = 'g000ig0022', amount = 1, weight = 1 }, -- Эликсир защиты от магии Воды 250
+			{ id = 'g000ig0023', amount = 1, weight = 1 }, -- Эликсир защиты от магии Земли 250
+			{ id = 'g000ig0024', amount = 1, weight = 1 }, -- Эликсир защиты от магии Огня 250
+			{ id = 'g001ig0125', amount = 1, weight = 1 }, -- Эликсир защиты от магии Разума 250
+			{ id = 'g001ig0036', amount = 1, weight = 1 }, -- Эликсир защиты от магии Смерти 250
+			{ id = 'g001ig0351', amount = 1, weight = 1 }, -- Эликсир защиты от поглощения 375
+			{ id = 'g001ig0128', amount = 1, weight = 1 }, -- Эликсир защиты от Оружия 400
+			{ id = 'g001ig0355', amount = 1, weight = 1 }, -- Зелье тритоньей чешуи 600
+		}
+	},
+}
 
 ------------------------------------------------------------------------------------------------------------------------
 --- Предметы -> Руины
@@ -2559,65 +2556,41 @@ Pools.items.ruins.t2 = {
 }
 --- Руины т3
 Pools.items.ruins.t3 = {
-	r1 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			{ id = 'g001ig0124', amount = 1, weight = 1 }, -- Клинок Возвышенного (Артефакт) 1000
-			{ id = 'g001ig0042', amount = 1, weight = 1 }, -- Клыки Бездны (Артефакт) 950
-			{ id = 'g001ig0612', amount = 1, weight = 1 }, -- Кольцо небесной воли (Артефакт) 1000
-			--{ id = 'g001ig0592', amount = 0, weight = 1 }, -- Монолитный щит (Артефакт) 1200
-			{ id = 'g002ig0019', amount = 1, weight = 1 }, -- Осадный щит (Артефакт) 1000
-			{ id = 'g001ig0040', amount = 1, weight = 1 }, -- Перстень песков (Артефакт) 1000
-			--{ id = 'g000ig2004', amount = 0, weight = 1 }, -- Рог всеведенья (Артефакт) 1200
-			--{ id = 'g001ig0044', amount = 0, weight = 1 }, -- Сердце океана (Артефакт) 1200
-			--{ id = 'g001ig0060', amount = 0, weight = 1 }, -- Тысяча чешуек (Артефакт) 1200
-			--{ id = 'g001ig0158', amount = 0, weight = 1 }, -- Ужасающий топор (Артефакт) 1200
-			{ id = 'g001ig0041', amount = 1, weight = 1 }, -- Череп шамана (Артефакт) 1000
-			{ id = 'g001ig0590', amount = 1, weight = 1 }, -- Щит Мизраэля (Артефакт) 1200
-			{ id = 'g001ig0071', amount = 1, weight = 1 }, -- Эльфийская брошь (Артефакт) 1000
-		}
-	},
-	r2 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			--{ id = 'g001ig0174', amount = 0, weight = 1 }, -- Божественный потир (Артефакт) 1200
-			{ id = 'g000ig3019', amount = 1, weight = 1 }, -- Клинок Танатоса (Артефакт) 1150
-			{ id = 'g001ig0413', amount = 1, weight = 1 }, -- Корни триббога (Артефакт) 1200
-			{ id = 'g001ig0197', amount = 1, weight = 1 }, -- Проклятый пепел (Артефакт) 950
-			{ id = 'g001ig0415', amount = 1, weight = 1 }, -- Руна кары Тьяцци (Артефакт) 1150
-			--{ id = 'g000ig3004', amount = 0, weight = 1 }, -- Рунический клинок (Артефакт) 1200
-			{ id = 'g000ig9035', amount = 1, weight = 1 }, -- Слеза Мортис (Артефакт) 1200
-			{ id = 'g001ig0657', amount = 1, weight = 1 }, -- Топор палача (Артефакт) 1000
-			{ id = 'g001ig0155', amount = 1, weight = 1 }, -- Благословенный браслет (Артефакт) 1400
-		}
-	},
-	r3 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			{ id = 'g001ig0424', amount = 1, weight = 1 }, -- Длани ангела (Реликвия) 1000
-			{ id = 'g001ig0425', amount = 1, weight = 1 }, -- Кафтан первооткрывателя (Реликвия) 900
-			--{ id = 'g000ig3005', amount = 0, weight = 1 }, -- Корона Мьолнира (Реликвия) 1200
-			--{ id = 'g001ig0539', amount = 0, weight = 1 }, -- Тисовый лук (Реликвия) 900
-			{ id = 'g001ig0156', amount = 1, weight = 1 }, -- Шкатулка предсказаний (Реликвия) 1050
-			{ id = 'g001ig0419', amount = 1, weight = 1 }, -- Шлем воителя (Реликвия) 1000
-			{ id = 'g001ig0115', amount = 1, weight = 1 }, -- Железная поступь 1100
-		}
-	},
-	r4 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			{ id = 'g001ig0362', amount = 1, weight = 1 }, -- Знамя болот 950
-			{ id = 'g001ig0364', amount = 1, weight = 1 }, -- Знамя ветра перемен 900
-			--{ id = 'g002ig0021', amount = 0, weight = 1 }, -- Знамя двойственной судьбы 900
-			{ id = 'g001ig0375', amount = 1, weight = 1 }, -- Знамя наследия 1000
-			{ id = 'g001ig0359', amount = 1, weight = 1 }, -- Знамя неизбежности 1000
-			{ id = 'g001ig0357', amount = 1, weight = 1 }, -- Знамя неистовства 850
-			{ id = 'g000ig1002', amount = 1, weight = 1 }, -- Знамя неуязвимости 850
-			{ id = 'g001ig0358', amount = 1, weight = 1 }, -- Знамя ража 950
-			{ id = 'g000ig1006', amount = 1, weight = 1 }, -- Знамя скорости 925
-			{ id = 'g001ig0374', amount = 1, weight = 1 }, -- Знамя стального листопада 900
-		}
-	},
+	priority = PoolPriority.AS_POSSIBLE,
+	items = {
+		{ id = 'g001ig0124', amount = 1, weight = 1, type = Item.Weapon }, -- Клинок Возвышенного (Артефакт) 1000
+		{ id = 'g001ig0042', amount = 1, weight = 1, type = Item.Weapon }, -- Клыки Бездны (Артефакт) 950
+		{ id = 'g001ig0612', amount = 1, weight = 1, type = Item.Weapon }, -- Кольцо небесной воли (Артефакт) 1000
+		{ id = 'g002ig0019', amount = 1, weight = 1, type = Item.Weapon }, -- Осадный щит (Артефакт) 1000
+		{ id = 'g001ig0040', amount = 1, weight = 1, type = Item.Weapon }, -- Перстень песков (Артефакт) 1000
+		{ id = 'g001ig0041', amount = 1, weight = 1, type = Item.Weapon }, -- Череп шамана (Артефакт) 1000
+		{ id = 'g001ig0590', amount = 1, weight = 1, type = Item.Weapon }, -- Щит Мизраэля (Артефакт) 1200
+		{ id = 'g001ig0071', amount = 1, weight = 1, type = Item.Weapon }, -- Эльфийская брошь (Артефакт) 1000
+
+		{ id = 'g000ig3019', amount = 1, weight = 1, type = Item.Armor }, -- Клинок Танатоса (Артефакт) 1150
+		{ id = 'g001ig0413', amount = 1, weight = 1, type = Item.Armor }, -- Корни триббога (Артефакт) 1200
+		{ id = 'g001ig0197', amount = 1, weight = 1, type = Item.Armor }, -- Проклятый пепел (Артефакт) 950
+		{ id = 'g001ig0415', amount = 1, weight = 1, type = Item.Armor }, -- Руна кары Тьяцци (Артефакт) 1150
+		{ id = 'g000ig9035', amount = 1, weight = 1, type = Item.Armor }, -- Слеза Мортис (Артефакт) 1200
+		{ id = 'g001ig0657', amount = 1, weight = 1, type = Item.Armor }, -- Топор палача (Артефакт) 1000
+		{ id = 'g001ig0155', amount = 1, weight = 1, type = Item.Armor }, -- Благословенный браслет (Артефакт) 1400
+
+		{ id = 'g001ig0424', amount = 1, weight = 1, type = Item.Jewel }, -- Длани ангела (Реликвия) 1000
+		{ id = 'g001ig0425', amount = 1, weight = 1, type = Item.Jewel }, -- Кафтан первооткрывателя (Реликвия) 900
+		{ id = 'g001ig0156', amount = 1, weight = 1, type = Item.Jewel }, -- Шкатулка предсказаний (Реликвия) 1050
+		{ id = 'g001ig0419', amount = 1, weight = 1, type = Item.Jewel }, -- Шлем воителя (Реликвия) 1000
+		{ id = 'g001ig0115', amount = 1, weight = 1, type = Item.Jewel }, -- Железная поступь 1100
+
+		{ id = 'g001ig0362', amount = 1, weight = 1, type = Item.Banner }, -- Знамя болот 950
+		{ id = 'g001ig0364', amount = 1, weight = 1, type = Item.Banner }, -- Знамя ветра перемен 900
+		{ id = 'g001ig0375', amount = 1, weight = 1, type = Item.Banner }, -- Знамя наследия 1000
+		{ id = 'g001ig0359', amount = 1, weight = 1, type = Item.Banner }, -- Знамя неизбежности 1000
+		{ id = 'g001ig0357', amount = 1, weight = 1, type = Item.Banner }, -- Знамя неистовства 850
+		{ id = 'g000ig1002', amount = 1, weight = 1, type = Item.Banner }, -- Знамя неуязвимости 850
+		{ id = 'g001ig0358', amount = 1, weight = 1, type = Item.Banner }, -- Знамя ража 950
+		{ id = 'g000ig1006', amount = 1, weight = 1, type = Item.Banner }, -- Знамя скорости 925
+		{ id = 'g001ig0374', amount = 1, weight = 1, type = Item.Banner }, -- Знамя стального листопада 900
+	}
 }
 --- Руины т4-т5
 Pools.items.ruins.t4 = {
@@ -3039,6 +3012,12 @@ Pools.objects.merchants = {
 			{ data = { name = 'Магазин Сатонира', description = 'У меня лучший CUMпот в округе!' }, weight = 1 },
 		}
 	},
+	t5 = {
+		priority = PoolPriority.UNLIMITED,
+		items = {
+			{ data = { name = 'Выручайка', description = 'Быстрые деньги без лишних вопросов' }, weight = 1 },
+		}
+	},
 }
 --- Башня мага
 Pools.objects.mages = {
@@ -3266,59 +3245,6 @@ Pools.mercenaries.t3 = {
 	m2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ data = { id = 'g000uu5033', level = 1, unique = true }, weight = 1 }, -- Упырь 220
-			{ data = { id = 'g000uu2006', level = 1, unique = true }, weight = 1 }, -- Наяда 235
-			{ data = { id = 'g000uu8157', level = 1, unique = true }, weight = 1 }, -- Гоблин-громыхун 400
-			{ data = { id = 'g000uu8213', level = 1, unique = true }, weight = 1 }, -- Гоблин-шаман 525
-			{ data = { id = 'g000uu8048', level = 1, unique = true }, weight = 1 }, -- Старейшина Гоблинов 570
-		}
-	},
-	m3 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			{ data = { id = 'g000uu7590', level = 1, unique = true }, weight = 1 }, -- Ящер-охотник 590
-			{ data = { id = 'g000uu8042', level = 1, unique = true }, weight = 1 }, -- Темный Эльф Потрошитель 625
-			{ data = { id = 'g000uu8041', level = 1, unique = true }, weight = 1 }, -- Темный Эльф Мясник 625
-			{ data = { id = 'g000uu7619', level = 1, unique = true }, weight = 1 }, -- Слуга культа 625
-			{ data = { id = 'g000uu5012', level = 1, unique = true }, weight = 1 }, -- Орк-багатур 750
-			{ data = { id = 'g000uu7607', level = 1, unique = true }, weight = 1 }, -- Черный ядозуб 825
-			{ data = { id = 'g000uu8043', level = 1, unique = true }, weight = 1 }, -- Жрица Безмясой 900
-			{ data = { id = 'g000uu8005', level = 1, unique = true }, weight = 1 }, -- Дух волка 990
-		}
-	},
-	m4 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			{ data = { id = 'g001uu7617', level = 1, unique = true }, weight = 1 }, -- Тень культа 1070
-			{ data = { id = 'g000uu6121', level = 1, unique = true }, weight = 1 }, -- Дхампир 1070
-			{ data = { id = 'g000uu6106', level = 1, unique = true }, weight = 1 }, -- Принцесса гномов 1200
-			{ data = { id = 'g000uu8151', level = 1, unique = true }, weight = 1 }, -- Фурия 1215
-			{ data = { id = 'g001uu7560', level = 1, unique = true }, weight = 1 }, -- Каратель 1230
-			{ data = { id = 'g000uu5026', level = 1, unique = true }, weight = 1 }, -- Русалка 1320
-			{ data = { id = 'g000uu8275', level = 1, unique = true }, weight = 1 }, -- Медуза 1250
-			{ data = { id = 'g000uu8174', level = 1, unique = true }, weight = 1 }, -- Вестник распада 1400
-		}
-	},
-	m5 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
-			{ data = { id = 'g002uu5026', level = 1, unique = true }, weight = 1 }, -- Элементаль Воды 1450
-			{ data = { id = 'g001uu7586', level = 1, unique = true }, weight = 1 }, -- Легат 1480
-			{ data = { id = 'g000uu6109', level = 1, unique = true }, weight = 1 }, -- Женщина-некромант 1500
-			{ data = { id = 'g000uu8277', level = 1, unique = true }, weight = 1 }, -- Уста Богов 1520
-			{ data = { id = 'g001uu7620', level = 1, unique = true }, weight = 1 }, -- Одержимый великан 1560
-			{ data = { id = 'g000uu8035', level = 1, unique = true }, weight = 1 }, -- Висильда 1620
-			{ data = { id = 'g000uu8218', level = 1, unique = true }, weight = 1 }, -- Волхв 1750
-			{ data = { id = 'g000uu7567', level = 1, unique = true }, weight = 1 }, -- Первородная сущность 1800 (ожог)
-			{ data = { id = 'g000uu7566', level = 1, unique = true }, weight = 1 }, -- Первородная сущность 1800 (мороз)
-			{ data = { id = 'g000uu8237', level = 1, unique = true }, weight = 1 }, -- Первородная сущность 1800 (РБ)
-			{ data = { id = 'g000uu0190', level = 1, unique = true }, weight = 1 }, -- Дух Фенрира 2000
-			{ data = { id = 'g000uu5010', level = 1, unique = true }, weight = 1 }, -- Облачная Погибель 2370
-		}
-	},
-	m6 = {
-		priority = PoolPriority.AS_POSSIBLE,
-		items = {
 			--- Human
 			{ data = { id = 'g000uu7595', level = 2, unique = true }, weight = 3, races = { Race.Human } }, -- Рефаим 915
 			{ data = { id = 'g000uu0003', level = 3, unique = true }, weight = 3, races = { Race.Human } }, -- Имперский рыцарь 715
@@ -3340,7 +3266,7 @@ Pools.mercenaries.t3 = {
 			{ data = { id = 'g000uu0091', level = 3, unique = true }, weight = 3, races = { Race.Undead } }, -- Лорд Тьмы 770
 			{ data = { id = 'g003uu5012', level = 3, unique = true }, weight = 3, races = { Race.Undead } }, -- Орк-палач 880
 			--- Heretic
-			{ data = { id = 'g000uu7577', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Сатир 915
+			{ data = { id = 'g000uu7577', level = 2, unique = true }, weight = 3, races = { Race.Heretic } }, -- Сатир 915
 			{ data = { id = 'g000uu0167', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Ониксовая гаргулья 1880
 			{ data = { id = 'g001uu7574', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Цитриновая гаргулья 1880
 			{ data = { id = 'g001uu8272', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Азуритовая гаргулья 1880
@@ -3352,7 +3278,7 @@ Pools.mercenaries.t3 = {
 			{ data = { id = 'g001uu7579', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Кентавр-гвардеец 905
 		}
 	},
-	m7 = {
+	m3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			--- Human
@@ -3393,7 +3319,69 @@ Pools.mercenaries.t3 = {
 			{ data = { id = 'g000uu8227', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Знахарь 730
 			{ data = { id = 'g000uu8027', level = 3, unique = true }, weight = 3, races = { Race.Elf } }, -- Архонт 730
 		}
-	}
+	},
+	m4 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ data = { id = 'g000uu5033', level = 1, unique = true }, weight = 1 }, -- Упырь 220
+			{ data = { id = 'g000uu2006', level = 1, unique = true }, weight = 1 }, -- Наяда 235
+			{ data = { id = 'g000uu8157', level = 1, unique = true }, weight = 1 }, -- Гоблин-громыхун 400
+			{ data = { id = 'g000uu8213', level = 1, unique = true }, weight = 1 }, -- Гоблин-шаман 525
+			{ data = { id = 'g000uu8048', level = 1, unique = true }, weight = 1 }, -- Старейшина Гоблинов 570
+		}
+	},
+	m5 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ data = { id = 'g000uu8168', level = 1, unique = true }, weight = 1 }, -- Ледяная сущность(М) 525
+			{ data = { id = 'g000uu8169', level = 1, unique = true }, weight = 1 }, -- Каменная сущность(М) 525
+			{ data = { id = 'g000uu8170', level = 1, unique = true }, weight = 1 }, -- Сущность пламени(М) 525
+			{ data = { id = 'g000uu8171', level = 1, unique = true }, weight = 1 }, -- Сущность бури(М) 525
+			{ data = { id = 'g000uu7590', level = 1, unique = true }, weight = 1 }, -- Ящер-охотник 590
+			{ data = { id = 'g000uu8042', level = 1, unique = true }, weight = 1 }, -- Темный Эльф Потрошитель 625
+			{ data = { id = 'g000uu8041', level = 1, unique = true }, weight = 1 }, -- Темный Эльф Мясник 625
+			{ data = { id = 'g000uu7619', level = 1, unique = true }, weight = 1 }, -- Слуга культа 625
+			{ data = { id = 'g000uu5012', level = 1, unique = true }, weight = 1 }, -- Орк-багатур 750
+			{ data = { id = 'g000uu7607', level = 1, unique = true }, weight = 1 }, -- Черный ядозуб 825
+			{ data = { id = 'g000uu8043', level = 1, unique = true }, weight = 1 }, -- Жрица Безмясой 900
+			{ data = { id = 'g000uu8005', level = 1, unique = true }, weight = 1 }, -- Дух волка 990
+		}
+	},
+	m6 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ data = { id = 'g000uu5004', level = 1, unique = true }, weight = 1 }, -- Дикий грифон 1060
+			{ data = { id = 'g001uu7617', level = 1, unique = true }, weight = 1 }, -- Тень культа 1070
+			{ data = { id = 'g000uu6121', level = 1, unique = true }, weight = 1 }, -- Дхампир 1070
+			{ data = { id = 'g000uu6106', level = 1, unique = true }, weight = 1 }, -- Принцесса гномов 1200
+			{ data = { id = 'g000uu8151', level = 1, unique = true }, weight = 1 }, -- Фурия 1215
+			{ data = { id = 'g001uu7560', level = 1, unique = true }, weight = 1 }, -- Каратель 1230
+			{ data = { id = 'g000uu5026', level = 1, unique = true }, weight = 1 }, -- Русалка 1320
+			{ data = { id = 'g000uu8275', level = 1, unique = true }, weight = 1 }, -- Медуза 1250
+			{ data = { id = 'g000uu8174', level = 1, unique = true }, weight = 1 }, -- Вестник распада 1400
+		}
+	},
+	m7 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ data = { id = 'g002uu5026', level = 1, unique = true }, weight = 1 }, -- Элементаль Воды 1450
+			{ data = { id = 'g001uu7586', level = 1, unique = true }, weight = 1 }, -- Легат 1480
+			{ data = { id = 'g000uu6109', level = 1, unique = true }, weight = 1 }, -- Женщина-некромант 1500
+			{ data = { id = 'g000uu8277', level = 1, unique = true }, weight = 1 }, -- Уста Богов 1520
+			{ data = { id = 'g001uu7620', level = 1, unique = true }, weight = 1 }, -- Одержимый великан 1560
+			{ data = { id = 'g000uu8035', level = 1, unique = true }, weight = 1 }, -- Вильсида 1620
+			{ data = { id = 'g002uu0025', level = 1, unique = true }, weight = 1 }, -- Элементаль Земли 1650
+			{ data = { id = 'g000uu8218', level = 1, unique = true }, weight = 1 }, -- Волхв 1750
+			{ data = { id = 'g000uu7567', level = 1, unique = true }, weight = 1 }, -- Первородная сущность 1800 (ожог)
+			{ data = { id = 'g000uu7566', level = 1, unique = true }, weight = 1 }, -- Первородная сущность 1800 (мороз)
+			{ data = { id = 'g000uu8237', level = 1, unique = true }, weight = 1 }, -- Первородная сущность 1800 (РБ)
+			{ data = { id = 'g001uu7597', level = 1, unique = true }, weight = 1 }, -- Кадавр 185
+			{ data = { id = 'g000uu0190', level = 1, unique = true }, weight = 1 }, -- Дух Фенрира 2000
+			{ data = { id = 'g000uu5010', level = 1, unique = true }, weight = 1 }, -- Облачная Погибель 2370
+			{ data = { id = 'g001uu0051', level = 1, unique = true }, weight = 1 }, -- Каменный предок 3500
+			{ data = { id = 'g000uu5029', level = 1, unique = true }, weight = 1 }, -- Морской змей 3500
+		}
+	},
 }
 --- т5
 Pools.mercenaries.t5 = {
@@ -3543,7 +3531,7 @@ Pools.mines = {
 		t0 = { items = { { id = 'gold', amount = 0, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 		t1 = { items = { { id = 'gold', amount = 0, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 		t2 = { items = { { id = 'gold', amount = 0, weight = 1 } }, priority = PoolPriority.UNLIMITED },
-		t3 = { items = { { id = 'gold', amount = 0, weight = 1 } }, priority = PoolPriority.UNLIMITED },
+		t3 = { items = { { id = 'gold', amount = 1, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 		t4 = { items = { { id = 'gold', amount = 2, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 		t5 = { items = { { id = 'gold', amount = 1, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 	},
@@ -3578,6 +3566,17 @@ Pools.mines = {
 			{ id = 'deathMana', amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Elf} },
 			{ id = 'infernalMana', amount = 1, weight = 1, races = {Race.Human, Race.Dwarf} },
 			{ id = 'groveMana', amount = 0, weight = 0, races = {} },
+		}
+	},
+	-- т0-т2 дополнительная
+	additional = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'lifeMana', amount = 1, weight = 1 },
+			{ id = 'runicMana', amount = 1, weight = 1 },
+			{ id = 'deathMana', amount = 1, weight = 1 },
+			{ id = 'infernalMana', amount = 1, weight = 1 },
+			{ id = 'groveMana', amount = 1, weight = 1 },
 		}
 	},
 	-- т3 мана + золото
@@ -4872,9 +4871,8 @@ function absZone(id, size)
 		id = id,
 		size = size,
 		type = Zone.Junction,
-		--fill = Fill.Mountain,
 		border = Border.Closed,
-		gapChange = 50,
+		gapChance = 50,
 		-------------------------
 		--- только для столицы
 		-------------------------
@@ -5395,9 +5393,9 @@ function getRuins0(race)
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 160)
 	ruins[i].guard.forbiddenIds = forbidden.ruins
 	ruins[i].gold = {min = 225, max = 275}
-	local placed = tryPlaceSetItem(ruins[i], 'g002ig0001', ruinsLootTypes[1], 0.5)
+	local placed = tryPlaceSetItem(ruins[i], 'g002ig0001', ruinsLootTypes1[1], 0.5)
 	if not placed then
-		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t0, 1, {types = {ruinsLootTypes[1]}, race = race})
+		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t0, 1, {types = {ruinsLootTypes1[1]}, race = race})
 	end
 	i = i + 1
 	--- 160 / 200-250
@@ -5409,9 +5407,9 @@ function getRuins0(race)
 	ruins[i].guard.forbiddenIds = forbidden.ruins
 	ruins[i].gold = {min = 225, max = 275}
 	ruins[i].loot.items = {}
-	placed = tryPlaceSetItem(ruins[i], 'g002ig0001', ruinsLootTypes[2], 0.5)
+	placed = tryPlaceSetItem(ruins[i], 'g002ig0001', ruinsLootTypes1[2], 0.5)
 	if not placed then
-		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t0, 1, {types = {ruinsLootTypes[2]}, race = race})
+		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t0, 1, {types = {ruinsLootTypes1[2]}, race = race})
 	end
 	i = i + 1
 
@@ -5430,12 +5428,12 @@ function getRuins1(race)
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 240)
 	ruins[i].guard.forbiddenIds = forbidden.ruins
 	ruins[i].gold = {min = 300, max = 350}
-	local placed = tryPlaceSetItem(ruins[i], 'g002ig0002', ruinsLootTypes[3], 0.5)
+	local placed = tryPlaceSetItem(ruins[i], 'g002ig0002', ruinsLootTypes1[3], 0.5)
 	if not placed then
-		placed = tryPlaceSetItem(ruins[i], 'g001ig0602', ruinsLootTypes[3], 0.5)
+		placed = tryPlaceSetItem(ruins[i], 'g001ig0602', ruinsLootTypes1[3], 0.5)
 	end
 	if not placed then
-		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t1, 1, {types = {ruinsLootTypes[3]}, race = race})
+		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t1, 1, {types = {ruinsLootTypes1[3]}, race = race})
 	end
 	i = i + 1
 
@@ -5455,9 +5453,9 @@ function getRuins2()
 	ruins[i].guard.value = getStackValue(ruins[i].guard, 400)
 	ruins[i].guard.forbiddenIds = forbidden.ruins
 	ruins[i].gold = {min = 350, max = 400}
-	local placed = tryPlaceSetItem(ruins[i], 'g001ig0603', ruinsLootTypes[4], 0.5)
+	local placed = tryPlaceSetItem(ruins[i], 'g001ig0603', ruinsLootTypes1[4], 0.5)
 	if not placed then
-		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t2, 1, {types = {ruinsLootTypes[4]}, race = race})
+		Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t2, 1, {types = {ruinsLootTypes1[4]}, race = race})
 	end
 	i = i + 1
 
@@ -5498,7 +5496,7 @@ function getRuins3(types)
 		end
 
 		if not placed then
-			Distributor:requestItems(ruins[i], Pools.items.ruins.t3[typeName], 1)
+			Distributor:requestItemsAdvanced(ruins[i], Pools.items.ruins.t3, 1, {types = {typeName}})
 		end
 		i = i + 1
 	end
@@ -5509,7 +5507,6 @@ end
 --- т4
 function getRuins4()
 	local ruins = {}
-	local i = 1
 
 	local availableSetItems = {}
 	for id, config in pairs(setItemsConfig) do
@@ -5518,8 +5515,10 @@ function getRuins4()
 		end
 	end
 
+	local r = is_chill_mode and 3 or 2
+
 	--- 1400-1500 / 450-500
-	for _ = 1, 2 do
+	for i = 1, r do
 		ruins[i] = absRuin()
 		Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t4)
 		ruins[i].guard = absStack()
@@ -5542,7 +5541,6 @@ function getRuins4()
 		if not placed then
 			Distributor:requestItems(ruins[i], Pools.items.ruins.t4.r1, 1)
 		end
-		i = i + 1
 	end
 
 	return ruins
@@ -5560,10 +5558,7 @@ function getRuins5()
 		end
 	end
 
-	local r = 2
-	if is_island_mode then
-		r = 4
-	end
+	local r = is_island_mode and 4 or 2
 
 	--- 1600-1700 / 500-550
 	for _ = 1, r do
@@ -5742,6 +5737,10 @@ function getStacks1(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.heal, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t1.talisman, 1, race)
 	Distributor:requestItems(stacks[i], Pools.items.ward_dot, 1)
+
+	if math.random(2) == 1 then
+		Distributor:requestItems(stacks[i], Pools.loot.t1.permo_2, 1, race)
+	end
 
 	i = i + 1
 
@@ -5998,14 +5997,16 @@ function getStacksW(id)
 
 	--- 1300*1 waterOnly
 	stacks[i] = absStack()
+	stacks[i].subrace = Subrace.NeutralWater
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].order = Order.Bezerk
 	stacks[i].leaderIds = {'g000uu8138'} -- Русалка
 	stacks[i].value = getStackValue(stacks[i], 1300)
 
+	Distributor:requestItems(stacks[i], Pools.loot.w35.ward_mix, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.art_1, 1, race)
+	--Distributor:requestItems(stacks[i], Pools.loot.t5.art_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_1, 1)
 	Distributor:requestItems(stacks[i], Pools.items.mana.normal, 1)
@@ -6013,14 +6014,16 @@ function getStacksW(id)
 
 	--- 1300*1 waterOnly
 	stacks[i] = absStack()
+	stacks[i].subrace = Subrace.NeutralWater
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].order = Order.Bezerk
 	stacks[i].leaderIds = {'g000uu5126'} -- Русалка
 	stacks[i].value = getStackValue(stacks[i], 1300)
 
+	Distributor:requestItems(stacks[i], Pools.loot.w35.ward_mix, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.boots_1, 1, race)
+	--Distributor:requestItems(stacks[i], Pools.loot.t5.boots_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.scroll_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_1, 1)
@@ -6028,28 +6031,32 @@ function getStacksW(id)
 
 	--- 1300*1 waterOnly
 	stacks[i] = absStack()
+	stacks[i].subrace = Subrace.NeutralWater
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].order = Order.Bezerk
 	stacks[i].leaderIds = {'g000uu5127'} -- Кракен
 	stacks[i].value = getStackValue(stacks[i], 1300)
 
+	Distributor:requestItems(stacks[i], Pools.loot.w35.ward_mix, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.banner_1, 1, race)
+	--Distributor:requestItems(stacks[i], Pools.loot.t5.banner_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_2, 1)
 	i = i + 1
 
 	--- 1300*1 waterOnly
 	stacks[i] = absStack()
+	stacks[i].subrace = Subrace.NeutralWater
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].order = Order.Bezerk
 	stacks[i].leaderIds = {'g000uu5129'} -- Морской змей
 	stacks[i].value = getStackValue(stacks[i], 1300)
 
+	Distributor:requestItems(stacks[i], Pools.loot.w35.ward_mix, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t5.relic_1, 1, race)
+	--Distributor:requestItems(stacks[i], Pools.loot.t5.relic_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.items.buff_e2, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_2, 1)
@@ -6081,7 +6088,7 @@ function getStacksM(race1, race2)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
---- Контент:ГО
+--- Контент:Охрана
 ------------------------------------------------------------------------------------------------------------------------
 --- т0-1
 function getGuard01(race, id)
@@ -6098,6 +6105,61 @@ function getGuard01(race, id)
 			Distributor:requestLeaders(stack, Pools.leaders.bes_t0, 1)
 
 		end
+	end
+	return stack
+end
+
+--- т2 охрана объекта
+function getGuardObject2(race, id)
+	local pool_race = race + id
+	local stack = absStack()
+
+	if not is_chill_mode then
+		return stack
+	end
+
+	if id == 1 then
+		--- 350*1
+		stack = absStack()
+		stack.value = getStackValue(stack, 350)
+		Distributor:requestItems(stack, Pools.loot.t2.heal_1, 1, pool_race)
+		Distributor:requestItems(stack, Pools.loot.t2.heal_2, 1, pool_race)
+		Distributor:requestItems(stack, Pools.loot.t2.buff_1, 1, pool_race)
+		Distributor:requestItems(stack, Pools.loot.t2.gold_1, 1, pool_race)
+	end
+	return stack
+end
+
+--- т3 охрана объекта
+function getGuardObject3(id)
+	local pool_race = math.random(1000, 9999) + id
+	local stack = absStack()
+
+	if not is_chill_mode then
+		return stack
+	end
+
+	if id == 1 then
+		--- 650*1
+		stack = absStack()
+		stack.value = getStackValue(stack, 650)
+		Distributor:requestItems(stack, Pools.loot.t3.heal_1, 1, pool_race)
+		Distributor:requestItems(stack, Pools.loot.t3.heal_2, 1, pool_race)
+		Distributor:requestItems(stack, Pools.loot.t3.misc_1, 1, pool_race)
+	elseif id == 2 then
+		--- 650*1
+		stack = absStack()
+		stack.value = getStackValue(stack, 650)
+		Distributor:requestItems(stack, Pools.loot.t3.heal_2, 1, pool_race)
+		Distributor:requestItems(stack, Pools.items.ward_el, 1, pool_race)
+		Distributor:requestItems(stack, Pools.items.buff_1, 1, pool_race)
+	elseif id == 3 then
+		--- 650*1
+		stack = absStack()
+		stack.value = getStackValue(stack, 650)
+		Distributor:requestItems(stack, Pools.loot.t3.heal_3, 1, pool_race)
+		Distributor:requestItems(stack, Pools.items.ward_dot, 1, pool_race)
+		Distributor:requestItems(stack, Pools.items.ward_1, 1, pool_race)
 	end
 	return stack
 end
@@ -6145,13 +6207,42 @@ function getGuard34(race, id)
 	return stack
 end
 
-function getGuardWater03(race, id)
+--- т1-2
+function getGuardIsland12(race, id)
+	local pool_race = race + id
+	local stack = absStack()
+
+	if not is_island_mode then
+		return stack
+	end
+
+	if id == 1 then
+		--- 300*1
+		stack = absStack()
+		stack.value = getStackValue(stack, 300)
+		Distributor:requestItems(stack, Pools.loot.t1.heal, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t1.ward_2, 1, race)
+		Distributor:requestItems(stack, Pools.items.buff_1, 1)
+		Distributor:requestItems(stack, Pools.items.ward_dot, 1)
+	elseif id == 2 then
+		--- 350*1
+		stack = absStack()
+		stack.value = getStackValue(stack, 350)
+		Distributor:requestItems(stack, Pools.loot.t1.heal, 2, race)
+		Distributor:requestItems(stack, Pools.items.ward_el, 1)
+		Distributor:requestItems(stack, Pools.items.buff_e2, 1)
+	end
+	return stack
+end
+
+function getGuardIsland03(race, id)
 	if border_mode ~= 7 then
 		return
 	end
 	local stack = absStack()
 	if id == 1 then
 		--- 280*1 waterOnly
+		stack.subrace = Subrace.NeutralWater
 		stack.value = getStackValue(stack, 280)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {
@@ -6165,13 +6256,14 @@ function getGuardWater03(race, id)
 		Distributor:requestItems(stack, Pools.items.ward_dot, 1)
 	elseif id == 2 then
 		--- 300*1 waterOnly
+		stack.subrace = Subrace.NeutralWater
+		stack.value = getStackValue(stack, 300)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {
 			'g000uu7522', -- Наяда 80
 			'g000uu5126', -- Русалка 100
 			'g000uu8138', -- Никса 105
 		}
-		stack.value = getStackValue(stack, 300)
 		Distributor:requestItems(stack, Pools.loot.t1.heal, 2, race)
 		Distributor:requestItems(stack, Pools.items.ward_el, 1)
 		Distributor:requestItems(stack, Pools.items.buff_e2, 1)
@@ -6180,13 +6272,14 @@ function getGuardWater03(race, id)
 	return stack
 end
 
-function getGuardWater23(race, id)
+function getGuardIsland23(race, id)
 	if border_mode ~= 7 then
 		return
 	end
 	local stack = absStack()
 	if id == 1 then
 		--- 750*1 waterOnly
+		stack.subrace = Subrace.NeutralWater
 		stack.value = getStackValue(stack, 750)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {
@@ -6200,6 +6293,7 @@ function getGuardWater23(race, id)
 		Distributor:requestItems(stack, Pools.items.buff_e1, 1)
 	elseif id == 2 then
 		--- 800*1 waterOnly
+		stack.subrace = Subrace.NeutralWater
 		stack.value = getStackValue(stack, 800)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {
@@ -6216,13 +6310,14 @@ function getGuardWater23(race, id)
 	return stack
 end
 
-function getGuardWater35(race, id)
+function getGuardIsland35(race, id)
 	if border_mode ~= 7 then
 		return
 	end
 	local stack = absStack()
 	if id == 1 then
 		--- 1300*1 waterOnly
+		stack.subrace = Subrace.NeutralWater
 		stack.subraceTypes = rsub(true)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {'g000uu8138'} -- Русалка
@@ -6235,6 +6330,7 @@ function getGuardWater35(race, id)
 		Distributor:requestItems(stack, Pools.items.ward_el, 2)
 	elseif id == 2 then
 		--- 1300*1 waterOnly
+		stack.subrace = Subrace.NeutralWater
 		stack.subraceTypes = rsub(true)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {'g000uu5126'} -- Русалка
@@ -6246,6 +6342,7 @@ function getGuardWater35(race, id)
 		Distributor:requestItems(stack, Pools.items.ward_1, 2)
 	elseif id == 3 then
 		--- 1300*1 waterOnly
+		stack.subrace = Subrace.NeutralWater
 		stack.subraceTypes = rsub(true)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {'g000uu5127'} -- Кракен
@@ -6257,6 +6354,7 @@ function getGuardWater35(race, id)
 		Distributor:requestItems(stack, Pools.items.ward_dot, 2)
 	elseif id == 4 then
 		--- 1300*1 waterOnly
+		stack.subrace = Subrace.NeutralWater
 		stack.subraceTypes = rsub(true)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {'g000uu5129'} -- Морской змей
@@ -6287,6 +6385,7 @@ function getMerchants1(race)
 	Distributor:requestMerchantData(merchants[i], Pools.objects.merchants.t1)
 
 	Distributor:requestItems(merchants[i], Pools.items.perks.pool_1, 1, race)
+	Distributor:requestItems(merchants[i], Pools.loot.t1.permo_2, 0, race)
 
 	Distributor:requestItems(merchants[i], Pools.items.buff_1, 4)
 	Distributor:requestItems(merchants[i], Pools.items.buff_1, 2)
@@ -6340,6 +6439,7 @@ function getMerchants2(race)
 
 	---
 	merchants[i] = absMerchant()
+	merchants[i].guard = getGuardObject2(race, 1)
 	Distributor:requestMerchantData(merchants[i], Pools.objects.merchants.t2)
 
 	Distributor:requestItems(merchants[i], Pools.items.special_equip, 1)
@@ -6400,6 +6500,7 @@ function getMerchants3(id)
 
 	---
 	merchants[i] = absMerchant()
+	merchants[i].guard = getGuardObject3(1)
 	Distributor:requestMerchantData(merchants[i], Pools.objects.merchants.t3)
 
 	Distributor:requestItems(merchants[i], Pools.items.special_equip, 1)
@@ -6439,6 +6540,18 @@ function getMerchants3(id)
 
 	return merchants
 end
+--- т5
+function getMerchants5(id)
+	local merchants = {}
+	local i = 1
+
+	---
+	merchants[i] = absMerchant()
+	Distributor:requestMerchantData(merchants[i], Pools.objects.merchants.t5)
+	i = i + 1
+
+	return merchants
+end
 
 ------------------------------------------------------------------------------------------------------------------------
 --- Контент:Башня мага
@@ -6468,6 +6581,7 @@ function getMages3(id)
 
 	---
 	mages[i] = absMage()
+	mages[i].guard = getGuardObject3(2)
 	Distributor:requestMageData(mages[i], Pools.objects.mages.t3)
 
 	Distributor:requestSpells(mages[i], Pools.spells.t3.list, 4)
@@ -6506,17 +6620,19 @@ function getMercenaries3(id)
 	local i = 1
 	---
 	mercenaries[i] = absMercenary()
+	mercenaries[i].guard = getGuardObject3(3)
 	Distributor:requestMercenaryData(mercenaries[i], Pools.objects.mercenaries.t3)
 
-	for _,race in ipairs(ALL_RACES) do
-		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m6, 1, race)
-		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m7, 1, race)
-	end
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m5, 2)
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m4, 1)
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m3, 1)
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m2, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m1, 1)
+	for _,race in ipairs(ALL_RACES) do
+		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m3, 1, race)
+		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m2, 1, race)
+	end
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m7, 2)
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m6, 1)
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m5, 1)
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m4, 1)
+
 	i = i + 1
 
 	return mercenaries
@@ -6532,17 +6648,17 @@ function getMercenaries5()
 	Distributor:requestMercenaryData(mercenaries[i], Pools.objects.mercenaries.t5)
 
 	for _,race in ipairs(ALL_RACES) do
-		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t2.m4, 1, race)
-		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t2.m3, 1, race)
+		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m3, 1, race)
+		Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m2, 1, race)
 	end
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t5.m4, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t5.m3, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t5.m2, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t5.m1, 1)
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m5, 2)
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m7, 2)
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m6, 1)
+	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m5, 1)
 	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m4, 1)
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m3, 1)
-	Distributor:requestMercenaryUnits(mercenaries[i], Pools.mercenaries.t3.m2, 1)
 	i = i + 1
 
 	return mercenaries
@@ -6569,6 +6685,10 @@ end
 function getMarkets4()
 	local markets = {}
 	local i = 1
+
+	if is_chill_mode then
+		return markets
+	end
 
 	---
 	markets[i] = absMarket()
@@ -6759,6 +6879,9 @@ function getMines0(race)
 	Distributor:requestMines(mines, Pools.mines.racial, 1, race)
 	Distributor:requestMines(mines, Pools.mines.first, 1, race)
 	Distributor:requestMines(mines, Pools.mines.second, 0, race)
+	if is_chill_mode then
+		Distributor:requestMines(mines, Pools.mines.additional, 1, race)
+	end
 
 	return mines
 end
@@ -6781,14 +6904,18 @@ function getMines2(race)
 	Distributor:requestMines(mines, Pools.mines.racial, 0, race)
 	Distributor:requestMines(mines, Pools.mines.first, 0, race)
 	Distributor:requestMines(mines, Pools.mines.second, 1, race)
-
+	if is_chill_mode then
+		Distributor:requestMines(mines, Pools.mines.additional, 2, race)
+	end
 	return mines
 end
 
 --- т3
 function getMines3()
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t3, 1)
+	if is_chill_mode then
+		Distributor:requestMines(mines, Pools.mines.gold.t3, 1)
+	end
 	Distributor:requestMines(mines, Pools.mines.t3, 1)
 	return mines
 end
@@ -6797,8 +6924,13 @@ end
 function getMines4()
 	local mines = absMines()
 	Distributor:requestMines(mines, Pools.mines.gold.t4, 0)
-	for _,race in pairs(getMissingRaces()) do
-		Distributor:requestMines(mines, Pools.mines.racial, 1, race)
+	if is_chill_mode then
+		local races =  getMissingRaces()
+		shake(races)
+		races = {table.unpack(races, 1, math.min(#races, 2))}
+		for _,race in pairs(races) do
+			Distributor:requestMines(mines, Pools.mines.racial, 1, race)
+		end
 	end
 	return mines
 end
@@ -6876,6 +7008,8 @@ function getZone0(id, race)
 	local zone = absZone(id, getZoneSizes().z0)
 	zone.label = 0
 	zone.type = Zone.PlayerStart
+	--zone.fill = Fill.Forest
+	--zone.pathWidth = 9
 	zone.race = race
 	zone.capital = getCapital0(race)
 	zone.mines = getMines0(race)
@@ -6883,9 +7017,12 @@ function getZone0(id, race)
 	zone.stacks = getStacks0(race)
 	zone.ruins = getRuins0(race)
 	if is_island_mode then
+		--zone.fill = Fill.Water
 		zone.border = Border.SemiOpen
 		zone.gapChance = 40
 	end
+	--zone.roads = 100
+	--zone.forest = 10
 	return zone
 end
 ------------------------------------------------------------------------------------------------------------------------
@@ -6893,6 +7030,8 @@ end
 function getZone1(id, race)
 	local zone = absZone(id, getZoneSizes().z1)
 	zone.label = 1
+	--zone.fill = Fill.Mountain
+	--zone.pathWidth = 9
 	zone.towns = getTowns1(race)
 	zone.mines = getMines1(race)
 	zone.bags = getBags1(race)
@@ -6901,8 +7040,11 @@ function getZone1(id, race)
 	zone.merchants = getMerchants1(race)
 	zone.mages = getMages1(race)
 	if is_island_mode then
+		--zone.fill = Fill.Water
 		zone.border = Border.Open
 	end
+	--zone.roads = 75
+	--zone.forest = 20
 	return zone
 end
 ------------------------------------------------------------------------------------------------------------------------
@@ -6910,6 +7052,8 @@ end
 function getZone2(id, race)
 	local zone = absZone(id, getZoneSizes().z2)
 	zone.label = 2
+	--zone.fill = Fill.Mountain
+	--zone.pathWidth = 9
 	zone.towns = getTowns2(race)
 	zone.mines = getMines2(race)
 	zone.bags = getBags2(race)
@@ -6918,23 +7062,28 @@ function getZone2(id, race)
 	zone.merchants = getMerchants2(race)
 	zone.mercenaries = getMercenaries2(race)
 	if is_island_mode then
-		zone.border = Border.Open
+		--zone.fill = Fill.Water
+		zone.border = Border.SemiOpen
+		zone.gapChance = 40
 	end
+	--zone.roads = 50
+	--zone.forest = 30
 	return zone
 end
 ------------------------------------------------------------------------------------------------------------------------
 --- Зона:т3
 local ZONE3_A_OBJECTS = {}
 local ZONE3_B_OBJECTS = {}
-local ZONE3_A_RUINS = {}
-local ZONE3_B_RUINS = {}
+local ZONE3_A_TYPES = {}
+local ZONE3_B_TYPES = {}
+local ZONE3_A_RUINS_COUNT = 0
+local ZONE3_B_RUINS_COUNT = 0
 local BORDERS_1 = {Border.Open, Border.Water, Border.SemiOpen}
 local BORDERS_2 = {Border.Open, Border.Water, Border.SemiOpen}
 
 function initZone3()
 	local object_amount = {2, 2}
 	local buildings = {"merchant", "mage", "trainer"}
-	local ruins = {"r1", "r2", "r3", "r4"}
 	local ruins_amount = {2, 2}
 
 	if template_mode == trinity and treasure_mode then
@@ -6950,35 +7099,64 @@ function initZone3()
 		table.insert(buildings, "mercenary")
 	end
 
+	if is_chill_mode then
+		for i = #buildings, 1, -1 do
+			if buildings[i] == "trainer" then
+				table.remove(buildings, i)
+				break
+			end
+		end
+		if template_mode == duo or template_mode == clover then
+			object_amount = {2, 1}
+			shake(object_amount)
+			if object_amount[1] == 2 then
+				ruins_amount = {2, 3}
+			else
+				ruins_amount = {3, 2}
+			end
+		elseif template_mode == trinity then
+			if treasure_mode then
+				object_amount = {2, 1}
+				shake(object_amount)
+				if object_amount[1] == 2 then
+					ruins_amount = {2, 3}
+				else
+					ruins_amount = {3, 2}
+				end
+			else
+				object_amount = {1, 1}
+				ruins_amount = {3, 3}
+			end
+		end
+	end
+
+	ZONE3_A_RUINS_COUNT = ruins_amount[1]
+	ZONE3_B_RUINS_COUNT = ruins_amount[2]
+
+	-- Генерация типов для групп
+	shake(ruinsLootTypes2)
+
+	ZONE3_A_TYPES = {ruinsLootTypes2[1], ruinsLootTypes2[2]}
+	ZONE3_B_TYPES = {ruinsLootTypes2[3], ruinsLootTypes2[4]}
+
 	if template_mode == trinity then
 		table.remove(BORDERS_1, 3)
 		table.remove(BORDERS_2, 3)
 	end
 
-	shake(object_amount)
+	shake(ruinsLootTypes2)
 	shake(buildings)
-	shake(ruins)
 	shake(BORDERS_1)
 	shake(BORDERS_2)
 
 	local count = 0
 	local obj_var = ZONE3_A_OBJECTS
-	for _,amount in ipairs(object_amount) do
+	for _, amount in ipairs(object_amount) do
 		for i = 1, amount do
 			count = count + 1
 			table.insert(obj_var, buildings[count])
 		end
 		obj_var = ZONE3_B_OBJECTS
-	end
-
-	count = 0
-	local ruin_var = ZONE3_A_RUINS
-	for _,amount in ipairs(ruins_amount) do
-		for i = 1, amount do
-			count = count + 1
-			table.insert(ruin_var, ruins[count])
-		end
-		ruin_var = ZONE3_B_RUINS
 	end
 end
 
@@ -7012,21 +7190,36 @@ function getZone3(id)
 
 	local isZoneA = (id == c3_1 or id == c3_3 or id == c3_5)
 	local zone_buildings = isZoneA and ZONE3_A_OBJECTS or ZONE3_B_OBJECTS
-	local zone_ruins = isZoneA and ZONE3_A_RUINS or ZONE3_B_RUINS
+	local ruins_count = isZoneA and ZONE3_A_RUINS_COUNT or ZONE3_B_RUINS_COUNT
+	local group_types = isZoneA and ZONE3_A_TYPES or ZONE3_B_TYPES
+
+	local ruins_loot_types = {}
+	for i = 1, ruins_count do
+		local type_index = ((i - 1) % #group_types) + 1
+		table.insert(ruins_loot_types, group_types[type_index])
+	end
 
 	local zone = absZone(id, getZoneSizes().z3)
 	zone.label = 3
 	zone.type = Zone.Treasure
+	--zone.fill = Fill.None
+	--zone.pathWidth = 12
 	zone.border = getBorderType(id)
 	zone.mines = getMines3()
 	zone.bags = getBags3(id)
 	zone.stacks = getStacks3(id)
-	zone.ruins = getRuins3(zone_ruins)
+	zone.ruins = getRuins3(ruins_loot_types)
 	for _, btype in ipairs(zone_buildings) do
 		if btype == "merchant" then zone.merchants = getMerchants3(id) end
 		if btype == "mage" then zone.mages = getMages3(id) end
 		if btype == "mercenary" then zone.mercenaries = getMercenaries3(id) end
 		if btype == "trainer" then zone.trainers = getTrainers3(id) end
+	end
+	if is_island_mode then
+		if map_size ~= 72 then
+			--zone.fill = Fill.Water
+		end
+		zone.border = Border.Water
 	end
 	return zone
 end
@@ -7037,15 +7230,27 @@ function getZone4(id)
 	local zone = absZone(id, getZoneSizes().z4)
 	zone.label = 4
 	zone.type = Zone.Treasure
+	--zone.fill = Fill.None
+	--zone.pathWidth = 12
 	zone.border = Border.Open
 	zone.towns = getTowns4()
-	--zone.mines = getMines4()
+	zone.mines = getMines4()
 	zone.stacks = getStacks4(id)
 	zone.ruins = getRuins4()
 	zone.resourceMarkets = getMarkets4()
 	if is_island_mode then
+		if map_size ~= 72 then
+			--zone.fill = Fill.Water
+		end
 		zone.border = Border.Water
+		--zone.water = 50
 	end
+	--zone.water = 50
+	--zone.waterType = Water.Rivers
+	--zone.roads = 0
+	--zone.forest = 0
+	--zone.terrainType = Terrain.Undead
+	--zone.terrain = 100
 	return zone
 end
 
@@ -7053,7 +7258,8 @@ end
 --- Зона:т5
 function getZone5(id)
 	local zone = absZone(id, getZoneSizes().z5)
-	zone.label = 5
+	--zone.fill = Fill.Mountain
+	zone.pathWidth = 9
 	zone.border = tmd(Border.Close, Border.Open, Border.Close)
 	zone.mines = getMines5()
 	zone.bags = getBags5(id)
@@ -7063,8 +7269,20 @@ function getZone5(id)
 		zone.mercenaries = getMercenaries5()
 	end
 	if is_island_mode then
+		--if map_size ~= 72 then
+		--	zone.pathWidth = 9
+		--else
+		--	zone.pathWidth = 11
+		--end
+		--zone.fill = Fill.Water
 		zone.border = Border.Water
+		--zone.water = 100
 	end
+	if is_chill_mode then
+		getMerchants5()
+	end
+	--zone.roads = 0
+	--zone.forest = 20
 	return zone
 end
 
@@ -7083,6 +7301,8 @@ end
 function getZoneW(id)
 	local zone = absZone(id, getZoneSizes().z5)
 	zone.label = 'W'
+	zone.pathWidth = 11
+	--zone.fill = Fill.Water
 	zone.type = Zone.Water
 	zone.border = Border.Open
 	zone.stacks = getStacksW(id)
@@ -7095,10 +7315,10 @@ end
 function getZoneE(id)
 	local zone = absZone(id, getZoneSizes().ze)
 	zone.label = ''
-	--zone.type = Zone.Junction
+	zone.border = Border.Closed
 	zone.type = Zone.Water
+	--zone.fill = Fill.Mountain
 	zone.pathWidth = 0
-	--zone.border = Border.Water
 	return zone
 end
 
@@ -7109,20 +7329,20 @@ function getZones()
 	local zones = {}
 
 	--- Зоны:Игрок 1
-	shake(ruinsLootTypes)
+	shake(ruinsLootTypes1)
 	table.insert(zones, getZone0(c0_1, Races[1]))
 	table.insert(zones, getZone1(c1_1, Races[1]))
 	table.insert(zones, getZone2(c2_1, Races[1]))
 
 	--- Зоны:Игрок 2
-	shake(ruinsLootTypes)
+	shake(ruinsLootTypes1)
 	table.insert(zones, getZone0(c0_2, Races[2]))
 	table.insert(zones, getZone1(c1_2, Races[2]))
 	table.insert(zones, getZone2(c2_2, Races[2]))
 
 	--- Зоны:Игрок 3
 	if template_mode == trinity or template_mode == clover then
-		shake(ruinsLootTypes)
+		shake(ruinsLootTypes1)
 		table.insert(zones, getZone0(c0_3, Races[3]))
 		table.insert(zones, getZone1(c1_3, Races[3]))
 		table.insert(zones, getZone2(c2_3, Races[3]))
@@ -7130,7 +7350,7 @@ function getZones()
 
 	--- Зоны:Игрок 4
 	if template_mode == clover then
-		shake(ruinsLootTypes)
+		shake(ruinsLootTypes1)
 		table.insert(zones, getZone0(c0_4, Races[4]))
 		table.insert(zones, getZone1(c1_4, Races[4]))
 		table.insert(zones, getZone2(c2_4, Races[4]))
@@ -7215,6 +7435,14 @@ function getZoneSizes()
 		z5 = 20,
 		ze = 18,
 		zm = 10,
+		--z0 = 26,
+		--z1 = 28,
+		--z2 = 26,
+		--z3 = 16,
+		--z4 = 16,
+		--z5 = 28,
+		--ze = 24,
+		--zm = 13,
 	}
 	if template_mode == duo then
 
@@ -7278,8 +7506,12 @@ function getConnections_duo()
 		addConn(connections, c0_1, c1_1, 1, getGuard01(Races[1], id))
 		addConn(connections, c0_2, c1_2, 1, getGuard01(Races[2], id))
 	end
+
 	-- т1 -> т2
-	addPairwise(connections, zones1, zones2, 1, nil, p12)
+	for id = 1, p12 do
+		addConn(connections, c1_1, c2_1, 1, getGuardIsland12(Races[1], id))
+		addConn(connections, c1_2, c2_2, 1, getGuardIsland12(Races[2], id))
+	end
 
 	-- т2 -> т3 (используем p23_used)
 	local pairs23 = {
@@ -7292,7 +7524,7 @@ function getConnections_duo()
 			local guard_id = (i % 2 == 1) and 1 or 2  -- чередуем 1,2
 			for _, fromZone in ipairs(pair[2]) do
 				local race = fromZone + toZone
-				addConn(connections, fromZone, toZone, 1, getGuardWater23(race, guard_id))
+				addConn(connections, fromZone, toZone, 1, getGuardIsland23(race, guard_id))
 			end
 		end
 	end
@@ -7334,7 +7566,7 @@ function getConnections_duo()
 			for i = 1, p35_used do
 				local guard_id = ids[id_index]
 				id_index = id_index + 1
-				addConn(connections, t5, to3,1, getGuardWater35(race, guard_id))
+				addConn(connections, t5, to3,1, getGuardIsland35(race, guard_id))
 			end
 		end
 	end
@@ -7350,7 +7582,7 @@ function getConnections_duo()
 		local race = from3 + to0
 		for i = 1, p03 do
 			local guard_id = (i % 2 == 1) and 1 or 2
-			addConn(connections, from3, to0, 1, getGuardWater03(race, guard_id))
+			addConn(connections, from3, to0, 1, getGuardIsland03(race, guard_id))
 		end
 	end
 
@@ -7409,7 +7641,12 @@ function getConnections_duo()
 	-- т2 -> т4
 	addCartesian(connections, zones2, zones4, 0, nil, p24, false)
 	-- т4 -> т5
-	addCartesian(connections, zones4, zones5, 0, nil, p45)
+	if is_island_mode then
+		addCartesian(connections, zones4, zones5, 1, nil, p45, true)
+	else
+		addCartesian(connections, zones4, zones5, 0, nil, p45, false)
+	end
+
 
 	return connections
 end
@@ -7604,7 +7841,7 @@ function getConnections_clover()
 		             Races[4]
 		for j = 1, p03_used do
 			local guard_id = (j % 2 == 1) and 1 or 2
-			local guard = is_island_mode and getGuardWater03(race, guard_id) or nil
+			local guard = is_island_mode and getGuardIsland03(race, guard_id) or nil
 			addConn(connections, from0, to3, 1, guard)
 		end
 	end
@@ -7624,7 +7861,7 @@ function getConnections_clover()
 			             Races[4]
 			for i = 1, p23_used do
 				local guard_id = (i % 2 == 1) and 1 or 2
-				local guard = is_island_mode and getGuardWater23(race, guard_id) or nil
+				local guard = is_island_mode and getGuardIsland23(race, guard_id) or nil
 				for _, toZone in ipairs(pair[2]) do
 					addConn(connections, fromZone, toZone, 1, guard)
 				end
@@ -7662,7 +7899,7 @@ function getConnections_clover()
 			             Races[4]
 			for j = 1, p23_used do
 				local guard_id = (j % 2 == 1) and 1 or 2
-				local guard = is_island_mode and getGuardWater23(race, guard_id) or nil
+				local guard = is_island_mode and getGuardIsland23(race, guard_id) or nil
 				addConn(connections, fromZone, toZone, 1, guard)
 			end
 		end
@@ -7694,7 +7931,7 @@ function getConnections_clover()
 			             Races[4]
 			for j = 1, p23_used do
 				local guard_id = (j % 2 == 1) and 1 or 2
-				local guard = is_island_mode and getGuardWater23(race, guard_id) or nil
+				local guard = is_island_mode and getGuardIsland23(race, guard_id) or nil
 				addConn(connections, fromZone, toZone, 1, guard)
 			end
 		end
@@ -7730,7 +7967,13 @@ end
 --- Переменные сценария
 ------------------------------------------------------------------------------------------------------------------------
 function getScenarioVariables()
-	local result = {}
+	local result = {
+		{ name = 'HIRE_LIMIT_LEADER', value = 1 },                -- лимит количества лидеров
+		{ name = 'HIRE_LIMIT_ROD', value = 1 },                   -- лимит количества жезловиков
+		{ name = 'HIRE_LIMIT_NOBLE', value = 1 },                 -- лимит количества воров
+		{ name = 'ITEM_CAN_STEAL_LESS_COST_SUM', value = 501 },   -- лимит воровства предметов
+		{ name = 'SPELL_CAN_STEAL_LESS_COST_SUM', value = 501 },  -- лимит воровства заклинаний
+	}
 
 	if emd({false, false, true, true}) then
 		table.insert(result, { name = 'HIRE_UNIT_ANY_RACE', value = 1 })
@@ -7795,6 +8038,12 @@ function getScenarioVariables()
 			{ name = '_TIER_5_CITY_INCOME', value = t5 - t0 },
 		}
 	})
+
+	if is_no_miss_mode then
+		table.insert(r_vars, { name = '_POWER1_MULTI', value = 110 })
+		table.insert(result, { name = 'NEUTRALS_POWER1_MULTI', value = 110 })
+	end
+
 	for _, v in pairs(r_vars) do
 		for _, race in pairs(races) do
 			table.insert(result, { name = race..v['name'], value = v['value'] })
@@ -7818,6 +8067,8 @@ function getCustomParameters()
 	if template_mode == duo then
 		mode.values = {
 			'1x1',
+			'1x1 [Чилл]',
+			'1x1 [+10 мтк]',
 		}
 	elseif template_mode == trinity then
 		mode.values = {
@@ -7901,7 +8152,13 @@ function readCustomParameters(parameters)
 	if parameters then
 		if parameters[1] then
 			game_mode = parameters[1]
-			if game_mode > 1 and game_mode % 2 == 0 then
+			if template_mode == duo then
+				if game_mode == 2 then
+					is_chill_mode = true
+				elseif game_mode == 3 then
+					is_no_miss_mode = true
+				end
+			elseif game_mode > 1 and game_mode % 2 == 0 then
 				market_mode = true
 			end
 		end
@@ -7926,14 +8183,6 @@ end
 function getDiplomacyRelations()
 	if template_mode == trinity then
 		if game_mode > 1 then
-			----- игрок 2
-			--c0_2 = 209 -- оранжевый
-			--c1_2 = 210 -- т.зелёный
-			--c2_2 = 211 -- т.синий
-			----- игрок 3
-			--c0_3 = 309 -- оранжевый
-			--c1_3 = 310 -- т.зелёный
-			--c2_3 = 311 -- т.синий
 			return
 			{
 				{
@@ -7961,14 +8210,6 @@ function getDiplomacyRelations()
 		end
 	elseif template_mode == clover then
 		if game_mode > 1 then
-			----- игрок 3
-			--c0_3 = 309 -- оранжевый
-			--c1_3 = 310 -- т.зелёный
-			--c2_3 = 311 -- т.синий
-			----- игрок 4
-			--c0_4 = 409 -- оранжевый
-			--c1_4 = 410 -- т.зелёный
-			--c2_4 = 411 -- т.синий
 			return {
 				{
 					raceA = Races[1],
@@ -8046,6 +8287,8 @@ end
 function getTemplateContents(races, size, parameters)
 	local contents = {}
 
+	map_size = size or map_size
+
 	shuffleRaces(races)
 	readCustomParameters(parameters)
 
@@ -8059,6 +8302,10 @@ function getTemplateContents(races, size, parameters)
 
 	-- Выполняем распределение данных
 	Distributor:distribute()
+
+	if is_island_mode then
+		contents.roads = 65
+	end
 
 	return contents
 end
@@ -8318,6 +8565,7 @@ template = {
 		'g000ig5057', --Свиток "Мerum Facies" Защита от полиморфа за 700 в ролле нафиг надо
 		'g000ig5118', --Свиток "Ослепления" Уменьшает обзор противника на 3 в радиусе 5х5.
 		'g000ig5057', --Свиток "Мerum Facies" Защита от полиморфа.
+		'g002ig0024', --Свиток "Пламенные небеса"
 		'g000ig5008', --Свиток "Призыв I: Живой доспех"
 		'g000ig5025', --Свиток "Призыв I: Рух"
 		'g000ig5061', --Свиток "Призыв I: Скелет"
