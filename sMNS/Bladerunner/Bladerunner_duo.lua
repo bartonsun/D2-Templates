@@ -10,7 +10,16 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.9'
+local ver = '3.4.10'
+------------------------------------------------------------------------------------------------------------------------
+---
+local content_0 = true
+local content_1 = true
+local content_2 = true
+local content_3 = true
+local content_4 = true
+local content_5 = true
+
 ------------------------------------------------------------------------------------------------------------------------
 --- Варианты режима шаблона
 local duo = 2
@@ -450,10 +459,10 @@ end
 
 --- Проверка наличия значения в таблице
 function isTableContains(tbl, item)
-    for _, v in ipairs(tbl) do
-        if v == item then return true end
-    end
-    return false
+	for _, v in ipairs(tbl) do
+		if v == item then return true end
+	end
+	return false
 end
 
 --- Поиск по имени и замена значения
@@ -831,17 +840,17 @@ local setItemsConfig = {
 }
 
 function tryPlaceSetItem(ruin, setItemId, expectedType, chance)
-    local config = setItemsConfig[setItemId]
-    if not config then return false end
-    if expectedType and config.type ~= expectedType then return false end
-    if setItemsStatus[setItemId] then return false end
-    if math.random() < chance then
-        setItemsStatus[setItemId] = true
-        ruin.loot.items = ruin.loot.items or {}
-        table.insert(ruin.loot.items, { id = setItemId, min = 1, max = 1 })
-        return true
-    end
-    return false
+	local config = setItemsConfig[setItemId]
+	if not config then return false end
+	if expectedType and config.type ~= expectedType then return false end
+	if setItemsStatus[setItemId] then return false end
+	if math.random() < chance then
+		setItemsStatus[setItemId] = true
+		ruin.loot.items = ruin.loot.items or {}
+		table.insert(ruin.loot.items, { id = setItemId, min = 1, max = 1 })
+		return true
+	end
+	return false
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -2209,7 +2218,7 @@ Pools.loot.t3 = {
 			{ id = 'g001ig0315', amount = 2, weight = 3 }, -- Зелье великана 400 (+5% ОЗ)
 			{ id = 'g001ig0336', amount = 1, weight = 1 }, -- Эликсир павших оков 800 (защита от окаменения)
 			{ id = 'g001ig0338', amount = 1, weight = 1 }, -- Эликсир непоколебимости 800 (паралич)
-      { id = 'g001ig0340', amount = 1, weight = 1 }, -- Эликсир непорочности 800 (полиморф)
+			{ id = 'g001ig0340', amount = 1, weight = 1 }, -- Эликсир непорочности 800 (полиморф)
 		}
 	},
 	permo_2 = {
@@ -2637,7 +2646,6 @@ Pools.items.ruins.t4 = {
 			{ id = 'g001ig0174', amount = 1, weight = 4 }, -- Божественный потир (Артефакт) 1200
 			{ id = 'g001ig0411', amount = 1, weight = 4 }, -- Грань реальности (Артефакт) 1400
 			{ id = 'g001ig0410', amount = 1, weight = 4 }, -- Дьявольская булава (Артефакт) 1500
-			{ id = 'g000ig3019', amount = 1, weight = 4 }, -- Клинок Танатоса (Артефакт) 1150
 			{ id = 'g001ig0413', amount = 1, weight = 4 }, -- Корни триббога (Артефакт) 1200
 			{ id = 'g000ig3004', amount = 1, weight = 4 }, -- Рунический клинок (Артефакт) 1200
 			{ id = 'g001ig0585', amount = 1, weight = 4 }, -- Кольцо создателя (Артефакт) 1400
@@ -2953,7 +2961,7 @@ Pools.objects.ruins = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Одно слово - Чеченец! Так он Белорус! Да? Какая разница?' }, weight = 1 },
-			{ data = { name = 'Шахматный клуб "Programmer Helix"' }, weight = 1 },
+			{ data = { name = 'Шахматный клуб "Helix". Надень маску, красавчик!' }, weight = 1 },
 			{ data = { name = 'Гараж Вадим Палыча. На стене изображен когтистый медведь, ниже надпись: "Не беспокоить, Ивана нет", подпись: "Евгений"' }, weight = 1 },
 		}
 	},
@@ -2961,20 +2969,21 @@ Pools.objects.ruins = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Логово Бехолдера.Вход без Хренотонометра запрещен!' }, weight = 1 },
+			{ data = { name = 'Крепость инквизиции "Wise`s BanHammer". На воротах надпись: "Contemptio Animae"' }, weight = 1 },
 		}
 	},
 	t3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Ифритский уголок' }, weight = 1 },
-			{ data = { name = "Замок-кузня Kowka'Mare" }, weight = 1 },
+			{ data = { name = 'Замок-кузня Kowka`Mare' }, weight = 1 },
 			{ data = { name = 'Древневавилонская таверна "Некситель"' }, weight = 1 },
 			{ data = { name = 'Пиратский Гронт. Над входом табличка: заходи, у нас Nice Kok' }, weight = 1 },
 			{ data = { name = 'Старая пивоварня Ивана' }, weight = 1 },
 			{ data = { name = 'Без негатива' }, weight = 1 },
 			{ data = { name = 'Protoss Bone Nexus' }, weight = 1 },
-			{ data = { name = "Неприступный данжен Reign'o'Van" }, weight = 1 },
-			{ data = { name = "Сокровищница НеВерМора (бота)" }, weight = 1 },
+			{ data = { name = 'Неприступный данжен Reign`o`Van' }, weight = 1 },
+			{ data = { name = 'Сокровищница НеВерМора (бота)' }, weight = 1 },
 		}
 	},
 	t4 = {
@@ -5523,11 +5532,11 @@ function getRuins3(types)
 	local i = 1
 
 	local availableSetItems = {}
-    for id, config in pairs(setItemsConfig) do
-        if not setItemsStatus[id] and config.ruins and isTableContains(config.ruins, 't3') then
-            table.insert(availableSetItems, id)
-        end
-    end
+	for id, config in pairs(setItemsConfig) do
+		if not setItemsStatus[id] and config.ruins and isTableContains(config.ruins, 't3') then
+			table.insert(availableSetItems, id)
+		end
+	end
 
 	--- 900 / 400-450
 	for _, typeName in ipairs(types) do
@@ -6944,12 +6953,12 @@ end
 --- т0
 function getMines0(race)
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t0, 0)
-	Distributor:requestMines(mines, Pools.mines.racial, 1, race)
-	Distributor:requestMines(mines, Pools.mines.first, 1, race)
-	Distributor:requestMines(mines, Pools.mines.second, 0, race)
+	Distributor:requestMines(mines, Pools.mines.gold.t0, tmd(0, 0, 0))
+	Distributor:requestMines(mines, Pools.mines.racial, tmd(1, 1, 1), race)
+	Distributor:requestMines(mines, Pools.mines.first, tmd(1, 1, 1), race)
+	Distributor:requestMines(mines, Pools.mines.second, tmd(0, 0, 0), race)
 	if is_chill_mode then
-		Distributor:requestMines(mines, Pools.mines.additional, 1, race)
+		Distributor:requestMines(mines, Pools.mines.additional, tmd(1, 1, 1), race)
 	end
 
 	return mines
@@ -6958,10 +6967,10 @@ end
 --- т1
 function getMines1(race)
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t1, 0)
-	Distributor:requestMines(mines, Pools.mines.racial, 1, race)
-	Distributor:requestMines(mines, Pools.mines.first, 1, race)
-	Distributor:requestMines(mines, Pools.mines.second, 1, race)
+	Distributor:requestMines(mines, Pools.mines.gold.t1, tmd(0, 0, 0))
+	Distributor:requestMines(mines, Pools.mines.racial, tmd(1, 1, 1), race)
+	Distributor:requestMines(mines, Pools.mines.first, tmd(1, 0, 1), race)
+	Distributor:requestMines(mines, Pools.mines.second, tmd(1, 1, 1), race)
 
 	return mines
 end
@@ -6969,12 +6978,12 @@ end
 --- т2
 function getMines2(race)
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t2, 0)
-	Distributor:requestMines(mines, Pools.mines.racial, 0, race)
-	Distributor:requestMines(mines, Pools.mines.first, 0, race)
-	Distributor:requestMines(mines, Pools.mines.second, 1, race)
+	Distributor:requestMines(mines, Pools.mines.gold.t2, tmd(0, 0, 0))
+	Distributor:requestMines(mines, Pools.mines.racial, tmd(0, 0, 0), race)
+	Distributor:requestMines(mines, Pools.mines.first, tmd(0, 1, 0), race)
+	Distributor:requestMines(mines, Pools.mines.second, tmd(1, 1, 1), race)
 	if is_chill_mode then
-		Distributor:requestMines(mines, Pools.mines.additional, 2, race)
+		Distributor:requestMines(mines, Pools.mines.additional, tmd(2, 2, 2), race)
 	end
 	return mines
 end
@@ -6983,22 +6992,22 @@ end
 function getMines3()
 	local mines = absMines()
 	if is_chill_mode then
-		Distributor:requestMines(mines, Pools.mines.gold.t3, 1)
+		Distributor:requestMines(mines, Pools.mines.gold.t3, tmd(1, 1, 1))
 	end
-	Distributor:requestMines(mines, Pools.mines.t3, 1)
+	Distributor:requestMines(mines, Pools.mines.t3, tmd(1, 1, 1))
 	return mines
 end
 
 --- т4
 function getMines4()
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t4, 0)
+	Distributor:requestMines(mines, Pools.mines.gold.t4, tmd(0, 0, 0))
 	if is_chill_mode then
 		local races =  getMissingRaces()
 		shake(races)
 		races = {table.unpack(races, 1, math.min(#races, 2))}
 		for _,race in pairs(races) do
-			Distributor:requestMines(mines, Pools.mines.racial, 1, race)
+			Distributor:requestMines(mines, Pools.mines.racial, tmd(1, 1, 1), race)
 		end
 	end
 	return mines
@@ -7007,9 +7016,9 @@ end
 --- т5
 function getMines5()
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t5, 1)
+	Distributor:requestMines(mines, Pools.mines.gold.t5, tmd(1, 1, 1))
 	for _,race in pairs(Races) do
-		Distributor:requestMines(mines, Pools.mines.racial, 1, race)
+		Distributor:requestMines(mines, Pools.mines.racial, tmd(1, 1, 1), race)
 	end
 	return mines
 end
@@ -7077,20 +7086,22 @@ function getZone0(id, race)
 	local zone = absZone(id, getZoneSizes().z0)
 	zone.label = 0
 	zone.type = Zone.PlayerStart
-	zone.fill = Fill.Forest
-	zone.pathWidth = 8
+	zone.fill = tmd(Fill.Forest, Fill.Mountain, Fill.Forest)
+	zone.pathWidth = tmd(8, 11, 8)
 	zone.race = race
 	zone.capital = getCapital0(race)
-	zone.mines = getMines0(race)
-	zone.bags = getBags0(race)
-	zone.stacks = getStacks0(race)
-	zone.ruins = getRuins0(race)
+	if content_0 then
+		zone.mines = getMines0(race)
+		zone.bags = getBags0(race)
+		zone.stacks = getStacks0(race)
+		zone.ruins = getRuins0(race)
+	end
 	if is_island_mode then
 		zone.fill = Fill.Water
 		zone.border = Border.SemiOpen
 		zone.gapChance = 40
 	end
-	--zone.roads = 100
+	zone.roads = tmd(-1, 65, -1)
 	zone.forest = 10
 	zone.terrainType = getTerrainByRace(race)
 	zone.terrain = 10
@@ -7101,22 +7112,24 @@ end
 function getZone1(id, race)
 	local zone = absZone(id, getZoneSizes().z1)
 	zone.label = 1
-	zone.fill = Fill.Mountain
-	zone.pathWidth = 9
-	zone.towns = getTowns1(race)
-	zone.mines = getMines1(race)
-	zone.bags = getBags1(race)
-	zone.stacks = getStacks1(race)
-	zone.ruins = getRuins1(race)
-	zone.merchants = getMerchants1(race)
-	zone.mages = getMages1(race)
+	zone.fill = tmd(Fill.Mountain, Fill.None, Fill.Mountain)
+	zone.pathWidth = tmd(9, 9, 9)
+	if content_1 then
+		zone.towns = getTowns1(race)
+		zone.mines = getMines1(race)
+		zone.bags = getBags1(race)
+		zone.stacks = getStacks1(race)
+		zone.ruins = getRuins1(race)
+		zone.merchants = getMerchants1(race)
+		zone.mages = getMages1(race)
+	end
 	if is_island_mode then
 		zone.fill = Fill.Water
 		zone.border = Border.Open
 		zone.water = 10
 		zone.waterType = Water.Lakes
 	end
-	--zone.roads = 75
+	zone.roads = tmd(-1, 65, -1)
 	zone.forest = 20
 	return zone
 end
@@ -7125,15 +7138,17 @@ end
 function getZone2(id, race)
 	local zone = absZone(id, getZoneSizes().z2)
 	zone.label = 2
-	zone.fill = Fill.Mountain
-	zone.pathWidth = 8
-	zone.towns = getTowns2(race)
-	zone.mines = getMines2(race)
-	zone.bags = getBags2(race)
-	zone.stacks = getStacks2(race)
-	zone.ruins = getRuins2(race)
-	zone.merchants = getMerchants2(race)
-	zone.mercenaries = getMercenaries2(race)
+	zone.fill = tmd(Fill.Mountain, Fill.Mountain, Fill.Mountain)
+	zone.pathWidth = tmd(8, 11, 8)
+	if content_2 then
+		zone.towns = getTowns2(race)
+		zone.mines = getMines2(race)
+		zone.bags = getBags2(race)
+		zone.stacks = getStacks2(race)
+		zone.ruins = getRuins2(race)
+		zone.merchants = getMerchants2(race)
+		zone.mercenaries = getMercenaries2(race)
+	end
 	if is_island_mode then
 		zone.fill = Fill.Water
 		zone.border = Border.Open
@@ -7146,86 +7161,99 @@ function getZone2(id, race)
 end
 ------------------------------------------------------------------------------------------------------------------------
 --- Зона:т3
-local ZONE3_A_OBJECTS = {}
-local ZONE3_B_OBJECTS = {}
-local ZONE3_A_TYPES = {}
-local ZONE3_B_TYPES = {}
-local ZONE3_A_RUINS_COUNT = 0
-local ZONE3_B_RUINS_COUNT = 0
+local ZONE3_CONFIG = {}
 local BORDERS_1 = {Border.Open, Border.Water, Border.SemiOpen}
 local BORDERS_2 = {Border.Open, Border.Water, Border.SemiOpen}
-
 function initZone3()
-	local object_amount = {2, 2}
-	local buildings = {"merchant", "mage", "trainer"}
-	local ruins_amount = {2, 2}
-
-	if template_mode == trinity and treasure_mode then
-		object_amount = {2, 1}
-		shake(object_amount)
-		ruins_amount = {object_amount[2], object_amount[1]}
-	elseif template_mode == trinity and not treasure_mode then
-		object_amount = {2, 2}
-		shake(object_amount)
-		ruins_amount = {1, 1}
-		table.insert(buildings, "mercenary")
-	else
-		table.insert(buildings, "mercenary")
+	-- Определяем список зон для текущего режима
+	local zone_ids
+	if template_mode == duo then
+		zone_ids = {c3_1, c3_2, c3_3, c3_4}
+	elseif template_mode == trinity then
+		zone_ids = {c3_1, c3_2, c3_3, c3_4, c3_5, c3_6}
+	elseif template_mode == clover then
+		zone_ids = {c3_1, c3_2, c3_3, c3_4}
 	end
 
-	if is_chill_mode then
+	local buildings = {"merchant", "mage", "trainer", "mercenary"}
+	if is_chill_mode or template_mode == trinity then
+		-- Удаляем trainer для указанных режимов
 		for i = #buildings, 1, -1 do
 			if buildings[i] == "trainer" then
 				table.remove(buildings, i)
 				break
 			end
 		end
-		if template_mode == duo or template_mode == clover then
+	end
+
+	if template_mode == trinity then
+		-- Для trinity: каждую пару зон получает один объект и один тип руины
+		shake(buildings)
+		local pairs = {{c3_1, c3_4}, {c3_2, c3_5}, {c3_3, c3_6}}
+		-- Перемешиваем типы руин и берём первые 3
+		local ruin_types = {}
+		for _, v in ipairs(ruinsLootTypes2) do
+			table.insert(ruin_types, v)
+		end
+		shake(ruin_types)
+
+		for i, pair in ipairs(pairs) do
+			local obj_type = buildings[i]
+			local rtype = ruin_types[i]
+			for _, zone_id in ipairs(pair) do
+				ZONE3_CONFIG[zone_id] = {
+					object_types = {obj_type},
+					ruin_types = {rtype}
+				}
+			end
+		end
+	else
+		-- Для duo и clover: группируем зоны на A и B (нечётные – A, чётные – B)
+		-- Определяем количество объектов и руин в каждой группе
+		local object_amount = {2, 2}
+		if is_chill_mode then
 			object_amount = {2, 1}
 			shake(object_amount)
+		end
+
+		local ruins_amount = {2, 2}
+		if template_mode == duo or template_mode == clover then
 			if object_amount[1] == 2 then
 				ruins_amount = {2, 3}
 			else
 				ruins_amount = {3, 2}
 			end
-		elseif template_mode == trinity then
-			if treasure_mode then
-				object_amount = {2, 1}
-				shake(object_amount)
-				if object_amount[1] == 2 then
-					ruins_amount = {2, 3}
-				else
-					ruins_amount = {3, 2}
-				end
+		end
+
+		shake(ruinsLootTypes2)
+		local typesA = {ruinsLootTypes2[1], ruinsLootTypes2[2]}
+		local typesB = {ruinsLootTypes2[3], ruinsLootTypes2[4]}
+
+		shake(buildings)
+		local objA = {}
+		local objB = {}
+		for i = 1, object_amount[1] do
+			table.insert(objA, buildings[i])
+		end
+		for i = object_amount[1] + 1, object_amount[1] + object_amount[2] do
+			table.insert(objB, buildings[i])
+		end
+
+		-- Назначаем каждой зоне своей группы
+		for idx, zone_id in ipairs(zone_ids) do
+			local isA = (idx % 2 == 1)  -- нечётные (1,3,5) – A, чётные – B
+			if isA then
+				ZONE3_CONFIG[zone_id] = {
+					object_types = objA,
+					ruin_types = typesA
+				}
 			else
-				object_amount = {1, 1}
-				ruins_amount = {3, 3}
+				ZONE3_CONFIG[zone_id] = {
+					object_types = objB,
+					ruin_types = typesB
+				}
 			end
 		end
-	end
-
-	ZONE3_A_RUINS_COUNT = ruins_amount[1]
-	ZONE3_B_RUINS_COUNT = ruins_amount[2]
-
-	-- Генерация типов для групп
-	shake(ruinsLootTypes2)
-
-	ZONE3_A_TYPES = {ruinsLootTypes2[1], ruinsLootTypes2[2]}
-	ZONE3_B_TYPES = {ruinsLootTypes2[3], ruinsLootTypes2[4]}
-
-	shake(ruinsLootTypes2)
-	shake(buildings)
-	shake(BORDERS_1)
-	shake(BORDERS_2)
-
-	local count = 0
-	local obj_var = ZONE3_A_OBJECTS
-	for _, amount in ipairs(object_amount) do
-		for i = 1, amount do
-			count = count + 1
-			table.insert(obj_var, buildings[count])
-		end
-		obj_var = ZONE3_B_OBJECTS
 	end
 end
 
@@ -7253,19 +7281,9 @@ function getBorderType(id)
 end
 
 function getZone3(id)
-	if next(ZONE3_A_OBJECTS) == nil then
-		initZone3()
-	end
-
-	local isZoneA = (id == c3_1 or id == c3_3 or id == c3_5)
-	local zone_buildings = isZoneA and ZONE3_A_OBJECTS or ZONE3_B_OBJECTS
-	local ruins_count = isZoneA and ZONE3_A_RUINS_COUNT or ZONE3_B_RUINS_COUNT
-	local group_types = isZoneA and ZONE3_A_TYPES or ZONE3_B_TYPES
-
-	local ruins_loot_types = {}
-	for i = 1, ruins_count do
-		local type_index = ((i - 1) % #group_types) + 1
-		table.insert(ruins_loot_types, group_types[type_index])
+	local config = ZONE3_CONFIG[id]
+	if not config then
+		config = { object_types = {}, ruin_types = {} }
 	end
 
 	local zone = absZone(id, getZoneSizes().z3)
@@ -7273,16 +7291,32 @@ function getZone3(id)
 	zone.fill = Fill.None
 	zone.pathWidth = 12
 	zone.border = getBorderType(id)
-	zone.mines = getMines3()
-	zone.bags = getBags3(id)
-	zone.stacks = getStacks3(id)
-	zone.ruins = getRuins3(ruins_loot_types)
-	for _, btype in ipairs(zone_buildings) do
-		if btype == "merchant" then zone.merchants = getMerchants3(id) end
-		if btype == "mage" then zone.mages = getMages3(id) end
-		if btype == "mercenary" then zone.mercenaries = getMercenaries3(id) end
-		if btype == "trainer" then zone.trainers = getTrainers3(id) end
+	if content_3 then
+		zone.mines = getMines3()
+		zone.bags = getBags3(id)
+		zone.stacks = getStacks3(id)
+
+		-- Руины
+		local ruin_types = config.ruin_types
+		if #ruin_types > 0 then
+			zone.ruins = getRuins3(ruin_types)
+		end
+
+		-- Объекты
+		local object_types = config.object_types
+		for _, btype in ipairs(object_types) do
+			if btype == "merchant" then
+				zone.merchants = getMerchants3(id)
+			elseif btype == "mage" then
+				zone.mages = getMages3(id)
+			elseif btype == "mercenary" then
+				zone.mercenaries = getMercenaries3(id)
+			elseif btype == "trainer" then
+				zone.trainers = getTrainers3(id)
+			end
+		end
 	end
+
 	if is_island_mode then
 		if map_size ~= 72 then
 			zone.fill = Fill.Water
@@ -7305,11 +7339,13 @@ function getZone4(id)
 	zone.fill = Fill.None
 	zone.pathWidth = 12
 	zone.border = Border.Open
-	zone.towns = getTowns4()
-	zone.mines = getMines4()
-	zone.stacks = getStacks4(id)
-	zone.ruins = getRuins4()
-	zone.resourceMarkets = getMarkets4()
+	if content_4 then
+		zone.towns = getTowns4()
+		zone.mines = getMines4()
+		zone.stacks = getStacks4(id)
+		zone.ruins = getRuins4()
+		zone.resourceMarkets = getMarkets4()
+	end
 	if is_island_mode then
 		if map_size ~= 72 then
 			zone.fill = Fill.Water
@@ -7330,15 +7366,14 @@ end
 function getZone5(id)
 	local zone = absZone(id, getZoneSizes().z5)
 	zone.label = 5
-	zone.fill = Fill.Mountain
-	zone.pathWidth = 9
+	zone.fill = tmd(Fill.Mountain, Fill.Water, Fill.Mountain)
+	zone.pathWidth = tmd(9, 15, 9)
 	zone.border = tmd(Border.Close, Border.Open, Border.Close)
-	zone.mines = getMines5()
-	zone.bags = getBags5(id)
-	zone.stacks = getStacks5(id)
-	zone.ruins = getRuins5()
-	if template_mode == trinity and treasure_mode then
-		zone.mercenaries = getMercenaries5()
+	if content_5 then
+		zone.mines = getMines5()
+		zone.bags = getBags5(id)
+		zone.stacks = getStacks5(id)
+		zone.ruins = getRuins5()
 	end
 	if is_island_mode then
 		zone.fill = Fill.Water
@@ -7402,6 +7437,7 @@ end
 --- Зоны:Сводная
 ------------------------------------------------------------------------------------------------------------------------
 function getZones()
+	initZone3()
 	local zones = {}
 
 	--- Зоны:Игрок 1
@@ -7515,12 +7551,12 @@ function getZoneSizes()
 	if template_mode == duo then
 
 	elseif template_mode == trinity then
-		sizes.z0 = 20
-		sizes.z1 = 20
-		sizes.z2 = 20
-		sizes.z3 = 16
-		sizes.z4 = 16
-		sizes.z5 = 20
+		sizes.z0 = 180
+		sizes.z1 = 220
+		sizes.z2 = 180
+		sizes.z3 = 160
+		sizes.z4 = 155
+		sizes.z5 = 175
 		sizes.ze = sizes.z5
 		sizes.zm = sizes.z5
 
@@ -7837,9 +7873,9 @@ function getConnections_trinity()
 
 	-- т1 -> т3
 	for _ = 1, p13 do
-		addConn(connections, c3_1, c1_1, 0, nil)
-		addConn(connections, c3_3, c1_2, 0, nil)
-		addConn(connections, c3_5, c1_3, 0, nil)
+		addConn(connections, c3_1, c1_1, 0, nil, false)
+		addConn(connections, c3_3, c1_2, 0, nil, false)
+		addConn(connections, c3_5, c1_3, 0, nil, false)
 	end
 
 	-- т3 -> т3 (кольцо)
@@ -7898,9 +7934,9 @@ function getConnections_clover()
 		local from0 = zones0[i]
 		local to3 = zones3[i]
 		local race = (from0 == c0_1) and Races[1] or
-		             (from0 == c0_2) and Races[2] or
-		             (from0 == c0_3) and Races[3] or
-		             Races[4]
+				(from0 == c0_2) and Races[2] or
+				(from0 == c0_3) and Races[3] or
+				Races[4]
 		for j = 1, p03 do
 			local guard_id = (j % 2 == 1) and 1 or 2
 			local guard = is_island_mode and getGuardIsland03(race, guard_id) or nil
@@ -7918,9 +7954,9 @@ function getConnections_clover()
 		for _, pair in ipairs(pairs23) do
 			local fromZone = pair[1]
 			local race = (fromZone == c2_1) and Races[1] or
-			             (fromZone == c2_2) and Races[2] or
-			             (fromZone == c2_3) and Races[3] or
-			             Races[4]
+					(fromZone == c2_2) and Races[2] or
+					(fromZone == c2_3) and Races[3] or
+					Races[4]
 			for i = 1, p23 do
 				local guard_id = (i % 2 == 1) and 1 or 2
 				local guard = is_island_mode and getGuardIsland23(race, guard_id) or nil
@@ -7956,9 +7992,9 @@ function getConnections_clover()
 			local fromZone = zones2[i]
 			local toZone = zones3[i]
 			local race = (fromZone == c2_1) and Races[1] or
-			             (fromZone == c2_2) and Races[2] or
-			             (fromZone == c2_3) and Races[3] or
-			             Races[4]
+					(fromZone == c2_2) and Races[2] or
+					(fromZone == c2_3) and Races[3] or
+					Races[4]
 			for j = 1, p23 do
 				local guard_id = (j % 2 == 1) and 1 or 2
 				local guard = is_island_mode and getGuardIsland23(race, guard_id) or nil
@@ -7988,9 +8024,9 @@ function getConnections_clover()
 			local fromZone = zones2[i]
 			local toZone = zones3[i]
 			local race = (fromZone == c2_1) and Races[1] or
-			             (fromZone == c2_2) and Races[2] or
-			             (fromZone == c2_3) and Races[3] or
-			             Races[4]
+					(fromZone == c2_2) and Races[2] or
+					(fromZone == c2_3) and Races[3] or
+					Races[4]
 			for j = 1, p23 do
 				local guard_id = (j % 2 == 1) and 1 or 2
 				local guard = is_island_mode and getGuardIsland23(race, guard_id) or nil
@@ -8398,15 +8434,15 @@ end
 ---
 template = {
 	name = 'Bladerunner['..tmd('Duo', 'Trinity', 'Clover')..'] '..ver,
-	description = 'Шаблон для игры '..tmd('1x1', '1x1x1/1x2', '1x1x1x1/2x2')..'. 1 герой, 1 жезловик, 1 вор\n\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
-	minSize = tmd(72, 96, 72),
-	maxSize = tmd(72, 96, 72),
+	description = 'Шаблон для игры '..tmd('1x1', '1x1x1', '1x1x1x1/2x2')..'. 1 герой, 1 жезловик, 1 вор\n\nАвтор оригинального шаблона Uchenik. Спасибо за поддержку! Карта Тинькофф: 2200700846776804',
+	minSize = 72,
+	maxSize = 96,
 	maxPlayers = tmd(2, 3, 4),
 	startingGold = 800,
 	startingNativeMana = 150,
 	roads = 35,
 	forest = 20,
-	iterations = tmd(10000, 50000, 100000),
+	iterations = tmd(10000, 10000, 10000),
 
 	customParameters = getCustomParameters(),
 

@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.9'
+local ver = '3.4.10'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -2646,7 +2646,6 @@ Pools.items.ruins.t4 = {
 			{ id = 'g001ig0174', amount = 1, weight = 4 }, -- Божественный потир (Артефакт) 1200
 			{ id = 'g001ig0411', amount = 1, weight = 4 }, -- Грань реальности (Артефакт) 1400
 			{ id = 'g001ig0410', amount = 1, weight = 4 }, -- Дьявольская булава (Артефакт) 1500
-			{ id = 'g000ig3019', amount = 1, weight = 4 }, -- Клинок Танатоса (Артефакт) 1150
 			{ id = 'g001ig0413', amount = 1, weight = 4 }, -- Корни триббога (Артефакт) 1200
 			{ id = 'g000ig3004', amount = 1, weight = 4 }, -- Рунический клинок (Артефакт) 1200
 			{ id = 'g001ig0585', amount = 1, weight = 4 }, -- Кольцо создателя (Артефакт) 1400
@@ -2962,7 +2961,7 @@ Pools.objects.ruins = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Одно слово - Чеченец! Так он Белорус! Да? Какая разница?' }, weight = 1 },
-			{ data = { name = 'Шахматный клуб "Programmer Helix"' }, weight = 1 },
+			{ data = { name = 'Шахматный клуб "Helix". Надень маску, красавчик!' }, weight = 1 },
 			{ data = { name = 'Гараж Вадим Палыча. На стене изображен когтистый медведь, ниже надпись: "Не беспокоить, Ивана нет", подпись: "Евгений"' }, weight = 1 },
 		}
 	},
@@ -2970,20 +2969,21 @@ Pools.objects.ruins = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Логово Бехолдера.Вход без Хренотонометра запрещен!' }, weight = 1 },
+			{ data = { name = 'Крепость инквизиции "Wise`s BanHammer". На воротах надпись: "Contemptio Animae"' }, weight = 1 },
 		}
 	},
 	t3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Ифритский уголок' }, weight = 1 },
-			{ data = { name = "Замок-кузня Kowka'Mare" }, weight = 1 },
+			{ data = { name = 'Замок-кузня Kowka`Mare' }, weight = 1 },
 			{ data = { name = 'Древневавилонская таверна "Некситель"' }, weight = 1 },
 			{ data = { name = 'Пиратский Гронт. Над входом табличка: заходи, у нас Nice Kok' }, weight = 1 },
 			{ data = { name = 'Старая пивоварня Ивана' }, weight = 1 },
 			{ data = { name = 'Без негатива' }, weight = 1 },
 			{ data = { name = 'Protoss Bone Nexus' }, weight = 1 },
-			{ data = { name = "Неприступный данжен Reign'o'Van" }, weight = 1 },
-			{ data = { name = "Сокровищница НеВерМора (бота)" }, weight = 1 },
+			{ data = { name = 'Неприступный данжен Reign`o`Van' }, weight = 1 },
+			{ data = { name = 'Сокровищница НеВерМора (бота)' }, weight = 1 },
 		}
 	},
 	t4 = {
@@ -6953,12 +6953,12 @@ end
 --- т0
 function getMines0(race)
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t0, 0)
-	Distributor:requestMines(mines, Pools.mines.racial, 1, race)
-	Distributor:requestMines(mines, Pools.mines.first, 1, race)
-	Distributor:requestMines(mines, Pools.mines.second, 0, race)
+	Distributor:requestMines(mines, Pools.mines.gold.t0, tmd(0, 0, 0))
+	Distributor:requestMines(mines, Pools.mines.racial, tmd(1, 1, 1), race)
+	Distributor:requestMines(mines, Pools.mines.first, tmd(1, 1, 1), race)
+	Distributor:requestMines(mines, Pools.mines.second, tmd(0, 0, 0), race)
 	if is_chill_mode then
-		Distributor:requestMines(mines, Pools.mines.additional, 1, race)
+		Distributor:requestMines(mines, Pools.mines.additional, tmd(1, 1, 1), race)
 	end
 
 	return mines
@@ -6967,10 +6967,10 @@ end
 --- т1
 function getMines1(race)
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t1, 0)
-	Distributor:requestMines(mines, Pools.mines.racial, 1, race)
-	Distributor:requestMines(mines, Pools.mines.first, 0, race)
-	Distributor:requestMines(mines, Pools.mines.second, 1, race)
+	Distributor:requestMines(mines, Pools.mines.gold.t1, tmd(0, 0, 0))
+	Distributor:requestMines(mines, Pools.mines.racial, tmd(1, 1, 1), race)
+	Distributor:requestMines(mines, Pools.mines.first, tmd(1, 0, 1), race)
+	Distributor:requestMines(mines, Pools.mines.second, tmd(1, 1, 1), race)
 
 	return mines
 end
@@ -6978,12 +6978,12 @@ end
 --- т2
 function getMines2(race)
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t2, 0)
-	Distributor:requestMines(mines, Pools.mines.racial, 0, race)
-	Distributor:requestMines(mines, Pools.mines.first, 1, race)
-	Distributor:requestMines(mines, Pools.mines.second, 1, race)
+	Distributor:requestMines(mines, Pools.mines.gold.t2, tmd(0, 0, 0))
+	Distributor:requestMines(mines, Pools.mines.racial, tmd(0, 0, 0), race)
+	Distributor:requestMines(mines, Pools.mines.first, tmd(0, 1, 0), race)
+	Distributor:requestMines(mines, Pools.mines.second, tmd(1, 1, 1), race)
 	if is_chill_mode then
-		Distributor:requestMines(mines, Pools.mines.additional, 2, race)
+		Distributor:requestMines(mines, Pools.mines.additional, tmd(2, 2, 2), race)
 	end
 	return mines
 end
@@ -6992,22 +6992,22 @@ end
 function getMines3()
 	local mines = absMines()
 	if is_chill_mode then
-		Distributor:requestMines(mines, Pools.mines.gold.t3, 1)
+		Distributor:requestMines(mines, Pools.mines.gold.t3, tmd(1, 1, 1))
 	end
-	Distributor:requestMines(mines, Pools.mines.t3, 1)
+	Distributor:requestMines(mines, Pools.mines.t3, tmd(1, 1, 1))
 	return mines
 end
 
 --- т4
 function getMines4()
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t4, 0)
+	Distributor:requestMines(mines, Pools.mines.gold.t4, tmd(0, 0, 0))
 	if is_chill_mode then
 		local races =  getMissingRaces()
 		shake(races)
 		races = {table.unpack(races, 1, math.min(#races, 2))}
 		for _,race in pairs(races) do
-			Distributor:requestMines(mines, Pools.mines.racial, 1, race)
+			Distributor:requestMines(mines, Pools.mines.racial, tmd(1, 1, 1), race)
 		end
 	end
 	return mines
@@ -7016,9 +7016,9 @@ end
 --- т5
 function getMines5()
 	local mines = absMines()
-	Distributor:requestMines(mines, Pools.mines.gold.t5, 1)
+	Distributor:requestMines(mines, Pools.mines.gold.t5, tmd(1, 1, 1))
 	for _,race in pairs(Races) do
-		Distributor:requestMines(mines, Pools.mines.racial, 1, race)
+		Distributor:requestMines(mines, Pools.mines.racial, tmd(1, 1, 1), race)
 	end
 	return mines
 end
@@ -7086,9 +7086,8 @@ function getZone0(id, race)
 	local zone = absZone(id, getZoneSizes().z0)
 	zone.label = 0
 	zone.type = Zone.PlayerStart
-	--zone.fill = Fill.None
-	zone.fill = Fill.Mountain
-	zone.pathWidth = 11
+	zone.fill = tmd(Fill.Forest, Fill.Mountain, Fill.Forest)
+	zone.pathWidth = tmd(8, 11, 8)
 	zone.race = race
 	zone.capital = getCapital0(race)
 	if content_0 then
@@ -7102,7 +7101,7 @@ function getZone0(id, race)
 		zone.border = Border.SemiOpen
 		zone.gapChance = 40
 	end
-	zone.roads = 65
+	zone.roads = tmd(-1, 65, -1)
 	zone.forest = 10
 	zone.terrainType = getTerrainByRace(race)
 	zone.terrain = 10
@@ -7113,17 +7112,16 @@ end
 function getZone1(id, race)
 	local zone = absZone(id, getZoneSizes().z1)
 	zone.label = 1
-	zone.fill = Fill.None
-	--zone.fill = Fill.Mountain
-	--zone.pathWidth = 9
+	zone.fill = tmd(Fill.Mountain, Fill.None, Fill.Mountain)
+	zone.pathWidth = tmd(9, 9, 9)
 	if content_1 then
 		zone.towns = getTowns1(race)
 		zone.mines = getMines1(race)
 		zone.bags = getBags1(race)
 		zone.stacks = getStacks1(race)
 		zone.ruins = getRuins1(race)
-		zone.mages = getMages1(race)
 		zone.merchants = getMerchants1(race)
+		zone.mages = getMages1(race)
 	end
 	if is_island_mode then
 		zone.fill = Fill.Water
@@ -7131,7 +7129,7 @@ function getZone1(id, race)
 		zone.water = 10
 		zone.waterType = Water.Lakes
 	end
-	zone.roads = 65
+	zone.roads = tmd(-1, 65, -1)
 	zone.forest = 20
 	return zone
 end
@@ -7140,9 +7138,8 @@ end
 function getZone2(id, race)
 	local zone = absZone(id, getZoneSizes().z2)
 	zone.label = 2
-	--zone.fill = Fill.None
-	zone.fill = Fill.Mountain
-	zone.pathWidth = 11
+	zone.fill = tmd(Fill.Mountain, Fill.Mountain, Fill.Mountain)
+	zone.pathWidth = tmd(8, 11, 8)
 	if content_2 then
 		zone.towns = getTowns2(race)
 		zone.mines = getMines2(race)
@@ -7369,8 +7366,8 @@ end
 function getZone5(id)
 	local zone = absZone(id, getZoneSizes().z5)
 	zone.label = 5
-	zone.fill = Fill.Water
-	zone.pathWidth = 15
+	zone.fill = tmd(Fill.Mountain, Fill.Water, Fill.Mountain)
+	zone.pathWidth = tmd(9, 15, 9)
 	zone.border = tmd(Border.Close, Border.Open, Border.Close)
 	if content_5 then
 		zone.mines = getMines5()
@@ -7554,12 +7551,6 @@ function getZoneSizes()
 	if template_mode == duo then
 
 	elseif template_mode == trinity then
-		--sizes.z0 = 180
-		--sizes.z1 = 220
-		--sizes.z2 = 180
-		--sizes.z3 = 160
-		--sizes.z4 = 155
-		--sizes.z5 = 175
 		sizes.z0 = 180
 		sizes.z1 = 220
 		sizes.z2 = 180
