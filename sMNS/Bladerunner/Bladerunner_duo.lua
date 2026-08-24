@@ -2517,6 +2517,7 @@ Pools.items.ruins.t0 = {
 		{ id = 'g001ig0609', amount = 1, weight = 1, type = Item.Armor }, -- Загробный фонарь (Артефакт) 400
 		{ id = 'g000ig2002', amount = 1, weight = 1, type = Item.Armor }, -- Святая чаша (Артефакт) 500
 		{ id = 'g001ig0048', amount = 1, weight = 1, type = Item.Armor }, -- Амулет Кракена (Артефакт) 375
+		{ id = 'g001ig0589', amount = 1, weight = 1, type = Item.Armor }, -- Щит неведения (Артефакт) 500
 		{ id = 'g000ig1005', amount = 1, weight = 1, type = Item.Banner }, -- Знамя быстроты 550
 		{ id = 'g001ig0051', amount = 1, weight = 1, type = Item.Banner }, -- Знамя выносливости 400
 		{ id = 'g000ig1001', amount = 1, weight = 1, type = Item.Banner }, -- Знамя защиты 500
@@ -2577,7 +2578,6 @@ Pools.items.ruins.t2 = {
 		{ id = 'g001ig0045', amount = 1, weight = 1, type = Item.Armor }, -- Кровь святого (Артефакт) 800
 		{ id = 'g000ig2003', amount = 1, weight = 1, type = Item.Armor }, -- Наручи с черепом (Артефакт) 800
 		{ id = 'g001ig0558', amount = 1, weight = 1, type = Item.Armor }, -- Рог возмездия (Артефакт) 700
-		{ id = 'g001ig0589', amount = 1, weight = 1, type = Item.Armor }, -- Щит неведения (Артефакт) 800
 		{ id = 'g001ig0591', amount = 1, weight = 1, type = Item.Armor }, -- Щит отражения (Артефакт) 900
 		{ id = 'g001ig0420', amount = 1, weight = 1, type = Item.Jewel }, -- Вечные латы (Реликвия) 800
 		{ id = 'g001ig0104', amount = 1, weight = 1, type = Item.Jewel }, -- Зуб людоеда (Реликвия) 800
