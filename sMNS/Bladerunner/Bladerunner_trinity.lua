@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.10'
+local ver = '3.4.11'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -4898,7 +4898,7 @@ local Distributor = DistributionSystem
 local forbidden = {}
 forbidden.capital = {
 	'g001uu0049', -- Рух
-	'g000uu9005', -- Энт-защитникп
+	'g000uu9005', -- Энт-защитник
 }
 forbidden.ruins = {
 	'g000uu5025', -- Горгона
@@ -6771,13 +6771,39 @@ function getMarkets4()
 	---
 	markets[i] = absMarket()
 	Distributor:requestMarketData(markets[i], Pools.objects.markets.t4)
+
+	-- Определяем родные типы маны для участвующих рас
+	local nativeManaTypes = {}
+	for _, race in ipairs(Races) do
+		if race == Race.Human then
+			nativeManaTypes["lifeMana"] = true
+		elseif race == Race.Dwarf then
+			nativeManaTypes["runicMana"] = true
+		elseif race == Race.Undead then
+			nativeManaTypes["deathMana"] = true
+		elseif race == Race.Heretic then
+			nativeManaTypes["infernalMana"] = true
+		elseif race == Race.Elf then
+			nativeManaTypes["groveMana"] = true
+		end
+	end
+
+	-- Вычисляем количества для каждого типа маны один раз
+	local manaAmounts = {
+		lifeMana = nativeManaTypes["lifeMana"] and 300 or 500,
+		runicMana = nativeManaTypes["runicMana"] and 300 or 500,
+		deathMana = nativeManaTypes["deathMana"] and 300 or 500,
+		infernalMana = nativeManaTypes["infernalMana"] and 300 or 500,
+		groveMana = nativeManaTypes["groveMana"] and 300 or 500,
+	}
+
 	markets[i].stock = {
 		{ resource = Resource.Gold, value = { min = 1500, max = 1500 }},
-		{ resource = Resource.LifeMana, value = { min = 500, max = 500 }},
-		{ resource = Resource.DeathMana, value = { min = 500, max = 500 }},
-		{ resource = Resource.InfernalMana, value = { min = 500, max = 500 }},
-		{ resource = Resource.RunicMana, value = { min = 500, max = 500 }},
-		{ resource = Resource.GroveMana, value = { min = 500, max = 500 }},
+		{ resource = Resource.LifeMana, value = { min = manaAmounts.lifeMana, max = manaAmounts.lifeMana }},
+		{ resource = Resource.DeathMana, value = { min = manaAmounts.deathMana, max = manaAmounts.deathMana }},
+		{ resource = Resource.InfernalMana, value = { min = manaAmounts.infernalMana, max = manaAmounts.infernalMana }},
+		{ resource = Resource.RunicMana, value = { min = manaAmounts.runicMana, max = manaAmounts.runicMana }},
+		{ resource = Resource.GroveMana, value = { min = manaAmounts.groveMana, max = manaAmounts.groveMana }},
 	}
 	markets[i].exchangeRates = [[
 		function getExchangeRates(visitor)
