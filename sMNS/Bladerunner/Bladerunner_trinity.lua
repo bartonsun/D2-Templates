@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.11'
+local ver = '3.4.12'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -8453,6 +8453,57 @@ function getTemplateContents(races, size, parameters)
 
 	if is_island_mode then
 		contents.roads = 65
+	end
+
+	contents.events = {}
+	for _,race in ipairs(races) do
+		local diplomat_script = {
+			name = "LordDiplomat"..race,
+			chance = 100,
+			occurOnce = true,
+			races = {race},
+			targetRaces = {race},
+			conditions = {
+				{ type = Condition.PlayerType, ai = false },
+				{ type = Condition.Script, scriptCode = [[
+					local result = false
+					scenario:forEachPlayer(function (player)
+						if player.race == ]]..race..[[ then
+							result = (player.lord == Lord.Diplomat)
+						end
+					end)
+					return result
+				]], scriptDesc = "Lord is Diplomat check" },
+			},
+			effects = {
+				{ type = Effect.GiveSpell, spellId = "g000ss0152" }, -- Подкуп
+			}
+		}
+		local mage_script = {
+			name = "LordMage"..race,
+			chance = 100,
+			occurOnce = true,
+			races = {race},
+			targetRaces = {race},
+			conditions = {
+				{ type = Condition.PlayerType, ai = false },
+				{ type = Condition.Script, scriptCode = [[
+					local result = false
+					scenario:forEachPlayer(function (player)
+						if player.race == ]]..race..[[ then
+							result = (player.lord == Lord.Mage)
+						end
+					end)
+					return result
+				]], scriptDesc = "Lord is Diplomat check" },
+			},
+			effects = {
+				{ type = Effect.GiveSpell, spellId = "g000ss0301" }, -- Проклятье уязвимости I
+				{ type = Effect.GiveSpell, spellId = "g000ss0302" }, -- Проклятье уязвимости II
+			}
+		}
+		table.insert(contents.events, diplomat_script)
+		table.insert(contents.events, mage_script)
 	end
 
 	return contents
