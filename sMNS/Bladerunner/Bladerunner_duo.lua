@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.12'
+local ver = '3.4.13'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -118,6 +118,20 @@ local cm_2 = 203 -- белый
 ------------------------------------------------------------------------------------------------------------------------
 --- Расы
 local ALL_RACES = { Race.Human, Race.Dwarf, Race.Undead, Race.Heretic, Race.Elf }
+local RACE_NAMES = {
+	[Race.Human] = "Империя",
+	[Race.Dwarf] = "Горные кланы",
+	[Race.Undead] = "Орды нежити",
+	[Race.Heretic] = "Легионы проклятых",
+	[Race.Elf] = "Эльфийский союз",
+}
+local RACE_TAGS = {
+		[Race.Human] = 'EMPIRE',
+		[Race.Heretic] = 'LEGIONS',
+		[Race.Dwarf] = 'CLANS',
+		[Race.Undead] = 'HORDES',
+		[Race.Elf] = 'ELVES',
+	}
 local Races = {}
 local MissingRace = nil
 ------------------------------------------------------------------------------------------------------------------------
@@ -959,7 +973,7 @@ Pools.capital = {
 			{ id = 'g001ig0473', amount = 1, weight = 1 }, -- Сфера Статического разряда 100
 		}
 	},
-	rnd_scrolls_1 = {
+	rnd_scroll_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5021', amount = 1, weight = 1 }, -- Свиток "Ледяной щит" 200
@@ -968,7 +982,7 @@ Pools.capital = {
 			{ id = 'g000ig5023', amount = 1, weight = 1 }, -- Свиток "Сила Витара" 200
 		}
 	},
-	rnd_scrolls_2 = {
+	rnd_scroll_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g001ig0248', amount = 1, weight = 1 }, -- Свиток "Устрашающий гимн" 200
@@ -1186,7 +1200,7 @@ Pools.goods.t1 = {
 			{ id = 'g000ig6002', amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Heretic, Race.Elf} }, -- Посох некроманта 200
 		}
 	},
-	scrolls_1_buff = {
+	scroll_1_buff = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5003', amount = 1, weight = 1 }, -- Свиток "Сила" 200
@@ -1195,7 +1209,7 @@ Pools.goods.t1 = {
 			{ id = 'g001ig0250', amount = 1, weight = 1 }, -- Свиток "Стальные кости" 200
 		}
 	},
-	scrolls_1_debuff = {
+	scroll_1_debuff = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5045', amount = 1, weight = 1 }, -- Свиток "Tormentio" 200
@@ -1204,14 +1218,14 @@ Pools.goods.t1 = {
 			{ id = 'g001ig0248', amount = 1, weight = 1 }, -- Свиток "Устрашающий гимн" 200
 		}
 	},
-	scrolls_heal = {
+	scroll_heal = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5007', amount = 1, weight = 1 }, -- Свиток "Исцеление" 200
 			{ id = 'g000ig5029', amount = 1, weight = 1 }, -- Свиток "Ритуал исцеления" 400
 		}
 	},
-	scrolls_ward = {
+	scroll_ward = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5005', amount = 1, weight = 1 }, -- Свиток "Защита от магии Воды" 400
@@ -1220,7 +1234,7 @@ Pools.goods.t1 = {
 			{ id = 'g000ig5016', amount = 1, weight = 1 }, -- Свиток "Защита от магии Огня" 400
 		}
 	},
-	scrolls_2 = {
+	scroll_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g001ig0249', amount = 0, weight = 1 }, -- Свиток "Ardenti aqua" 400
@@ -1260,7 +1274,7 @@ Pools.goods.t1 = {
 			{ id = 'g000ig5067', amount = 1, weight = 1 }, -- Свиток "Чума" 400
 		}
 	},
-	scrolls_3 = {
+	scroll_3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5084', amount = 1, weight = 1 }, -- Свиток "Дар" 200
@@ -1452,20 +1466,20 @@ Pools.goods.t2 = {
 			{ id = 'g000ig6019', amount = 1, weight = 1 }, -- Посох Листвы 400
 		}
 	},
-	scrolls_heal_1 = {
+	scroll_heal_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5007', amount = 1, weight = 1 }, -- Свиток "Исцеление" 200
 			{ id = 'g000ig5029', amount = 1, weight = 1 }, -- Свиток "Ритуал исцеления" 400
 		}
 	},
-	scrolls_heal_2 = {
+	scroll_heal_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5040', amount = 1, weight = 1 }, -- Свиток "Песнь Вотана" 550
 		}
 	},
-	scrolls_summon = {
+	scroll_summon = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5031', amount = 1, weight = 1 }, -- Свиток "Призыв II: Валькирия" 550
@@ -1477,7 +1491,7 @@ Pools.goods.t2 = {
 			{ id = 'g000ig5108', amount = 1, weight = 1 }, -- Свиток "Призыв III: Энт Большой" 550
 		}
 	},
-	scrolls_1 = {
+	scroll_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5052', amount = 1, weight = 1 }, -- Свиток "Divis nocte" 550
@@ -1511,7 +1525,7 @@ Pools.goods.t2 = {
 			{ id = 'g001ig0579', amount = 1, weight = 1 }, -- Свиток "Хворь" 550
 		}
 	},
-	scrolls_2 = {
+	scroll_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5050', amount = 1, weight = 1 }, -- Свиток "Chronos" 400
@@ -1520,7 +1534,7 @@ Pools.goods.t2 = {
 			{ id = 'g001ig0256', amount = 1, weight = 1 }, -- Свиток "Могущество" 400
 		}
 	},
-	scrolls_3 = {
+	scroll_3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5103', amount = 1, weight = 1 }, -- Свиток "Призыв II: Энт" 400
@@ -1529,13 +1543,13 @@ Pools.goods.t2 = {
 			{ id = 'g001ig0085', amount = 1, weight = 1 }, -- Свиток "Потоп" 450
 		}
 	},
-	scrolls_4 = {
+	scroll_4 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5084', amount = 1, weight = 1 }, -- Свиток "Дар" 200
 		}
 	},
-	scrolls_ward = {
+	scroll_ward = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5005', amount = 1, weight = 1 }, -- Свиток "Защита от магии Воды" 400
@@ -1709,6 +1723,12 @@ Pools.goods.t3 = {
 			{ id = 'g000ig9136', amount = 1, weight = 1 }, -- Талисман горы 1600
 			{ id = 'g001ig0185', amount = 1, weight = 1 }, -- Талисман землетрясения 1800
 			{ id = 'g000ig9119', amount = 1, weight = 1 }, -- Талисман Всевышнего 1000
+		}
+	},
+	scroll_1 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g000ig5119', amount = 1, weight = 1 }, -- Свиток "Водосточный Колодец" 200
 		}
 	},
 	sphere_1 = {
@@ -2091,7 +2111,7 @@ Pools.loot.t2 = {
 			{ id = 'g000ig9116', amount = 1, weight = 1 }, -- Талисман святой земли 800
 		}
 	},
-	scrolls_1 = {
+	scroll_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5014', amount = 1, weight = 1 }, -- Свиток "Гнев Богов" 550 (40 урона)
@@ -2110,17 +2130,23 @@ Pools.loot.t2 = {
 			{ id = 'g001ig0580', amount = 1, weight = 1 }, -- Свиток "Небесный молот 550" (-Воздух/РБ)
 		}
 	},
-	scrolls_2 = {
+	scroll_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g000ig5099', amount = 1, weight = 1 }, -- Свиток "Опутывание" 400
 			{ id = 'g002ig0023', amount = 1, weight = 1 }, -- Свиток "Забвение" 400
 		}
 	},
-	scrolls_3 = {
+	scroll_3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = 'g001ig0085', amount = 1, weight = 1 }, -- Свиток "Потоп" 450
+		}
+	},
+	scroll_4 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g000ig5119', amount = 1, weight = 1 }, -- Свиток "Водосточный Колодец" 200
 		}
 	},
 }
@@ -5321,8 +5347,8 @@ function getCapital0(race)
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_sphere_1, 1, race)
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_sphere_2, 1, race)
 
-	Distributor:requestItems(capital.garrison, Pools.capital.rnd_scrolls_1, 1, race)
-	Distributor:requestItems(capital.garrison, Pools.capital.rnd_scrolls_2, 1, race)
+	Distributor:requestItems(capital.garrison, Pools.capital.rnd_scroll_1, 1, race)
+	Distributor:requestItems(capital.garrison, Pools.capital.rnd_scroll_2, 1, race)
 
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_bonus, 1, race)
 	Distributor:requestItems(capital.garrison, Pools.capital.rnd_equip, 1, race)
@@ -5397,10 +5423,10 @@ function getTowns2(race)
 			Pools.loot.t2.gold
 	), 1, race)
 	Distributor:requestItems(towns[i].stack, Pools.loot.t2.permo_2, 1, race)
-	Distributor:requestItems(towns[i].stack, Pools.loot.t2.scrolls_2, 1, race)
+	Distributor:requestItems(towns[i].stack, Pools.loot.t2.scroll_2, 1, race)
 	Distributor:requestItems(towns[i].stack, Pools.items.perks.pool_3, 1, race)
 	if is_island_mode then
-		Distributor:requestItems(towns[i].stack, Pools.loot.t2.scrolls_3, 1, race)
+		Distributor:requestItems(towns[i].stack, Pools.loot.t2.scroll_3, 1, race)
 	end
 	i = i + 1
 
@@ -5828,6 +5854,7 @@ function getStacks2(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.gold, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.ward_3, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.scroll_4, 1, race)
 	i = i + 1
 
 	--- 400*2
@@ -5849,7 +5876,7 @@ function getStacks2(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.ward_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.perk, 1, race)
-	Distributor:requestItems(stacks[i], Pools.goods.t2.scrolls_1, 2)
+	Distributor:requestItems(stacks[i], Pools.goods.t2.scroll_1, 2)
 	Distributor:requestItems(stacks[i], Pools.items.mana.normal, 1)
 	i = i + 1
 
@@ -6486,13 +6513,13 @@ function getMerchants1(race)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.staff_1, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.staff_2, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t1.staff_summon, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_1_buff, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_1_debuff, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_heal, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_ward, 1)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_3, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t1.scrolls_2, 2)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_3, 1, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.scroll_1_buff, 1, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.scroll_1_debuff, 1, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.scroll_heal, 1, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.scroll_ward, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.scroll_3, 1, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t1.scroll_2, 2)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_3, 1, race)
 	for id, config in pairs(setItemsConfig) do
 		if not setItemsStatus[id] and config.shops and isTableContains(config.shops, 't1') then
 			table.insert(merchants[#merchants].goods.items, { id = id, min = 1, max = 1 })
@@ -6549,14 +6576,14 @@ function getMerchants2(race)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.sphere_3, 1, race)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.staff_1, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t2.staff_2, 1)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_heal_1, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_heal_2, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_summon, 1)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_1, 2)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_2, 1)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_3, 1)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_4, 1, race)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_ward, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_heal_1, 1, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_heal_2, 1, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_summon, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_1, 2)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_2, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_3, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_4, 1, race)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_ward, 1)
 	for id, config in pairs(setItemsConfig) do
 		if not setItemsStatus[id] and config.shops and isTableContains(config.shops, 't2') then
 			table.insert(merchants[#merchants].goods.items, { id = id, min = 1, max = 1 })
@@ -6606,8 +6633,9 @@ function getMerchants3(id)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.sphere_3, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.staff_1, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.staff_2, 1)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_1, 2)
-	Distributor:requestItems(merchants[i], Pools.goods.t2.scrolls_ward, 1)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_1, 2)
+	Distributor:requestItems(merchants[i], Pools.goods.t3.scroll_1, 1, id)
+	Distributor:requestItems(merchants[i], Pools.goods.t2.scroll_ward, 1)
 	for id, config in pairs(setItemsConfig) do
 		if not setItemsStatus[id] and config.shops and isTableContains(config.shops, 't3') then
 			table.insert(merchants[#merchants].goods.items, { id = id, min = 1, max = 1 })
@@ -8100,6 +8128,10 @@ function getScenarioVariables()
 		{ name = 'SPELL_CAN_STEAL_LESS_COST_SUM', value = 501 },  -- лимит воровства заклинаний
 	}
 
+	for _,race in pairs(Races) do
+		table.insert(result, { name = 'LOSE_RACE_'..race,  value = 0 })
+	end
+
 	if emd({false, true, true, false}) then
 		setValueByName(result, 'GLOBAL_HIRE_LIMIT_LEADER', 0)
 		table.insert(result, { name = 'START_LEADER_CHANGE_MODE', value = 3 })
@@ -8121,7 +8153,6 @@ function getScenarioVariables()
 		end
 	end
 
-	local races = { 'EMPIRE', 'LEGIONS', 'CLANS', 'HORDES', 'ELVES' }
 	local t0 = 50
 	local t1 = 50
 	local t2 = 75
@@ -8175,8 +8206,8 @@ function getScenarioVariables()
 	end
 
 	for _, v in pairs(r_vars) do
-		for _, race in pairs(races) do
-			table.insert(result, { name = race..v['name'], value = v['value'] })
+		for _, race in pairs(Races) do
+			table.insert(result, { name = RACE_TAGS[race]..v['name'], value = v['value'] })
 		end
 	end
 	return result
@@ -8456,9 +8487,67 @@ function getTemplateContents(races, size, parameters)
 	end
 
 	contents.events = {}
+
+	hire_disable_event = {
+		name = "Disable leader hire",
+		chance = 100,
+		occurOnce = true,
+		races = Races,
+		targetRaces = Races,
+		conditions = {
+			{ type = Condition.Frequency, frequency = 5 },
+		},
+		effects = {
+			{ type = Effect.ModifyVariable, varName = "GLOBAL_HIRE_LIMIT_LEADER", operation=ModifyVariable.Set, value = 0 },
+		}
+	}
+	table.insert(contents.events, hire_disable_event)
+
 	for _,race in ipairs(races) do
-		local diplomat_script = {
-			name = "LordDiplomat"..race,
+		local own_city_event = {
+			name = "Own City "..race,
+			chance = 100,
+			occurOnce = true,
+			races = {race},
+			targetRaces = {race},
+			conditions = {
+				{ type = Condition.Frequency, frequency = 21 },
+				{ type = Condition.OwnCity, cityUid = "ZONE_"..c4_1.."_CITY_1" },
+			},
+			effects = {
+				{ type = Effect.Win, race = race },
+			}
+		}
+		local lose_race_event = {
+			name = "Win race "..race,
+			chance = 100,
+			occurOnce = true,
+			races = {race},
+			targetRaces = Races,
+			conditions = {
+				{ type = Condition.Script, scriptCode = [[
+					if scenario.day < 4 then
+						return false
+					end
+					local result = true
+					scenario:forEachStack(function (stack)
+						local owner = stack.owner
+						if owner.race ~= Race.Neutral and owner.race ~= ]]..race..[[ then
+							local leader = stack.leader
+							if leader.type ~= Leader.Rod and leader.type ~= Leader.Noble and leader.impl.type ~= Unit.Summon then
+								result = false
+							end
+						end
+					end)
+					return result
+				]] },
+			},
+			effects = {
+				{ type = Effect.Win, race = race },
+			}
+		}
+		local gm_spells_event = {
+			name = "Guildmaster spells "..race,
 			chance = 100,
 			occurOnce = true,
 			races = {race},
@@ -8473,14 +8562,14 @@ function getTemplateContents(races, size, parameters)
 						end
 					end)
 					return result
-				]], scriptDesc = "Lord is Diplomat check" },
+				]] },
 			},
 			effects = {
 				{ type = Effect.GiveSpell, spellId = "g000ss0152" }, -- Подкуп
 			}
 		}
-		local mage_script = {
-			name = "LordMage"..race,
+		local mage_spells_event = {
+			name = "Mage spells "..race,
 			chance = 100,
 			occurOnce = true,
 			races = {race},
@@ -8495,15 +8584,18 @@ function getTemplateContents(races, size, parameters)
 						end
 					end)
 					return result
-				]], scriptDesc = "Lord is Diplomat check" },
+				]] },
 			},
 			effects = {
 				{ type = Effect.GiveSpell, spellId = "g000ss0301" }, -- Проклятье уязвимости I
 				{ type = Effect.GiveSpell, spellId = "g000ss0302" }, -- Проклятье уязвимости II
 			}
 		}
-		table.insert(contents.events, diplomat_script)
-		table.insert(contents.events, mage_script)
+
+		table.insert(contents.events, own_city_event)
+		table.insert(contents.events, lose_race_event)
+		table.insert(contents.events, gm_spells_event)
+		table.insert(contents.events, mage_spells_event)
 	end
 
 	return contents
