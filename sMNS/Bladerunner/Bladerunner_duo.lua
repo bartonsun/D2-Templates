@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.13'
+local ver = '3.4.14'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -68,6 +68,9 @@ local kef = 1.0
 ------------------------------------------------------------------------------------------------------------------------
 --- Коэффициент разброса силы нейтралов
 local kr = 1.05
+------------------------------------------------------------------------------------------------------------------------
+--- Дополнительный коэффициент силы нейтралов в зонах т3-т5
+local dk = 1.05
 ------------------------------------------------------------------------------------------------------------------------
 --- Цвета зон
 ------------------------------------------------------------------------------------------------------------------------
@@ -3379,7 +3382,7 @@ Pools.mercenaries.t3 = {
 			{ data = { id = 'g000uu2003', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Мучитель 630
 			{ data = { id = 'g000uu0064', level = 3, unique = true }, weight = 3, races = { Race.Heretic } }, -- Демонолог 760
 			{ data = { id = 'g000uu0171', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Подражатель 1200
-			{ data = { id = 'g000uu0067', level = 3, unique = true }, weight = 1, races = { Race.Heretic } }, -- Ведьма 210
+			{ data = { id = 'g000uu0067', level = 2, unique = true }, weight = 1, races = { Race.Heretic } }, -- Ведьма 210
 			{ data = { id = 'g004uu6101', level = 2, unique = true }, weight = 1, races = { Race.Heretic } }, -- Дьяволенок 916
 			--- Elf
 			{ data = { id = 'g000uu2012', level = 3, unique = true }, weight = 1, races = { Race.Elf } }, -- Кентавр Стрелок 855
@@ -5444,7 +5447,7 @@ function getTowns4()
 
 	towns[i].stack = absStack()
 	towns[i].stack.subraceTypes = { Subrace.NeutralDragon, Subrace.Human, Subrace.Heretic, Subrace.Dwarf, Subrace.Elf }
-	towns[i].stack.value = getStackValue(towns[i].stack, 1100)
+	towns[i].stack.value = getStackValue(towns[i].stack, 1100 * dk)
 
 	towns[i].stack.loot.itemTypes = {Item.Scroll, Item.Orb}
 	towns[i].stack.loot.value = {min = 700, max = 820}
@@ -5570,7 +5573,7 @@ function getRuins3(types)
 		Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t3)
 		ruins[i].guard = absStack()
 		ruins[i].guard.subraceTypes = rsub(true)
-		ruins[i].guard.value = getStackValue(ruins[i].guard, 900)
+		ruins[i].guard.value = getStackValue(ruins[i].guard, 900 * dk)
 		ruins[i].guard.forbiddenIds = forbidden.ruins
 		ruins[i].gold = {min = 400, max = 450}
 
@@ -5613,7 +5616,7 @@ function getRuins4()
 		Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t4)
 		ruins[i].guard = absStack()
 		ruins[i].guard.subraceTypes = rsub(true)
-		ruins[i].guard.value = getStackValue(ruins[i].guard, 1400, 1500)
+		ruins[i].guard.value = getStackValue(ruins[i].guard, 1400 * dk, 1500 * dk)
 		ruins[i].guard.forbiddenIds = forbidden.ruins
 		ruins[i].gold = {min = 450, max = 500}
 
@@ -5656,7 +5659,7 @@ function getRuins5()
 		Distributor:requestRuinData(ruins[i], Pools.objects.ruins.t5)
 		ruins[i].guard = absStack()
 		ruins[i].guard.subraceTypes = rsub(true)
-		ruins[i].guard.value = getStackValue(ruins[i].guard, 1600, 1700)
+		ruins[i].guard.value = getStackValue(ruins[i].guard, 1600 * dk, 1700 * dk)
 		ruins[i].guard.forbiddenIds = forbidden.ruins
 		ruins[i].gold = {min = 500, max = 550}
 
@@ -5921,7 +5924,7 @@ function getStacks3(race)
 	--- 600*2
 	stacks[i] = absStack()
 	stacks[i].count = 2
-	stacks[i].value = getStackValue(stacks[i], 600)
+	stacks[i].value = getStackValue(stacks[i], 600 * dk)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_1, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_2, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.misc_1, 2, race)
@@ -5942,7 +5945,7 @@ function getStacks3(race)
 	--- 700*1
 	stacks[i] = absStack()
 	stacks[i].count = 2
-	stacks[i].value = getStackValue(stacks[i], 700)
+	stacks[i].value = getStackValue(stacks[i], 700 * dk)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_1, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_2, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.buff_2, 1)
@@ -5956,7 +5959,7 @@ function getStacks3(race)
 
 	--- 750*1
 	stacks[i] = absStack()
-	stacks[i].value = getStackValue(stacks[i], 750)
+	stacks[i].value = getStackValue(stacks[i], 750 * dk)
 	stacks[i].forbiddenIds = forbidden.stack
 	stacks[i].loot.itemTypes = { Item.Orb }
 	stacks[i].loot.value = { min = 600, max = 600 }
@@ -5970,7 +5973,7 @@ function getStacks3(race)
 	--- 800*1
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
-	stacks[i].value = getStackValue(stacks[i], 800)
+	stacks[i].value = getStackValue(stacks[i], 800 * dk)
 	if math.random(2) == 1 then
 		stacks[i].forbiddenIds = forbidden.stack
 	end
@@ -5984,7 +5987,7 @@ function getStacks3(race)
 	--- 1100*1
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = { Subrace.NeutralDragon, Subrace.Human, Subrace.Heretic, Subrace.Dwarf, Subrace.Elf }
-	stacks[i].value = getStackValue(stacks[i], 1100)
+	stacks[i].value = getStackValue(stacks[i], 1100 * dk)
 	if math.random(2) == 1 then
 		stacks[i].forbiddenIds = forbidden.stack
 	end
@@ -6009,7 +6012,7 @@ function getStacks4(race)
 	--- 1100*1
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = { Subrace.NeutralDragon, Subrace.Human, Subrace.Heretic, Subrace.Dwarf, Subrace.Elf }
-	stacks[i].value = getStackValue(stacks[i], 1100)
+	stacks[i].value = getStackValue(stacks[i], 1100 * dk)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_6, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.heal_7, 1, race)
@@ -6031,7 +6034,7 @@ function getStacks5(race)
 	--- 1300*1 -- 1
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
-	stacks[i].value = getStackValue(stacks[i], 1300)
+	stacks[i].value = getStackValue(stacks[i], 1300 * dk)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.art_1, 1, race)
@@ -6043,7 +6046,7 @@ function getStacks5(race)
 	--- 1300*1 -- 2
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
-	stacks[i].value = getStackValue(stacks[i], 1300)
+	stacks[i].value = getStackValue(stacks[i], 1300 * dk)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.boots_1, 1, race)
@@ -6055,7 +6058,7 @@ function getStacks5(race)
 	--- 1300*1 -- 3
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
-	stacks[i].value = getStackValue(stacks[i], 1300)
+	stacks[i].value = getStackValue(stacks[i], 1300 * dk)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.banner_1, 1, race)
@@ -6066,7 +6069,7 @@ function getStacks5(race)
 	--- 1300*1 -- 4
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
-	stacks[i].value = getStackValue(stacks[i], 1300)
+	stacks[i].value = getStackValue(stacks[i], 1300 * dk)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.relic_1, 1, race)
@@ -6078,7 +6081,7 @@ function getStacks5(race)
 	--- 1600*1
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
-	stacks[i].value = getStackValue(stacks[i], 1600)
+	stacks[i].value = getStackValue(stacks[i], 1600 * dk)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 7, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_3, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.aura_1, 1)
@@ -6099,7 +6102,7 @@ function getStacksW(id)
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].order = Order.Bezerk
 	stacks[i].leaderIds = {'g000uu8138'} -- Русалка
-	stacks[i].value = getStackValue(stacks[i], 1300)
+	stacks[i].value = getStackValue(stacks[i], 1300 * dk)
 
 	Distributor:requestItems(stacks[i], Pools.loot.w35.ward_mix, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
@@ -6116,7 +6119,7 @@ function getStacksW(id)
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].order = Order.Bezerk
 	stacks[i].leaderIds = {'g000uu5126'} -- Русалка
-	stacks[i].value = getStackValue(stacks[i], 1300)
+	stacks[i].value = getStackValue(stacks[i], 1300 * dk)
 
 	Distributor:requestItems(stacks[i], Pools.loot.w35.ward_mix, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
@@ -6133,7 +6136,7 @@ function getStacksW(id)
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].order = Order.Bezerk
 	stacks[i].leaderIds = {'g000uu5127'} -- Кракен
-	stacks[i].value = getStackValue(stacks[i], 1300)
+	stacks[i].value = getStackValue(stacks[i], 1300 * dk)
 
 	Distributor:requestItems(stacks[i], Pools.loot.w35.ward_mix, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
@@ -6149,7 +6152,7 @@ function getStacksW(id)
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].order = Order.Bezerk
 	stacks[i].leaderIds = {'g000uu5129'} -- Морской змей
-	stacks[i].value = getStackValue(stacks[i], 1300)
+	stacks[i].value = getStackValue(stacks[i], 1300 * dk)
 
 	Distributor:requestItems(stacks[i], Pools.loot.w35.ward_mix, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
@@ -6240,21 +6243,21 @@ function getGuardObject3(id)
 	if id == 1 then
 		--- 650*1
 		stack = absStack()
-		stack.value = getStackValue(stack, 650)
+		stack.value = getStackValue(stack, 650 * dk)
 		Distributor:requestItems(stack, Pools.loot.t3.heal_1, 1, pool_race)
 		Distributor:requestItems(stack, Pools.loot.t3.heal_2, 1, pool_race)
 		Distributor:requestItems(stack, Pools.loot.t3.misc_1, 1, pool_race)
 	elseif id == 2 then
 		--- 650*1
 		stack = absStack()
-		stack.value = getStackValue(stack, 650)
+		stack.value = getStackValue(stack, 650 * dk)
 		Distributor:requestItems(stack, Pools.loot.t3.heal_2, 1, pool_race)
 		Distributor:requestItems(stack, Pools.items.ward_el, 1, pool_race)
 		Distributor:requestItems(stack, Pools.items.buff_1, 1, pool_race)
 	elseif id == 3 then
 		--- 650*1
 		stack = absStack()
-		stack.value = getStackValue(stack, 650)
+		stack.value = getStackValue(stack, 650 * dk)
 		Distributor:requestItems(stack, Pools.loot.t3.heal_3, 1, pool_race)
 		Distributor:requestItems(stack, Pools.items.ward_dot, 1, pool_race)
 		Distributor:requestItems(stack, Pools.items.ward_1, 1, pool_race)
@@ -6266,7 +6269,7 @@ function getGuard34(race, id)
 	local stack = absStack()
 	if id == 1 then
 		--- 700*1
-		stack.value = getStackValue(stack, 600)
+		stack.value = getStackValue(stack, 600 * dk)
 		Distributor:requestItems(stack, Pools.loot.t3.heal_1, 1, race)
 		Distributor:requestItems(stack, Pools.loot.t3.heal_2, 1, race)
 		Distributor:requestItems(stack, Pools.loot.t3.misc_1, 1, race)
@@ -6278,7 +6281,7 @@ function getGuard34(race, id)
 	elseif id == 2 then
 		--- 850*1
 		stack.subraceTypes = rsub(true)
-		stack.value = getStackValue(stack, 850)
+		stack.value = getStackValue(stack, 850 * dk)
 		stack.forbiddenIds = forbidden.stack
 		Distributor:requestItems(stack, Pools.loot.t3.heal_4, 1, race)
 		Distributor:requestItems(stack, Pools.loot.t3.heal_5, 1, race)
@@ -6292,7 +6295,7 @@ function getGuard34(race, id)
 
 	elseif id == 3 and emd({false, true, true, false}) then
 		--- 350*1
-		stack.value = { min = 350, max = 350 }
+		stack.value = getStackValue(stack, 350 * dk)
 		stack.subrace = Subrace.NeutralDragon
 		stack.order = Order.Roam
 		stack.loot.items = {
@@ -6420,7 +6423,7 @@ function getGuardIsland35(race, id)
 		stack.subraceTypes = rsub(true)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {'g000uu8138'} -- Русалка
-		stack.value = getStackValue(stack, 1300)
+		stack.value = getStackValue(stack, 1300 * dk)
 
 		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
 		Distributor:requestItems(stack, Pools.loot.t5.gold_1, 1, race)
@@ -6433,7 +6436,7 @@ function getGuardIsland35(race, id)
 		stack.subraceTypes = rsub(true)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {'g000uu5126'} -- Русалка
-		stack.value = getStackValue(stack, 1300)
+		stack.value = getStackValue(stack, 1300 * dk)
 
 		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
 		Distributor:requestItems(stack, Pools.loot.t5.gold_1, 1, race)
@@ -6445,7 +6448,7 @@ function getGuardIsland35(race, id)
 		stack.subraceTypes = rsub(true)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {'g000uu5127'} -- Кракен
-		stack.value = getStackValue(stack, 1300)
+		stack.value = getStackValue(stack, 1300 * dk)
 
 		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
 		Distributor:requestItems(stack, Pools.loot.t5.gold_2, 1, race)
@@ -6457,7 +6460,7 @@ function getGuardIsland35(race, id)
 		stack.subraceTypes = rsub(true)
 		stack.order = Order.Bezerk
 		stack.leaderIds = {'g000uu5129'} -- Морской змей
-		stack.value = getStackValue(stack, 1300)
+		stack.value = getStackValue(stack, 1300 * dk)
 
 		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
 		Distributor:requestItems(stack, Pools.loot.t5.gold_2, 1, race)
@@ -7112,7 +7115,7 @@ end
 function getBags3(race)
 	local bags = absBags()
 	Distributor:requestItems(bags, Pools.items.bags.t3.heal_1, 3, race)
-	Distributor:requestItems(bags, Pools.items.bags.t3.gold, 1, race)
+	--Distributor:requestItems(bags, Pools.items.bags.t3.gold, 1, race)
 	Distributor:requestItems(bags, rnd(
 			Pools.items.buff_1,
 			Pools.items.ward_el
@@ -7125,7 +7128,7 @@ function getBags5(race)
 	local bags = absBags()
 	bags.count = 2
 	Distributor:requestItems(bags, Pools.items.bags.t5.heal_1, 2, race)
-	Distributor:requestItems(bags, Pools.items.bags.t5.gold, 1, race)
+	--Distributor:requestItems(bags, Pools.items.bags.t5.gold, 1, race)
 	Distributor:requestItems(bags, Pools.items.bags.t5.permo_1, 1)
 	Distributor:requestItems(bags, Pools.items.bags.t5.permo_2, 1)
 	Distributor:requestItems(bags, Pools.items.buff_e2, 1)
@@ -8526,7 +8529,7 @@ function getTemplateContents(races, size, parameters)
 			targetRaces = Races,
 			conditions = {
 				{ type = Condition.Script, scriptCode = [[
-					if scenario.day < 4 then
+					if scenario.day < 5 then
 						return false
 					end
 					local result = true
