@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.14'
+local ver = '3.4.15'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -2468,7 +2468,7 @@ Pools.loot.t5 = {
 			{ id = 'g001ig0021', amount = 1, weight = 1 }, -- Аура слепой ярости 1200 (10% урона)
 			{ id = 'g001ig0024', amount = 1, weight = 1 }, -- Аура защиты 1200 (10 брони)
 			{ id = 'g001ig0025', amount = 1, weight = 1 }, -- Аура живучести 1200 (10% ОЗ)
-			{ id = 'g001ig0031', amount = 1, weight = 1 }, -- Аура точности 1200 (15% точности)
+			--{ id = 'g001ig0031', amount = 1, weight = 1 }, -- Аура точности 1200 (15% точности)
 			{ id = 'g001ig0563', amount = 1, weight = 1 }, -- Аура внимательности 1200 (5% крита)
 		}
 	},
@@ -2984,6 +2984,7 @@ Pools.objects.ruins = {
 			{ data = { name = '33 страницы свода правил' }, weight = 1 },
 			{ data = { name = 'Псковская голубая порно устрица "Сраная руина"' }, weight = 1 },
 			{ data = { name = 'Аптека "2 сатира"' }, weight = 1 },
+			{ data = { name = 'Дом Анжумання. Заброшен (Влад укатил праздновать)."' }, weight = 1 },
 		}
 	},
 	t1 = {
@@ -3151,6 +3152,7 @@ Pools.objects.mercenaries = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Обессатиренный заповедник', description = 'Козлят нет, забрал доктор', units = {} }, weight = 1 },
+			{ data = { name = 'Unicorn Dash', description = 'Подкинь до драки, брат!', units = {} }, weight = 1 },
 		}
 	},
 	t5 = {
@@ -3528,6 +3530,7 @@ local bes_t0_mods = {
 	g201um9045 = 1, -- regen up to 25%
 	g201um9130 = 1, -- +10 negotiation
 	g201um9139 = 1, -- 1 source - life
+	g070um0083 = 1, -- hero magic resist
 
 	g070um0014 = 1, -- Некромант | Нежить
 	g070um0217 = 1, -- Шествие орд | Рыцарь Смерти
@@ -5853,7 +5856,7 @@ function getStacks2(race)
 	Distributor:requestItems(stacks[i], Pools.items.buff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.items.mana.normal, 1)
 
-	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.heal_1, Pools.loot.t2.heal_2), 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.gold, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.ward_3, 1, race)
@@ -5864,8 +5867,8 @@ function getStacks2(race)
 	stacks[i] = absStack()
 	stacks[i].count = 2
 	stacks[i].value = getStackValue(stacks[i], 400)
-	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.heal_1, Pools.loot.t2.heal_2), 1, race)
-	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.ward_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.buff_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.orb, 2)
@@ -5875,7 +5878,7 @@ function getStacks2(race)
 	stacks[i] = absStack()
 	stacks[i].count = 2
 	stacks[i].value = getStackValue(stacks[i], 500)
-	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.heal_1, Pools.loot.t2.heal_2), 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.ward_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.perk, 1, race)
@@ -5897,7 +5900,7 @@ function getStacks2(race)
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 575)
-	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.heal_1, Pools.loot.t2.heal_2), 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_1, 2, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.permo_2, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.buff_2, 1, race)
@@ -5907,7 +5910,7 @@ function getStacks2(race)
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = rsub(true)
 	stacks[i].value = getStackValue(stacks[i], 600)
-	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t2.heal_2, 2, race)
 	Distributor:requestItems(stacks[i], rnd(Pools.loot.t2.talisman, Pools.loot.t2.gold), 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t2.permo_3, 1)
 	Distributor:requestItems(stacks[i], Pools.items.buff_1, 1)
@@ -5984,10 +5987,10 @@ function getStacks3(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t3.scroll, 1)
 	i = i + 1
 
-	--- 1100*1
+	--- 1155*1
 	stacks[i] = absStack()
 	stacks[i].subraceTypes = { Subrace.NeutralDragon, Subrace.Human, Subrace.Heretic, Subrace.Dwarf, Subrace.Elf }
-	stacks[i].value = getStackValue(stacks[i], 1100 * dk)
+	stacks[i].value = getStackValue(stacks[i], 1155 * dk)
 	if math.random(2) == 1 then
 		stacks[i].forbiddenIds = forbidden.stack
 	end
@@ -6223,8 +6226,7 @@ function getGuardObject2(race, id)
 		--- 350*1
 		stack = absStack()
 		stack.value = getStackValue(stack, 350)
-		Distributor:requestItems(stack, Pools.loot.t2.heal_1, 1, pool_race)
-		Distributor:requestItems(stack, Pools.loot.t2.heal_2, 1, pool_race)
+		Distributor:requestItems(stack, Pools.loot.t2.heal_2, 2, pool_race)
 		Distributor:requestItems(stack, Pools.loot.t2.buff_1, 1, pool_race)
 		Distributor:requestItems(stack, Pools.loot.t2.gold_1, 1, pool_race)
 	end
