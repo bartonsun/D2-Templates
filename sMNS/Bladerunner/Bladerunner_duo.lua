@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.15'
+local ver = '3.4.16'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -1594,6 +1594,12 @@ Pools.goods.t3 = {
 			{ id = 'g002ig0006', amount = 1, weight = 1 }, -- Зелье бдительности 550
 		}
 	},
+	ward_debuff = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g002ig0009', amount = 1, weight = 1 }, -- Эликсир очищения 1000
+		}
+	},
 	permo_ward_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
@@ -2406,17 +2412,17 @@ Pools.loot.t5 = {
 	gold_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.gold.g200, amount = 1, weight = 1 },
-			{ id = Items.gold.g250, amount = 1, weight = 1 },
-			{ id = Items.gold.g300, amount = 1, weight = 1 },
+			{ id = Items.gold.g200, amount = 2, weight = 1 },
+			{ id = Items.gold.g250, amount = 2, weight = 1 },
+			--{ id = Items.gold.g300, amount = 1, weight = 1 },
 		}
 	},
 	gold_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ id = Items.gold.g250, amount = 1, weight = 1 },
-			{ id = Items.gold.g300, amount = 1, weight = 1 },
-			{ id = Items.gold.g350, amount = 1, weight = 1 },
+			{ id = Items.gold.g250, amount = 2, weight = 1 },
+			{ id = Items.gold.g300, amount = 2, weight = 1 },
+			--{ id = Items.gold.g350, amount = 1, weight = 1 },
 		}
 	},
 	gold_3 = {
@@ -2424,7 +2430,7 @@ Pools.loot.t5 = {
 		items = {
 			{ id = Items.gold.g300, amount = 1, weight = 1 },
 			{ id = Items.gold.g400, amount = 1, weight = 1 },
-			{ id = Items.gold.g500, amount = 1, weight = 1 },
+			--{ id = Items.gold.g500, amount = 1, weight = 1 },
 		}
 	},
 	art_1 = {
@@ -2984,7 +2990,7 @@ Pools.objects.ruins = {
 			{ data = { name = '33 страницы свода правил' }, weight = 1 },
 			{ data = { name = 'Псковская голубая порно устрица "Сраная руина"' }, weight = 1 },
 			{ data = { name = 'Аптека "2 сатира"' }, weight = 1 },
-			{ data = { name = 'Дом Анжумання. Заброшен (Влад укатил праздновать)."' }, weight = 1 },
+			{ data = { name = 'Дом Анжумання. Заброшен (Влад укатил праздновать).' }, weight = 1 },
 		}
 	},
 	t1 = {
@@ -3084,7 +3090,7 @@ Pools.objects.merchants = {
 	t3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ data = { name = 'Гастрономический бутик', description = 'Продаются продукты со всего мира! Гордость нашей лавки особый вид макарон - фетучини' }, weight = 1 },
+			{ data = { name = 'Гастрономический бутик', description = 'Продаются продукты со всего мира. Гордость нашей лавки - особый вид макарон - "Фетучини"!' }, weight = 1 },
 			{ data = { name = 'Магазин Сатонира', description = 'У меня лучший CUMпот в округе!' }, weight = 1 },
 		}
 	},
@@ -3152,7 +3158,7 @@ Pools.objects.mercenaries = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { name = 'Обессатиренный заповедник', description = 'Козлят нет, забрал доктор', units = {} }, weight = 1 },
-			{ data = { name = 'Unicorn Dash', description = 'Подкинь до драки, брат!', units = {} }, weight = 1 },
+			{ data = { name = 'Сервис поиска попутчиков "Unicorn Dash"', description = 'Подкинь до драки, брат!', units = {} }, weight = 1 },
 		}
 	},
 	t5 = {
@@ -3457,6 +3463,13 @@ Pools.mercenaries.t3 = {
 			{ data = { id = 'g000uu5010', level = 1, unique = true }, weight = 1 }, -- Облачная Погибель 2370
 			{ data = { id = 'g001uu0051', level = 1, unique = true }, weight = 1 }, -- Каменный предок 3500
 			{ data = { id = 'g000uu5029', level = 1, unique = true }, weight = 1 }, -- Морской змей 3500
+		}
+	},
+	m8 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ data = { id = 'g000uu9009', level = 1, unique = true }, weight = 1 }, -- Сущность волны 1000
+			{ data = { id = 'g000uu9628', level = 1, unique = true }, weight = 1 }, -- Изменник 600
 		}
 	},
 }
@@ -6271,7 +6284,7 @@ function getGuard34(race, id)
 	local stack = absStack()
 	if id == 1 then
 		--- 700*1
-		stack.value = getStackValue(stack, 600 * dk)
+		stack.value = getStackValue(stack, 700 * dk)
 		Distributor:requestItems(stack, Pools.loot.t3.heal_1, 1, race)
 		Distributor:requestItems(stack, Pools.loot.t3.heal_2, 1, race)
 		Distributor:requestItems(stack, Pools.loot.t3.misc_1, 1, race)
@@ -6279,6 +6292,17 @@ function getGuard34(race, id)
 				Pools.items.buff_1,
 				Pools.items.ward_el
 		), 1)
+		if is_island_mode then
+			stack.subrace = Subrace.NeutralWater
+			stack.leaderIds = {
+				'g000uu5127', -- Кракен
+				'g000uu5129', -- Морской змей
+				'g000uu7522', -- Наяда
+				'g000uu8138', -- Никса
+				'g000uu5126', -- Русалка
+			}
+			stack.order = { type = Order.Bezerk }
+		end
 
 	elseif id == 2 then
 		--- 850*1
@@ -6299,7 +6323,7 @@ function getGuard34(race, id)
 		--- 350*1
 		stack.value = getStackValue(stack, 350 * dk)
 		stack.subrace = Subrace.NeutralDragon
-		stack.order = Order.Roam
+		stack.order = { type = Order.Roam }
 		stack.loot.items = {
 			{ id = 'g000ig9040', min = 1, max = 1 }, -- Сфера Полиморфа
 		}
@@ -6348,7 +6372,7 @@ function getGuardIsland03(race, id)
 		--- 280*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
 		stack.value = getStackValue(stack, 280)
-		stack.order = Order.Bezerk
+		stack.order = { type = Order.Bezerk }
 		stack.leaderIds = {
 			'g000uu7522', -- Наяда 80
 			'g000uu5126', -- Русалка 100
@@ -6362,7 +6386,7 @@ function getGuardIsland03(race, id)
 		--- 300*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
 		stack.value = getStackValue(stack, 300)
-		stack.order = Order.Bezerk
+		stack.order = { type = Order.Bezerk }
 		stack.leaderIds = {
 			'g000uu7522', -- Наяда 80
 			'g000uu5126', -- Русалка 100
@@ -6385,7 +6409,7 @@ function getGuardIsland23(race, id)
 		--- 750*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
 		stack.value = getStackValue(stack, 750)
-		stack.order = Order.Bezerk
+		stack.order = { type = Order.Bezerk }
 		stack.leaderIds = {
 			'g000uu5126', -- Русалка 100
 			'g000uu5127', -- Кракен 310
@@ -6399,7 +6423,7 @@ function getGuardIsland23(race, id)
 		--- 800*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
 		stack.value = getStackValue(stack, 800)
-		stack.order = Order.Bezerk
+		stack.order = { type = Order.Bezerk }
 		stack.leaderIds = {
 			'g000uu8138', -- Никса 105
 			'g000uu5129', -- Морской змей 400
@@ -6420,55 +6444,52 @@ function getGuardIsland35(race, id)
 	end
 	local stack = absStack()
 	if id == 1 then
-		--- 1300*1 waterOnly
+		--- 700*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
 		stack.subraceTypes = rsub(true)
-		stack.order = Order.Bezerk
+		stack.order = { type = Order.Bezerk }
 		stack.leaderIds = {'g000uu8138'} -- Русалка
-		stack.value = getStackValue(stack, 1300 * dk)
+		stack.value = getStackValue(stack, 700 * dk)
 
-		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
-		Distributor:requestItems(stack, Pools.loot.t5.gold_1, 1, race)
-		Distributor:requestItems(stack, Pools.loot.t5.art_1, 1, race)
-		Distributor:requestItems(stack, Pools.items.mana.normal, 1)
-		Distributor:requestItems(stack, Pools.items.ward_el, 2)
+	Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
+	Distributor:requestItems(stack, Pools.loot.t2.heal_2, 2, race)
+	Distributor:requestItems(stack, Pools.items.ward_el, 1)
 	elseif id == 2 then
-		--- 1300*1 waterOnly
+		--- 750*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
 		stack.subraceTypes = rsub(true)
-		stack.order = Order.Bezerk
+		stack.order = { type = Order.Bezerk }
 		stack.leaderIds = {'g000uu5126'} -- Русалка
-		stack.value = getStackValue(stack, 1300 * dk)
+		stack.value = getStackValue(stack, 750 * dk)
 
-		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
-		Distributor:requestItems(stack, Pools.loot.t5.gold_1, 1, race)
-		Distributor:requestItems(stack, Pools.loot.t5.boots_1, 1, race)
-		Distributor:requestItems(stack, Pools.items.ward_1, 2)
+	Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
+	Distributor:requestItems(stack, Pools.loot.t2.heal_1, 1, race)
+	Distributor:requestItems(stack, Pools.loot.t2.heal_2, 1, race)
+	Distributor:requestItems(stack, Pools.items.mana.normal, 1)
 	elseif id == 3 then
-		--- 1300*1 waterOnly
+		--- 800*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
 		stack.subraceTypes = rsub(true)
-		stack.order = Order.Bezerk
+		stack.order = { type = Order.Bezerk }
 		stack.leaderIds = {'g000uu5127'} -- Кракен
-		stack.value = getStackValue(stack, 1300 * dk)
+		stack.value = getStackValue(stack, 800 * dk)
 
-		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
-		Distributor:requestItems(stack, Pools.loot.t5.gold_2, 1, race)
-		Distributor:requestItems(stack, Pools.loot.t5.banner_1, 1, race)
-		Distributor:requestItems(stack, Pools.items.ward_dot, 2)
+	Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
+	Distributor:requestItems(stack, Pools.loot.t2.heal_1, 1, race)
+	Distributor:requestItems(stack, Pools.loot.t2.heal_2, 1, race)
+	Distributor:requestItems(stack, Pools.items.buff_e2, 1)
 	elseif id == 4 then
-		--- 1300*1 waterOnly
+		--- 900*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
 		stack.subraceTypes = rsub(true)
-		stack.order = Order.Bezerk
+		stack.order = { type = Order.Bezerk }
 		stack.leaderIds = {'g000uu5129'} -- Морской змей
-		stack.value = getStackValue(stack, 1300 * dk)
+		stack.value = getStackValue(stack, 900 * dk)
 
-		Distributor:requestItems(stack, Pools.loot.t5.heal_1, 3, race)
-		Distributor:requestItems(stack, Pools.loot.t5.gold_2, 1, race)
-		Distributor:requestItems(stack, Pools.loot.t5.relic_1, 1, race)
-		Distributor:requestItems(stack, Pools.items.buff_e2, 1)
-		Distributor:requestItems(stack, Pools.items.mana.small, 2)
+	Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
+	Distributor:requestItems(stack, Pools.loot.t2.heal_2, 2, race)
+	Distributor:requestItems(stack, rnd(Pools.loot.t2.talisman, Pools.loot.t2.gold), 1, race)
+	Distributor:requestItems(stack, Pools.items.buff_1, 1)
 	end
 
 	return stack
@@ -6620,6 +6641,7 @@ function getMerchants3(id)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.heal, 27, id)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.buff_1, 4, id)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.buff_2, 3, id)
+	Distributor:requestItems(merchants[i], Pools.goods.t3.ward_debuff, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.permo_ward_1, 2)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.permo_ward_2, 1)
 	Distributor:requestItems(merchants[i], Pools.goods.t3.permo_stat, 1)
@@ -7381,8 +7403,8 @@ function getZone3(id)
 			zone.fill = Fill.Water
 		end
 		zone.border = Border.Water
-		zone.water = 35
-		zone.waterType = Water.Lakes
+		--zone.water = 35
+		--zone.waterType = Water.Lakes
 		zone.roads = 65
 	end
 	zone.terrainType = getTerrainByRace(MissingRace)
@@ -7410,8 +7432,8 @@ function getZone4(id)
 			zone.fill = Fill.Water
 		end
 		zone.border = Border.Water
-		zone.water = 35
-		zone.waterType = Water.Lakes
+		--zone.water = 35
+		--zone.waterType = Water.Lakes
 		zone.roads = 65
 	end
 	zone.forest = 20
@@ -7478,9 +7500,9 @@ function getZoneE(id)
 	local zone = absZone(id, getZoneSizes().ze)
 	zone.label = ''
 	if is_island_mode then
-		zone.border = Border.Water
-		zone.type = Zone.Water
-		zone.fill = Fill.Water
+		zone.border = Border.Closed
+		zone.type = Zone.Treasure
+		zone.fill = Fill.Mountain
 	else
 		zone.border = Border.Closed
 		zone.type = Zone.Junction
@@ -8439,76 +8461,27 @@ function getDiplomacyRelations()
 		return {}
 	end
 end
-------------------------------------------------------------------------------------------------------------------------
---- Расы
-------------------------------------------------------------------------------------------------------------------------
-function shuffleRaces(races)
-	if template_mode == trinity and game_mode ~= 1 then
-		local team1 = {races[1], races[2]}
-		local team2 = {races[3], races[4]}
-		shake(team1)
-		shake(team2)
-		local teams = {team1, team2}
-		shake(teams)
-		races = {
-			teams[1][1], teams[1][2],
-			teams[2][1], teams[2][2],
-		}
-	elseif template_mode == clover and game_mode ~= 1 then
-		local team = {races[2], races[3]}
-		shake(team)
-		races = {races[1], team[1], team[2]}
-	else
-		shake(races)
-	end
-	Races = races
-end
-------------------------------------------------------------------------------------------------------------------------
---- Шаблон
-------------------------------------------------------------------------------------------------------------------------
-function getTemplateContents(races, size, parameters)
-	local contents = {}
 
-	map_size = size or map_size
+function getEvents()
+	local events = {}
 
-	shuffleRaces(races)
-	readCustomParameters(parameters)
-
-	MissingRace = rndt(getMissingRaces())
-
-	-- Инициализируем систему распределения
-	Distributor:init()
-
-	contents.diplomacy = getDiplomacyRelations()
-	contents.zones = getZones()
-	contents.connections = getConnections()
-	contents.scenarioVariables = getScenarioVariables()
-
-	-- Выполняем распределение данных
-	Distributor:distribute()
-
-	if is_island_mode then
-		contents.roads = 65
-	end
-
-	contents.events = {}
-
-	hire_disable_event = {
+	local hire_disable_event = {
 		name = "Disable leader hire",
 		chance = 100,
 		occurOnce = true,
 		races = Races,
 		targetRaces = Races,
 		conditions = {
+			{ type = Condition.GameMode, gameMode = GameMode.Network },
 			{ type = Condition.Frequency, frequency = 5 },
 		},
 		effects = {
 			{ type = Effect.ModifyVariable, varName = "GLOBAL_HIRE_LIMIT_LEADER", operation=ModifyVariable.Set, value = 0 },
 		}
 	}
-	table.insert(contents.events, hire_disable_event)
+	table.insert(events, hire_disable_event)
 
-	for _,race in ipairs(races) do
+	for _,race in ipairs(Races) do
 		local own_city_event = {
 			name = "Own City "..race,
 			chance = 100,
@@ -8530,6 +8503,7 @@ function getTemplateContents(races, size, parameters)
 			races = {race},
 			targetRaces = Races,
 			conditions = {
+				{ type = Condition.GameMode, gameMode = GameMode.Network },
 				{ type = Condition.Script, scriptCode = [[
 					if scenario.day < 5 then
 						return false
@@ -8597,10 +8571,64 @@ function getTemplateContents(races, size, parameters)
 			}
 		}
 
-		table.insert(contents.events, own_city_event)
-		table.insert(contents.events, lose_race_event)
-		table.insert(contents.events, gm_spells_event)
-		table.insert(contents.events, mage_spells_event)
+		table.insert(events, own_city_event)
+		table.insert(events, lose_race_event)
+		table.insert(events, gm_spells_event)
+		table.insert(events, mage_spells_event)
+	end
+	return events
+end
+------------------------------------------------------------------------------------------------------------------------
+--- Расы
+------------------------------------------------------------------------------------------------------------------------
+function shuffleRaces(races)
+	if template_mode == trinity and game_mode ~= 1 then
+		local team1 = {races[1], races[2]}
+		local team2 = {races[3], races[4]}
+		shake(team1)
+		shake(team2)
+		local teams = {team1, team2}
+		shake(teams)
+		races = {
+			teams[1][1], teams[1][2],
+			teams[2][1], teams[2][2],
+		}
+	elseif template_mode == clover and game_mode ~= 1 then
+		local team = {races[2], races[3]}
+		shake(team)
+		races = {races[1], team[1], team[2]}
+	else
+		shake(races)
+	end
+	Races = races
+end
+------------------------------------------------------------------------------------------------------------------------
+--- Шаблон
+------------------------------------------------------------------------------------------------------------------------
+function getTemplateContents(races, size, parameters)
+	local contents = {}
+
+	map_size = size or map_size
+
+	shuffleRaces(races)
+	readCustomParameters(parameters)
+
+	MissingRace = rndt(getMissingRaces())
+
+	-- Инициализируем систему распределения
+	Distributor:init()
+
+	contents.diplomacy = getDiplomacyRelations()
+	contents.zones = getZones()
+	contents.connections = getConnections()
+	contents.scenarioVariables = getScenarioVariables()
+	contents.events = getEvents()
+
+	-- Выполняем распределение данных
+	Distributor:distribute()
+
+	if is_island_mode then
+		contents.roads = 80
 	end
 
 	return contents
