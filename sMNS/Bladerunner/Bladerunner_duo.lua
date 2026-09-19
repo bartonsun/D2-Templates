@@ -8643,7 +8643,8 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------
 --- Scripts
-local koto_mods_part_1 = [[
+function script_koto_mods(race)
+	return [[
 local mods_by_leader_id = {
   ---------------------------------------------------------------
   -- Воины
@@ -8809,9 +8810,7 @@ local result = false
 scenario:forEachStack(function (stack)
 	if result then return end
   local player = stack.owner
-  if player.race ~= Race.Neutral and player.race == ]]
-
-local koto_mods_part_2 = [[ then
+  if player.race ~= Race.Neutral and player.race == ]]..race..[[ then
     local leader = stack.leader
 
     if leader.type ~= Leader.Rod and leader.type ~= Leader.Noble and leader.impl.type ~= Unit.Summon then
@@ -8829,16 +8828,15 @@ local koto_mods_part_2 = [[ then
 end)
 return result
 ]]
+end
 
-local koto_check_part_1 = [[
+function script_koto_check(race)
+	return [[
   local result = true
   scenario:forEachStack(function (stack)
 	  local owner = stack.owner
-	  if owner.race ~= Race.Neutral and owner.race == ]]
-
-local koto_check_part_2 = [[
- then
-	    local leader = stack.leader
+	  if owner.race ~= Race.Neutral and owner.race == ]]..race..[[ then
+      local leader = stack.leader
 	    if leader.type ~= Leader.Rod and leader.type ~= Leader.Noble and leader.impl.type ~= Unit.Summon then
 	      result = false
 	    end
@@ -8846,6 +8844,7 @@ local koto_check_part_2 = [[
   end)
   return result
 ]]
+end
 ------------------------------------------------------------------------------------------------------------------------
 local function effectAppliesTo(effect, zone)
 	if effect.tiers and not effect.tiers[zone.tier] then
@@ -9269,7 +9268,7 @@ function getEvents()
 					{ type = Condition.Frequency, frequency = 1 },
 					{ type = Condition.VarInRange, varName1 = 'KOTO_MODS_APPLIED_'..race, varMin1 = 0, varMax1 = 0, varMode = VarMode.Single },
 					{ type = Condition.PlayerType, ai = false },
-					{ type = Condition.Script, scriptCode = koto_mods_part_1..race..koto_mods_part_2 },
+					{ type = Condition.Script, scriptCode = script_koto_mods(race) },
 				},
 				effects = {
 					{ type = Effect.EnableEvent, uid = '002 Koto '..race, enable = true },
@@ -9285,7 +9284,7 @@ function getEvents()
 				targetRaces = {race},
 				conditions = {
 					{ type = Condition.VarInRange, varName1 = 'KOTO_MODS_APPLIED_'..race, varMin1 = 1, varMax1 = 1, varMode = VarMode.Single },
-					{ type = Condition.Script, scriptCode = koto_check_part_1..race..koto_check_part_2 },
+					{ type = Condition.Script, scriptCode = script_koto_check(race) },
 				},
 				effects = {
 					{ type = Effect.ModifyVariable, varName = 'KOTO_MODS_APPLIED_'..race, operation=ModifyVariable.Set, value = 0 },
