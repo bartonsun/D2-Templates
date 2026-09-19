@@ -8645,6 +8645,9 @@ end
 --- Scripts
 function script_koto_mods(race)
 	return [[
+if scenario.day > 4 then
+	return false
+end
 local mods_by_leader_id = {
   ---------------------------------------------------------------
   -- Воины
@@ -8818,7 +8821,9 @@ scenario:forEachStack(function (stack)
 
       if mods then
         for _, mod in ipairs(mods) do
-          scenario:AddUnitModifier(leader.id, mod)
+          if leader.impl:hasModifier(mod) == false then
+            scenario:AddUnitModifier(leader.id, mod)
+          end
         end
         scenario:Heal(leader.id, 0)
       end
@@ -8830,21 +8835,6 @@ return result
 ]]
 end
 
-function script_koto_check(race)
-	return [[
-  local result = true
-  scenario:forEachStack(function (stack)
-	  local owner = stack.owner
-	  if owner.race ~= Race.Neutral and owner.race == ]]..race..[[ then
-      local leader = stack.leader
-	    if leader.type ~= Leader.Rod and leader.type ~= Leader.Noble and leader.impl.type ~= Unit.Summon then
-	      result = false
-	    end
-	  end
-  end)
-  return result
-]]
-end
 ------------------------------------------------------------------------------------------------------------------------
 local function effectAppliesTo(effect, zone)
 	if effect.tiers and not effect.tiers[zone.tier] then
@@ -9256,7 +9246,7 @@ function getEvents()
 		table.insert(events, gm_spells_event)
 		table.insert(events, mage_spells_event)
 
-		if is_koto_mode then
+		if emd({false, true, true, true}) then
 			local koto_1_event = {
 				name = '001 Koto '..race,
 				chance = 100,
@@ -9265,34 +9255,15 @@ function getEvents()
 				races = {race},
 				targetRaces = {race},
 				conditions = {
-					{ type = Condition.Frequency, frequency = 1 },
-					{ type = Condition.VarInRange, varName1 = 'KOTO_MODS_APPLIED_'..race, varMin1 = 0, varMax1 = 0, varMode = VarMode.Single },
 					{ type = Condition.PlayerType, ai = false },
 					{ type = Condition.Script, scriptCode = script_koto_mods(race) },
 				},
 				effects = {
-					{ type = Effect.EnableEvent, uid = '002 Koto '..race, enable = true },
 					{ type = Effect.ModifyVariable, varName = 'KOTO_MODS_APPLIED_'..race, operation=ModifyVariable.Set, value = 1 },
-				}
-			}
-			local koto_2_event = {
-				name = '002 Koto '..race,
-				chance = 100,
-				enabled = false,
-				occurOnce = true,
-				races = {race},
-				targetRaces = {race},
-				conditions = {
-					{ type = Condition.VarInRange, varName1 = 'KOTO_MODS_APPLIED_'..race, varMin1 = 1, varMax1 = 1, varMode = VarMode.Single },
-					{ type = Condition.Script, scriptCode = script_koto_check(race) },
-				},
-				effects = {
-					{ type = Effect.ModifyVariable, varName = 'KOTO_MODS_APPLIED_'..race, operation=ModifyVariable.Set, value = 0 },
 				}
 			}
 
 			table.insert(events, koto_1_event)
-			table.insert(events, koto_2_event)
 		end
 	end
 	return events
