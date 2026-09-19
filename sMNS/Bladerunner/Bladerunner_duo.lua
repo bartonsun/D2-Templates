@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.16'
+local ver = '3.4.17'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -62,6 +62,12 @@ local is_chill_mode = false
 ------------------------------------------------------------------------------------------------------------------------
 --- Включение дополнительных параметров для режима "+10 мтк"
 local is_no_miss_mode = false
+------------------------------------------------------------------------------------------------------------------------
+--- Включение рунных камней
+local is_rune_mode = false
+------------------------------------------------------------------------------------------------------------------------
+--- Включение режима котовасии
+local is_koto_mode = false
 ------------------------------------------------------------------------------------------------------------------------
 --- коэффициент сложности (<0.9 легко; 0.9-1.1 средне; >1.1 сложно) - не применяется к Т0
 local kef = 1.0
@@ -129,12 +135,12 @@ local RACE_NAMES = {
 	[Race.Elf] = "Эльфийский союз",
 }
 local RACE_TAGS = {
-		[Race.Human] = 'EMPIRE',
-		[Race.Heretic] = 'LEGIONS',
-		[Race.Dwarf] = 'CLANS',
-		[Race.Undead] = 'HORDES',
-		[Race.Elf] = 'ELVES',
-	}
+	[Race.Human] = 'EMPIRE',
+	[Race.Heretic] = 'LEGIONS',
+	[Race.Dwarf] = 'CLANS',
+	[Race.Undead] = 'HORDES',
+	[Race.Elf] = 'ELVES',
+}
 local Races = {}
 local MissingRace = nil
 ------------------------------------------------------------------------------------------------------------------------
@@ -628,6 +634,102 @@ function rsub(no_undead)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
+--- Реестр зон и их содержимого
+------------------------------------------------------------------------------------------------------------------------
+--- Ключ тира для таблицы byTier.
+--- getZone0 ? label = 0  ? ключ 't0'
+--- getZone5 ? label = 5  ? ключ 't5'
+--- getZoneM ? label = 'M' ? ключ 'M'
+--- getZoneW ? label = 'W' ? ключ 'W'
+--- getZoneE ? label = ''  ? ключ 'other'
+local function zoneTierKey(label)
+	if type(label) == 'number' then
+		return 't' .. label
+	elseif type(label) == 'string' and label ~= '' then
+		return label
+	end
+	return 'other'
+end
+
+ZoneRegistry = {
+	byTier = {}, -- ['t0'] = {100, 200}, ['t1'] = {101, 201}, ['M'] = {103}, ...
+	byId = {}, -- [100] = { id, tier, label, stacks = {...}, landmarks = {...} }
+}
+
+--- Зарегистрировать одну зону. Вычисляет uid'ы её содержимого
+--- в точности так же, как это делает генератор в TemplateZone::placeStacks
+--- и TemplateZone::placeLandmarks.
+function registerZone(zone)
+	if not zone or not zone.id then return end
+
+	local tierKey = zoneTierKey(zone.label)
+	local entry = {
+		id = zone.id,
+		tier = tierKey,
+		race = zone.race,
+		label = zone.label,
+		stacks = {},
+		landmarks = {},
+	}
+	ZoneRegistry.byId[zone.id] = entry
+	ZoneRegistry.byTier[tierKey] = ZoneRegistry.byTier[tierKey] or {}
+	table.insert(ZoneRegistry.byTier[tierKey], zone.id)
+
+	-- Лендмарки:
+	--   авто-uid:    ZONE_<zoneId>_LANDMARK_<n>   (n = 1..N)
+	--   локация:     LOC_ZONE_<zoneId>_LANDMARK_<n>
+	-- (генератор всегда использует авто-uid для локации, даже если задан customUid)
+	if zone.landmarks then
+		for i = 1, #zone.landmarks do
+			local autoUid = 'ZONE_' .. zone.id .. '_LANDMARK_' .. i
+			table.insert(entry.landmarks, {
+				uid = autoUid,
+				locUid = 'LOC_' .. autoUid,
+			})
+		end
+	end
+
+	-- Отряды:
+	--   auto-uid:  ZONE_<zoneId>_STACK_<groupIndex>_<i>
+	--   custom:    <customUid>            (если count == 1)
+	--              <customUid>_<i>         (если count > 1)
+	--   локация:   LOC_<finalUid>
+	if zone.stacks and #zone.stacks > 0 then
+		local groupIndex = 0
+		for _, group in ipairs(zone.stacks) do
+			groupIndex = groupIndex + 1
+			local count = group.count or 0
+			local customUid = group.uid
+
+			for i = 1, count do
+				local finalUid
+				if customUid and customUid ~= '' then
+					finalUid = (count <= 1) and customUid or (customUid .. '_' .. i)
+				else
+					finalUid = 'ZONE_' .. zone.id .. '_STACK_' .. groupIndex .. '_' .. i
+				end
+
+				table.insert(entry.stacks, {
+					uid = finalUid,
+					locUid = 'LOC_' .. finalUid,
+					groupIndex = groupIndex,
+					stackIndex = i,
+				})
+			end
+		end
+	end
+end
+
+--- Построить реестр по списку зон.
+function harvestZones(zones)
+	ZoneRegistry.byTier = {}
+	ZoneRegistry.byId = {}
+	for _, zone in ipairs(zones or {}) do
+		registerZone(zone)
+	end
+end
+
+------------------------------------------------------------------------------------------------------------------------
 --- Система распределения данных
 ------------------------------------------------------------------------------------------------------------------------
 local DistributionSystem = {
@@ -658,8 +760,8 @@ local RequestType = {
 -- Приоритеты распределения
 local PoolPriority = {
 	AS_POSSIBLE = 1,-- Выдает сколько запрошено, если может
-	ALL = 2,        -- Распределяет ВСЕ предметы из пула
-	UNLIMITED = 3,  -- Бесконечный пул
+	ALL = 2, -- Распределяет ВСЕ предметы из пула
+	UNLIMITED = 3, -- Бесконечный пул
 }
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -838,22 +940,22 @@ Pools.items.special_equip = {
 --- Предметы -> Сеты
 local setItemsConfig = {
 	--- Главарь наемников
-	['g002ig0001'] = { type = Item.Weapon, ruins = {'t0'}, shops = {'t1'} },        -- Потайной кинжал (Артефакт) 400
-	['g002ig0002'] = { type = Item.Jewel,  ruins = {'t1'}, shops = {'t2'} },        -- Промасленная кольчуга (Реликвия) 700
-	['g002ig0003'] = { type = Item.Banner,  ruins = {'t3'}, shops = {} },           -- Стяг главаря наемников 1000
+	['g002ig0001'] = { type = Item.Weapon, ruins = {'t0'}, shops = {'t1'} }, -- Потайной кинжал (Артефакт) 400
+	['g002ig0002'] = { type = Item.Jewel,  ruins = {'t1'}, shops = {'t2'} }, -- Промасленная кольчуга (Реликвия) 700
+	['g002ig0003'] = { type = Item.Banner,  ruins = {'t3'}, shops = {} }, -- Стяг главаря наемников 1000
 	--- Жатва
-	['g001ig0602'] = { type = Item.Jewel,  ruins = {'t1'}, shops = {'t2'} },        -- Доспех жатвы (Реликвия) 800
-	['g001ig0603'] = { type = Item.Armor,  ruins = {'t2'}, shops = {'t2', 't3'} },  -- Чаша жатвы (Артефакт) 1000
-	['g001ig0604'] = { type = Item.Armor, ruins = {'t4', 't5'}, shops = {'t3'} },   -- Кинжал жатвы (Артефакт) 1900
+	['g001ig0602'] = { type = Item.Jewel,  ruins = {'t1'}, shops = {'t2'} }, -- Доспех жатвы (Реликвия) 800
+	['g001ig0603'] = { type = Item.Armor,  ruins = {'t2'}, shops = {'t2', 't3'} }, -- Чаша жатвы (Артефакт) 1000
+	['g001ig0604'] = { type = Item.Armor, ruins = {'t4', 't5'}, shops = {'t3'} }, -- Кинжал жатвы (Артефакт) 1900
 	--- Наследие Феникса
-	['g002ig0010'] = { type = Item.Weapon, ruins = {'t3'}, shops = {'t3'} },        -- Меч рыцаря Феникса (Артефакт) 1750
-	['g002ig0011'] = { type = Item.Armor,  ruins = {'t3'}, shops = {'t3'} },        -- Щит рыцаря Феникса (Артефакт) 1500
-	['g002ig0012'] = { type = Item.Jewel,  ruins = {'t4', 't5'}, shops = {'t3'} },  -- Доспех рыцаря Феникса (Реликвия) 2100
+	['g002ig0010'] = { type = Item.Weapon, ruins = {'t3'}, shops = {'t3'} }, -- Меч рыцаря Феникса (Артефакт) 1750
+	['g002ig0011'] = { type = Item.Armor,  ruins = {'t3'}, shops = {'t3'} }, -- Щит рыцаря Феникса (Артефакт) 1500
+	['g002ig0012'] = { type = Item.Jewel,  ruins = {'t4', 't5'}, shops = {'t3'} }, -- Доспех рыцаря Феникса (Реликвия) 2100
 	--- Кодекс крови
-	['g002ig0013'] = { type = Item.Weapon, ruins = {'t4', 't5'}, shops = {'t3'} },  -- Серп Кровавого Ворона (Артефакт) 1850
-	['g002ig0014'] = { type = Item.Weapon, ruins = {'t3'}, shops = {'t3'} },        -- Кама Кровавого Ворона (Артефакт) 1600
-	['g002ig0015'] = { type = Item.Jewel,  ruins = {'t3'}, shops = {'t3'} },        -- Кираса Кровавого Ворона (Реликвия) 2100
-	['g002ig0016'] = { type = Item.Banner, ruins = {'t4', 't5'}, shops = {'t3'} },  -- Стяг Кровавого Ворона 2250+
+	['g002ig0013'] = { type = Item.Weapon, ruins = {'t4', 't5'}, shops = {'t3'} }, -- Серп Кровавого Ворона (Артефакт) 1850
+	['g002ig0014'] = { type = Item.Weapon, ruins = {'t3'}, shops = {'t3'} }, -- Кама Кровавого Ворона (Артефакт) 1600
+	['g002ig0015'] = { type = Item.Jewel,  ruins = {'t3'}, shops = {'t3'} }, -- Кираса Кровавого Ворона (Реликвия) 2100
+	['g002ig0016'] = { type = Item.Banner, ruins = {'t4', 't5'}, shops = {'t3'} }, -- Стяг Кровавого Ворона 2250+
 }
 
 function tryPlaceSetItem(ruin, setItemId, expectedType, chance)
@@ -915,8 +1017,7 @@ Pools.capital = {
 			{ id = 'g000ig0023', amount = 1, weight = 1 }, -- Эликсир защиты от магии Земли 250
 			{ id = 'g000ig0024', amount = 1, weight = 1 }, -- Эликсир защиты от магии Огня 250
 		}
-	},
-	-- случайные предметы
+	}, -- случайные предметы
 	rnd_buff_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
@@ -2413,24 +2514,21 @@ Pools.loot.t5 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.gold.g200, amount = 2, weight = 1 },
-			{ id = Items.gold.g250, amount = 2, weight = 1 },
-			--{ id = Items.gold.g300, amount = 1, weight = 1 },
+			{ id = Items.gold.g250, amount = 2, weight = 1 }, --{ id = Items.gold.g300, amount = 1, weight = 1 },
 		}
 	},
 	gold_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.gold.g250, amount = 2, weight = 1 },
-			{ id = Items.gold.g300, amount = 2, weight = 1 },
-			--{ id = Items.gold.g350, amount = 1, weight = 1 },
+			{ id = Items.gold.g300, amount = 2, weight = 1 }, --{ id = Items.gold.g350, amount = 1, weight = 1 },
 		}
 	},
 	gold_3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.gold.g300, amount = 1, weight = 1 },
-			{ id = Items.gold.g400, amount = 1, weight = 1 },
-			--{ id = Items.gold.g500, amount = 1, weight = 1 },
+			{ id = Items.gold.g400, amount = 1, weight = 1 }, --{ id = Items.gold.g500, amount = 1, weight = 1 },
 		}
 	},
 	art_1 = {
@@ -3545,11 +3643,31 @@ local bes_t0_mods = {
 	g201um9139 = 1, -- 1 source - life
 	g070um0083 = 1, -- hero magic resist
 
-	g070um0014 = 1, -- Некромант | Нежить
-	g070um0217 = 1, -- Шествие орд | Рыцарь Смерти
-	g070um0064 = 1, -- Боевое построение | Рыцарь на Пегасе
+	--g070um0150 = 1, -- Рыцарь на Пегасе
+	--g070um0151 = 1, -- Архимаг
+	--g070um0152 = 1, -- Следопыт
+	--
+	--g070um0090 = 1, -- Королева Личей
+	--g070um0093 = 1, -- Королева Личей
+	--g070um0091 = 1, -- Носферату
+	--g070um0218 = 1, -- Рыцарь Смерти
+	--
+	--g070um0070 = 1, -- Герцог
+	--
+	--g070um0055 = 1, -- Королевский страж
+	--g070um0031 = 1, -- Инженер
+	--g070um0054 = 1, -- Ученый
+	--
+	--g070um0124 = 1, -- Страж леса
+	--g070um0126 = 1, -- Дриада
+	--g070um0127 = 1, -- Вассал
+	--g070um0105 = 1, -- Вассал
+
+	--g070um0014 = 1, -- Некромант | Нежить
+	--g070um0217 = 1, -- Шествие орд | Рыцарь Смерти
+	--g070um0064 = 1, -- Боевое построение | Рыцарь на Пегасе
 	--g070um0130 = 1, -- Энергетическое эхо | Архимаг
-	g070um0069 = 1, -- Плечом к плечу | Королевский страж
+	--g070um0069 = 1, -- Плечом к плечу | Королевский страж
 	--g070um0172 = 1, -- Путь страданий | Советник
 }
 local bes_t3_mods = {
@@ -3567,28 +3685,22 @@ Pools.leaders = {
 			-- СУЗ
 			{ id = 'g000uu6008', amount = 1, weight = 1, name = 'Райз', modifiers = workers_mods },
 			{ id = 'g000uu6008', amount = 1, weight = 1, name = 'Бэка', modifiers = workers_mods },
-			{ id = 'g000uu6008', amount = 1, weight = 1, name = 'Гастрофетус', modifiers = workers_mods },
-			-- Фумитоксал
+			{ id = 'g000uu6008', amount = 1, weight = 1, name = 'Гастрофетус', modifiers = workers_mods }, -- Фумитоксал
 			{ id = 'g000uu7617', amount = 1, weight = 1, name = 'Фуми', modifiers = workers_mods },
 			{ id = 'g000uu7617', amount = 1, weight = 1, name = 'Токсин', modifiers = workers_mods },
-			{ id = 'g000uu7617', amount = 1, weight = 1, name = 'Хрусталь', modifiers = workers_mods },
-			-- ППсД
+			{ id = 'g000uu7617', amount = 1, weight = 1, name = 'Хрусталь', modifiers = workers_mods }, -- ППсД
 			{ id = 'g000uu5131', amount = 1, weight = 1, name = 'Магвай', modifiers = workers_mods },
 			{ id = 'g000uu5131', amount = 1, weight = 1, name = 'Тезос', modifiers = workers_mods },
-			{ id = 'g000uu5131', amount = 1, weight = 1, name = 'РингОф', modifiers = workers_mods },
-			-- Секс Флотилия
+			{ id = 'g000uu5131', amount = 1, weight = 1, name = 'РингОф', modifiers = workers_mods }, -- Секс Флотилия
 			{ id = 'g000uu5130', amount = 1, weight = 1, name = 'Грон', modifiers = workers_mods },
 			{ id = 'g000uu5130', amount = 1, weight = 1, name = 'Сыр Зерг', modifiers = workers_mods },
-			{ id = 'g000uu5130', amount = 1, weight = 1, name = 'Протостар', modifiers = workers_mods },
-			-- Сектанты
+			{ id = 'g000uu5130', amount = 1, weight = 1, name = 'Протостар', modifiers = workers_mods }, -- Сектанты
 			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'Ифрит', modifiers = workers_mods },
 			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'Хай', modifiers = workers_mods },
-			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'Амодеус', modifiers = workers_mods },
-			-- Легенды операции "Ы"
+			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'Амодеус', modifiers = workers_mods }, -- Легенды операции "Ы"
 			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'Талион', modifiers = workers_mods },
 			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'Зухендер', modifiers = workers_mods },
-			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'ОР', modifiers = workers_mods },
-			-- Ламборгини Хуракан
+			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'ОР', modifiers = workers_mods }, -- Ламборгини Хуракан
 			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'Макрометр', modifiers = workers_mods },
 			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'Дзаро', modifiers = workers_mods },
 			{ id = 'g000uu5101', amount = 1, weight = 1, name = 'Акира', modifiers = workers_mods },
@@ -3625,8 +3737,7 @@ Pools.mines = {
 		t3 = { items = { { id = 'gold', amount = 1, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 		t4 = { items = { { id = 'gold', amount = 2, weight = 1 } }, priority = PoolPriority.UNLIMITED },
 		t5 = { items = { { id = 'gold', amount = 1, weight = 1 } }, priority = PoolPriority.UNLIMITED },
-	},
-	-- Родная мана
+	}, -- Родная мана
 	racial = {
 		priority = PoolPriority.UNLIMITED,
 		items = {
@@ -3636,8 +3747,7 @@ Pools.mines = {
 			{ id = 'infernalMana', amount = 1, weight = 1, races = {Race.Heretic} },
 			{ id = 'groveMana', amount = 1, weight = 1, races = {Race.Elf} },
 		}
-	},
-	-- т0-т2 первичная мана
+	}, -- т0-т2 первичная мана
 	first = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
@@ -3647,8 +3757,7 @@ Pools.mines = {
 			{ id = 'infernalMana', amount = 1, weight = 1, races = {Race.Undead, Race.Elf} },
 			{ id = 'groveMana', amount = 1, weight = 1, races = {Race.Human, Race.Dwarf, Race.Undead, Race.Heretic} },
 		}
-	},
-	-- т0-т2 вторичная мана
+	}, -- т0-т2 вторичная мана
 	second = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
@@ -3658,8 +3767,7 @@ Pools.mines = {
 			{ id = 'infernalMana', amount = 1, weight = 1, races = {Race.Human, Race.Dwarf} },
 			{ id = 'groveMana', amount = 0, weight = 0, races = {} },
 		}
-	},
-	-- т0-т2 дополнительная
+	}, -- т0-т2 дополнительная
 	additional = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
@@ -3669,8 +3777,7 @@ Pools.mines = {
 			{ id = 'infernalMana', amount = 1, weight = 1 },
 			{ id = 'groveMana', amount = 1, weight = 1 },
 		}
-	},
-	-- т3 мана + золото
+	}, -- т3 мана + золото
 	t3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
@@ -4572,8 +4679,7 @@ function DistributionSystem:requestItemsAdvanced(object, pool_object, count, opt
 						seen[entry.id] = true
 						table.insert(unique_items, entry)
 					end
-					-- Для UNLIMITED пулов возвращать дубликаты не нужно,
-					-- так как они не уменьшают глобальный пул.
+					-- Для UNLIMITED пулов возвращать дубликаты не нужно, -- так как они не уменьшают глобальный пул.
 				end
 				if #unique_items > count then
 					local trimmed = {}
@@ -4959,7 +5065,7 @@ forbidden.stack = {
 ---- Шаблон:Локация
 function absLocation()
 	return {
-		--size = LocSize.x1,
+		size = LocSize.x3,
 	}
 end
 
@@ -4970,13 +5076,10 @@ function absZone(id, size)
 		size = size,
 		type = Zone.Junction,
 		border = Border.Closed,
-		gapChance = 50,
-		-------------------------
+		gapChance = 50, -------------------------
 		--- только для столицы
 		-------------------------
-		--race = race,
-		--capital = absCapital(),
-		-------------------------
+		--race = race, --capital = absCapital(), -------------------------
 		towns = {},
 		mines = {},
 		bags = {},
@@ -4987,14 +5090,12 @@ function absZone(id, size)
 		mages = {},
 		trainers = {},
 		resourceMarkets = {},
-		--
+		landmarks = {}, --
 		water = -1,
 		waterType = Water.None,
-		allowPlaceOnWater = true,
-		--
+		allowPlaceOnWater = true, --
 		terrain = 100,
-		terrainType = Terrain.Neutral,
-		--
+		terrainType = Terrain.Neutral, --
 		forest = -1,
 		roads = -1,
 	}
@@ -5025,6 +5126,7 @@ function absCapital(race)
 			loot = absLoot(),
 		},
 		location = absLocation(),
+		uid = "",
 	}
 end
 
@@ -5047,6 +5149,7 @@ function absTown()
 		riotTurn = 0,
 		protectionId = '',
 		location = absLocation(),
+		uid = "",
 	}
 end
 
@@ -5073,6 +5176,7 @@ function absMage()
 		guard = absStack(),
 		forbiddenIds = {},
 		location = absLocation(),
+		uid = "",
 	}
 end
 
@@ -5090,6 +5194,7 @@ function absMercenary()
 		duplicate = true,
 		forbiddenIds = {},
 		location = absLocation(),
+		uid = "",
 	}
 end
 
@@ -5100,6 +5205,7 @@ function absTrainer()
 		description = '',
 		guard = absStack(),
 		location = absLocation(),
+		uid = "",
 	}
 end
 
@@ -5119,6 +5225,7 @@ function absMarket()
 		},
 		guard = absStack(),
 		location = absLocation(),
+		uid = "",
 	}
 end
 
@@ -5126,17 +5233,17 @@ end
 function absRuin()
 	return {
 		name = '',
-		gold = { min = 0, max = 0 },
-		--- Максимум 1 предмет
+		gold = { min = 0, max = 0 }, --- Максимум 1 предмет
 		loot = absLoot(),
 		guard = absStack(),
 		location = absLocation(),
+		uid = "",
 	}
 end
 
 --- Шаблон:Отряд
 function absStack()
-	return {
+	local stack = {
 		kef = kef,
 		count = 1,
 		name = '',
@@ -5149,7 +5256,10 @@ function absStack()
 		loot = absLoot(),
 		forbiddenIds = {},
 		location = absLocation(),
+		uid = "",
 	}
+	stack.location.size = LocSize.x1
+	return stack
 end
 
 --- Шаблон:Сундук
@@ -5159,6 +5269,20 @@ function absBags()
 		aiPriority = 0,
 		loot = absLoot(),
 		location = absLocation(),
+		uid = "",
+	}
+end
+
+--- Шаблон:Ориентиры
+function absLandmark()
+	return {
+		description = "",
+		size = { min = { x = 1, y = 1 }, max = { x = 5, y = 5 } },
+		landmarkTypes = {},
+		typeIds = {},
+		forbiddenIds = {},
+		location = absLocation(),
+		uid = "",
 	}
 end
 
@@ -5186,19 +5310,19 @@ local BUILDINGS = {
 		L_FIGHTER = {
 			{'g000bb0001', 'g000bb0002', 'g000bb0003', 'g000bb0004'}, -- Мастер клинка + Хранитель Ордена
 			{'g000bb0001', 'g000bb0002', 'g000bb0003', 'g000bb0005'}, -- Паладин + Кастелян
-			{'g000bb0001', 'g000bb0002', 'g000bb0006'},               -- Ангел + Сенешаль
-			{'g000bb0007', 'g000bb0008', 'g000bb0009'},               -- Великий Инквизитор + Эмиссар
+			{'g000bb0001', 'g000bb0002', 'g000bb0006'}, -- Ангел + Сенешаль
+			{'g000bb0007', 'g000bb0008', 'g000bb0009'}, -- Великий Инквизитор + Эмиссар
 			{'g000bb0136', 'g000bb0137', 'g000bb0138', 'g000bb0139'}, -- Фанатик + Игнар
 		},
 		L_ARCHER = {
 			{'g000bb0010', 'g000bb0011', 'g000bb0190'}, -- Юстициар
 			{'g000bb0010', 'g000bb0131', 'g000bb0132'}, -- Кара Императора
-			{'g000bb0170', 'g000bb0171'},               -- Бореалис
+			{'g000bb0170', 'g000bb0171'}, -- Бореалис
 		},
 		L_MAGE = {
-			{'g000bb0012', 'g000bb0013', 'g000bb0014'},               -- Белый Маг
+			{'g000bb0012', 'g000bb0013', 'g000bb0014'}, -- Белый Маг
 			--{'g000bb0012', 'g000bb0015', 'g000bb0143', 'g000bb0154'}, -- Демиург #SUMMONER
-			{'g000bb0012', 'g000bb0182', 'g000bb0183'},               -- Криомант
+			{'g000bb0012', 'g000bb0182', 'g000bb0183'}, -- Криомант
 		},
 		L_SPECIAL = {
 			{'g000bb0016', 'g000bb0017', 'g000bb0018'}, -- Патриарх
@@ -5213,14 +5337,14 @@ local BUILDINGS = {
 		L_FIGHTER = {
 			{'g000bb0026', 'g000bb0027', 'g000bb0028', 'g000bb0029'}, -- Ярл + Гарм
 			{'g000bb0026', 'g000bb0027', 'g000bb0028', 'g000bb0030'}, -- Конунг + Гарм
-			{'g000bb0026', 'g000bb0027', 'g000bb0133'},               -- Хранитель рун + Гарм
+			{'g000bb0026', 'g000bb0027', 'g000bb0133'}, -- Хранитель рун + Гарм
 			{'g000bb0026', 'g000bb0031', 'g000bb0032', 'g000bb0158'}, -- Жрец Имира + Белый волк
-			--{'g000bb0026', 'g000bb0031', 'g000bb0033'},               -- Повелитель волков + Белый волк #SUMMONER
+			--{'g000bb0026', 'g000bb0031', 'g000bb0033'}, -- Повелитель волков + Белый волк #SUMMONER
 		},
 		L_ARCHER = {
-			{'g000bb0034', 'g000bb0035'},               -- Защитник горна
+			{'g000bb0034', 'g000bb0035'}, -- Защитник горна
 			{'g000bb0034', 'g000bb0036', 'g000bb0142'}, -- Метатель Огня
-			{'g000bb0034', 'g000bb0175'},               -- Сотрясатель
+			{'g000bb0034', 'g000bb0175'}, -- Сотрясатель
 		},
 		L_MAGE = {
 			{'g000bb0037', 'g000bb0038', 'g000bb0039'}, -- Архидруид
@@ -5228,8 +5352,8 @@ local BUILDINGS = {
 			{'g000bb0037', 'g000bb0173', 'g000bb0174'}, -- Хейса
 		},
 		L_SPECIAL = {
-			{'g000bb0041', 'g000bb0042', 'g000bb0043'},               -- Повелитель Бурь
-			{'g000bb0041', 'g000bb0149', 'g000bb0150'},               -- Сын земли
+			{'g000bb0041', 'g000bb0042', 'g000bb0043'}, -- Повелитель Бурь
+			{'g000bb0041', 'g000bb0149', 'g000bb0150'}, -- Сын земли
 			{'g000bb0041', 'g000bb0044', 'g000bb0045', 'g000bb0123'}, -- Гримтурс
 		},
 		L_SIDESHOW = {
@@ -5252,8 +5376,8 @@ local BUILDINGS = {
 			{ 'g000bb0055', 'g000bb0056', 'g000bb0057', 'g000bb0058' }, -- Модеус
 			{ 'g000bb0055', 'g000bb0056', 'g000bb0057', 'g000bb0153' }, -- Барантор
 			{ 'g000bb0055', 'g000bb0056', 'g000bb0060', 'g000bb0140' }, -- Якшини
-			--{ 'g000bb0055', 'g000bb0059', 'g000bb0157' },               -- Хозяин масок #SUMMONER
-			{ 'g000bb0061', 'g000bb0062', 'g000bb0063' },               -- Суккуб
+			--{ 'g000bb0055', 'g000bb0059', 'g000bb0157' }, -- Хозяин масок #SUMMONER
+			{ 'g000bb0061', 'g000bb0062', 'g000bb0063' }, -- Суккуб
 		},
 		L_SPECIAL = {
 			{ 'g000bb0064', 'g000bb0065', 'g000bb0066', 'g000bb0067' }, -- Тиамат
@@ -5272,22 +5396,22 @@ local BUILDINGS = {
 		L_FIGHTER = {
 			{'g000bb0075', 'g000bb0076', 'g000bb0077', 'g000bb0078'}, -- Воин-призрак
 			{'g000bb0075', 'g000bb0076', 'g000bb0077', 'g000bb0146'}, -- Черный рыцарь
-			{'g000bb0079', 'g000bb0080', 'g000bb0163'},               -- Клеврет смерти
+			{'g000bb0079', 'g000bb0080', 'g000bb0163'}, -- Клеврет смерти
 		},
 		L_ARCHER = {
-			{'g000bb0081', 'g000bb0082'},               -- Тень
+			{'g000bb0081', 'g000bb0082'}, -- Тень
 			{'g000bb0081', 'g000bb0129', 'g000bb0130'}, -- Длань Мортис
-			{'g000bb0081', 'g000bb0161'},               -- Эльф-призрак
+			{'g000bb0081', 'g000bb0161'}, -- Эльф-призрак
 		},
 		L_MAGE = {
 			{'g000bb0083', 'g000bb0084', 'g000bb0085', 'g000bb0086'}, -- Верховный Вампир
 			{'g000bb0083', 'g000bb0084', 'g000bb0087', 'g000bb0088'}, -- Архилич
-			--{'g000bb0083', 'g000bb0191'},                             -- Теневидец #SUMMONER
+			--{'g000bb0083', 'g000bb0191'}, -- Теневидец #SUMMONER
 			{'g000bb0164', 'g000bb0089', 'g000bb0090', 'g000bb0155'}, -- Драуг
 			{'g000bb0164', 'g000bb0089', 'g000bb0091', 'g000bb0141'}, -- Бааванши
 		},
 		L_SPECIAL = {
-			{'g000bb0092', 'g000bb0093', 'g000bb0094'},               -- Вирм + Каган Каменной Пасти
+			{'g000bb0092', 'g000bb0093', 'g000bb0094'}, -- Вирм + Каган Каменной Пасти
 			{'g000bb0092', 'g000bb0093', 'g000bb0095', 'g000bb0127'}, -- Змий разложения + Хан Каменной Пасти
 		},
 		L_SIDESHOW = {
@@ -5300,24 +5424,24 @@ local BUILDINGS = {
 		L_FIGHTER = {
 			{'g000bb0100', 'g000bb0101', 'g000bb0179'}, -- Кераст
 			{'g000bb0100', 'g000bb0134', 'g000bb0156'}, -- Штормовой кентавр
-			{'g000bb0102', 'g000bb0180'},               -- Кентавр-гвардеец
+			{'g000bb0102', 'g000bb0180'}, -- Кентавр-гвардеец
 		},
 		L_ARCHER = {
-			{'g000bb0103', 'g000bb0104'},                             -- Стингер
+			{'g000bb0103', 'g000bb0104'}, -- Стингер
 			{'g000bb0103', 'g000bb0105', 'g000bb0121', 'g000bb0122'}, -- Мародер
 			{'g000bb0103', 'g000bb0105', 'g000bb0135', 'g000bb0152'}, -- Кокильяр
-			{'g000bb0106', 'g000bb0107'},                             -- Стражник
-			{'g000bb0106', 'g000bb0108'},                             -- Часовой
+			{'g000bb0106', 'g000bb0107'}, -- Стражник
+			{'g000bb0106', 'g000bb0108'}, -- Часовой
 		},
 		L_MAGE = {
-			{'g000bb0109', 'g000bb0110'},               -- Тиург
-			{'g000bb0109', 'g000bb0111'},               -- Архонт
+			{'g000bb0109', 'g000bb0110'}, -- Тиург
+			{'g000bb0109', 'g000bb0111'}, -- Архонт
 			{'g000bb0109', 'g000bb0151', 'g000bb0160'}, -- Консул
 		},
 		L_SPECIAL = {
 			{'g000bb0112', 'g000bb0113', 'g000bb0114', 'g000bb0115'}, -- Сильфида
-			{'g000bb0112', 'g000bb0113', 'g000bb0124'},               -- Целитель
-			{'g000bb0112', 'g000bb0113', 'g000bb0148'},               -- Дриолисса
+			{'g000bb0112', 'g000bb0113', 'g000bb0124'}, -- Целитель
+			{'g000bb0112', 'g000bb0113', 'g000bb0148'}, -- Дриолисса
 		},
 		L_SIDESHOW = {
 			{'g000bb0116', 'g000bb0117', 'g000bb0147'}, -- Владыка Небес
@@ -5326,7 +5450,7 @@ local BUILDINGS = {
 }
 function getBuildings(race)
 	local buildings = {}
-	if emd({false, false, true, true}) then
+	if is_koto_mode then
 		for _, raceData in pairs(BUILDINGS) do
 			for _, categoryVariants in pairs(raceData) do
 				local chosen = categoryVariants[math.random(#categoryVariants)]
@@ -6451,9 +6575,9 @@ function getGuardIsland35(race, id)
 		stack.leaderIds = {'g000uu8138'} -- Русалка
 		stack.value = getStackValue(stack, 700 * dk)
 
-	Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
-	Distributor:requestItems(stack, Pools.loot.t2.heal_2, 2, race)
-	Distributor:requestItems(stack, Pools.items.ward_el, 1)
+		Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t2.heal_2, 2, race)
+		Distributor:requestItems(stack, Pools.items.ward_el, 1)
 	elseif id == 2 then
 		--- 750*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
@@ -6462,10 +6586,10 @@ function getGuardIsland35(race, id)
 		stack.leaderIds = {'g000uu5126'} -- Русалка
 		stack.value = getStackValue(stack, 750 * dk)
 
-	Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
-	Distributor:requestItems(stack, Pools.loot.t2.heal_1, 1, race)
-	Distributor:requestItems(stack, Pools.loot.t2.heal_2, 1, race)
-	Distributor:requestItems(stack, Pools.items.mana.normal, 1)
+		Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t2.heal_1, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t2.heal_2, 1, race)
+		Distributor:requestItems(stack, Pools.items.mana.normal, 1)
 	elseif id == 3 then
 		--- 800*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
@@ -6474,10 +6598,10 @@ function getGuardIsland35(race, id)
 		stack.leaderIds = {'g000uu5127'} -- Кракен
 		stack.value = getStackValue(stack, 800 * dk)
 
-	Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
-	Distributor:requestItems(stack, Pools.loot.t2.heal_1, 1, race)
-	Distributor:requestItems(stack, Pools.loot.t2.heal_2, 1, race)
-	Distributor:requestItems(stack, Pools.items.buff_e2, 1)
+		Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t2.heal_1, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t2.heal_2, 1, race)
+		Distributor:requestItems(stack, Pools.items.buff_e2, 1)
 	elseif id == 4 then
 		--- 900*1 waterOnly
 		stack.subrace = Subrace.NeutralWater
@@ -6486,10 +6610,10 @@ function getGuardIsland35(race, id)
 		stack.leaderIds = {'g000uu5129'} -- Морской змей
 		stack.value = getStackValue(stack, 900 * dk)
 
-	Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
-	Distributor:requestItems(stack, Pools.loot.t2.heal_2, 2, race)
-	Distributor:requestItems(stack, rnd(Pools.loot.t2.talisman, Pools.loot.t2.gold), 1, race)
-	Distributor:requestItems(stack, Pools.items.buff_1, 1)
+		Distributor:requestItems(stack, Pools.loot.w35.ward_mix, 1, race)
+		Distributor:requestItems(stack, Pools.loot.t2.heal_2, 2, race)
+		Distributor:requestItems(stack, rnd(Pools.loot.t2.talisman, Pools.loot.t2.gold), 1, race)
+		Distributor:requestItems(stack, Pools.items.buff_1, 1)
 	end
 
 	return stack
@@ -7029,6 +7153,57 @@ function getMarketsM()
 	return markets
 end
 ------------------------------------------------------------------------------------------------------------------------
+--- Контент:Ориентиры
+------------------------------------------------------------------------------------------------------------------------
+--- т0
+function getLandmarks0(race)
+	local landmarks = {}
+
+	if not is_rune_mode then
+		return landmarks
+	end
+
+	local i = 1
+	---
+	landmarks[i] = absLandmark()
+	landmarks[i].typeIds = {'G000MG8236'}
+	i = i + 1
+	---
+	return landmarks
+end
+--- т1
+function getLandmarks1(race)
+	local landmarks = {}
+
+	if not is_rune_mode then
+		return landmarks
+	end
+
+	local i = 1
+	---
+	landmarks[i] = absLandmark()
+	landmarks[i].typeIds = {'G000MG8236'}
+	i = i + 1
+	---
+	return landmarks
+end
+--- т2
+function getLandmarks2(race)
+	local landmarks = {}
+
+	if not is_rune_mode then
+		return landmarks
+	end
+
+	local i = 1
+	---
+	landmarks[i] = absLandmark()
+	landmarks[i].typeIds = {'G000MG8236'}
+	i = i + 1
+	---
+	return landmarks
+end
+------------------------------------------------------------------------------------------------------------------------
 --- Контент:Рудники
 ------------------------------------------------------------------------------------------------------------------------
 --- т0
@@ -7176,6 +7351,7 @@ function getZone0(id, race)
 		zone.bags = getBags0(race)
 		zone.stacks = getStacks0(race)
 		zone.ruins = getRuins0(race)
+		zone.landmarks = getLandmarks0(race)
 	end
 	if is_island_mode then
 		zone.fill = Fill.Water
@@ -7195,6 +7371,7 @@ function getZone1(id, race)
 	zone.label = 1
 	zone.fill = tmd(Fill.Mountain, Fill.None, Fill.Mountain)
 	zone.pathWidth = tmd(9, 9, 9)
+	zone.race = race
 	if content_1 then
 		zone.towns = getTowns1(race)
 		zone.mines = getMines1(race)
@@ -7203,6 +7380,7 @@ function getZone1(id, race)
 		zone.ruins = getRuins1(race)
 		zone.merchants = getMerchants1(race)
 		zone.mages = getMages1(race)
+		zone.landmarks = getLandmarks1(race)
 	end
 	if is_island_mode then
 		zone.fill = Fill.Water
@@ -7221,6 +7399,7 @@ function getZone2(id, race)
 	zone.label = 2
 	zone.fill = tmd(Fill.Mountain, Fill.Mountain, Fill.Mountain)
 	zone.pathWidth = tmd(8, 11, 8)
+	zone.race = race
 	if content_2 then
 		zone.towns = getTowns2(race)
 		zone.mines = getMines2(race)
@@ -7229,6 +7408,7 @@ function getZone2(id, race)
 		zone.ruins = getRuins2(race)
 		zone.merchants = getMerchants2(race)
 		zone.mercenaries = getMercenaries2(race)
+		zone.landmarks = getLandmarks2(race)
 	end
 	if is_island_mode then
 		zone.fill = Fill.Water
@@ -8147,16 +8327,17 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function getScenarioVariables()
 	local result = {
-		{ name = 'GLOBAL_UNIT_MAX_ARMOR', value = 80 },           -- кап брони
-		{ name = 'GLOBAL_HIRE_LIMIT_LEADER', value = 1 },         -- лимит количества лидеров
-		{ name = 'GLOBAL_HIRE_LIMIT_ROD', value = 1 },            -- лимит количества жезловиков
-		{ name = 'GLOBAL_HIRE_LIMIT_NOBLE', value = 1 },          -- лимит количества воров
-		{ name = 'ITEM_CAN_STEAL_LESS_COST_SUM', value = 501 },   -- лимит воровства предметов
-		{ name = 'SPELL_CAN_STEAL_LESS_COST_SUM', value = 501 },  -- лимит воровства заклинаний
+		{ name = 'GLOBAL_UNIT_MAX_ARMOR', value = 80 }, -- кап брони
+		{ name = 'GLOBAL_HIRE_LIMIT_LEADER', value = 1 }, -- лимит количества лидеров
+		{ name = 'GLOBAL_HIRE_LIMIT_ROD', value = 1 }, -- лимит количества жезловиков
+		{ name = 'GLOBAL_HIRE_LIMIT_NOBLE', value = 1 }, -- лимит количества воров
+		{ name = 'ITEM_CAN_STEAL_LESS_COST_SUM', value = 501 }, -- лимит воровства предметов
+		{ name = 'SPELL_CAN_STEAL_LESS_COST_SUM', value = 501 }, -- лимит воровства заклинаний
 	}
 
 	for _,race in pairs(Races) do
 		table.insert(result, { name = 'LOSE_RACE_'..race,  value = 0 })
+		table.insert(result, { name = 'KOTO_MODS_APPLIED_'..race, value = 0 })
 	end
 
 	if emd({false, true, true, false}) then
@@ -8164,7 +8345,7 @@ function getScenarioVariables()
 		table.insert(result, { name = 'START_LEADER_CHANGE_MODE', value = 3 })
 	end
 
-	if emd({false, false, true, true}) then
+	if is_koto_mode then
 		table.insert(result, { name = 'HIRE_UNIT_ANY_RACE', value = 1 })
 	end
 
@@ -8257,20 +8438,15 @@ function getCustomParameters()
 			'1x1',
 			'1x1 [Чилл]',
 			'1x1 [+10 мтк]',
+			'1x1 [Руны]',
 		}
 	elseif template_mode == trinity then
 		mode.values = {
-			'1x1x1',
-			--'1x2 [рынок]',
-			--'1x2',
+			'1x1x1', --'1x2 [рынок]', --'1x2',
 		}
 	elseif template_mode == clover then
 		mode.values = {
-			'1x1x1x1',
-			--'2x2 [т0][рынок]',
-			--'2x2 [т0]',
-			--'2x2 [т2][рынок]',
-			--'2x2 [т2]',
+			'1x1x1x1', --'2x2 [т0][рынок]', --'2x2 [т0]', --'2x2 [т2][рынок]', --'2x2 [т2]',
 		}
 	end
 
@@ -8345,6 +8521,8 @@ function readCustomParameters(parameters)
 					is_chill_mode = true
 				elseif game_mode == 3 then
 					is_no_miss_mode = true
+				elseif game_mode == 4 then
+					is_rune_mode = true
 				end
 			elseif game_mode > 1 and game_mode % 2 == 0 then
 				market_mode = true
@@ -8352,6 +8530,7 @@ function readCustomParameters(parameters)
 		end
 		if parameters[2] then
 			event_mode = parameters[2]
+			is_koto_mode = emd({false, false, true, true})
 		end
 		if parameters[3] and parameters[3] == 2 then
 			treasure_mode = true
@@ -8392,13 +8571,13 @@ function getDiplomacyRelations()
 					raceA = Races[1],
 					raceB = Races[2],
 					relation = 0,
-					alwaysAtWar  = true,
+					alwaysAtWar = true,
 				},
 				{
 					raceA = Races[1],
 					raceB = Races[3],
 					relation = 0,
-					alwaysAtWar  = true,
+					alwaysAtWar = true,
 				}
 			}
 		else
@@ -8433,25 +8612,25 @@ function getDiplomacyRelations()
 					raceA = Races[1],
 					raceB = Races[3],
 					relation = 0,
-					alwaysAtWar  = true,
+					alwaysAtWar = true,
 				},
 				{
 					raceA = Races[1],
 					raceB = Races[4],
 					relation = 0,
-					alwaysAtWar  = true,
+					alwaysAtWar = true,
 				},
 				{
 					raceA = Races[2],
 					raceB = Races[3],
 					relation = 0,
-					alwaysAtWar  = true,
+					alwaysAtWar = true,
 				},
 				{
 					raceA = Races[2],
 					raceB = Races[4],
 					relation = 0,
-					alwaysAtWar  = true,
+					alwaysAtWar = true,
 				},
 			}
 		else
@@ -8462,11 +8641,436 @@ function getDiplomacyRelations()
 	end
 end
 
+------------------------------------------------------------------------------------------------------------------------
+--- Scripts
+local koto_mods_part_1 = [[
+local mods_by_leader_id = {
+  ---------------------------------------------------------------
+  -- Воины
+  ---------------------------------------------------------------
+  [Id.new('g000uu0019').value] = {  -- Рыцарь на Пегасе
+    'g070um0218', -- Рыцарь Смерти
+    'g070um0070', -- Герцог
+    'g070um0055', -- Королевский страж
+    'g070um0127', -- Вассал
+    'g070um0105', -- Вассал
+    'g070um0014', -- Некромант | Нежить
+    'g070um0217', -- Шествие орд | Рыцарь Смерти
+    'g070um0069', -- Плечом к плечу | Королевский страж
+  },
+  [Id.new('g000uu0096').value] = {  -- Рыцарь Смерти
+    'g070um0150', -- Рыцарь на Пегасе
+    'g070um0070', -- Герцог
+    'g070um0055', -- Королевский страж
+    'g070um0127', -- Вассал
+    'g070um0105', -- Вассал
+    'g070um0064', -- Боевое построение | Рыцарь на Пегасе
+    'g070um0069', -- Плечом к плечу | Королевский страж
+  },
+  [Id.new('g000uu0070').value] = {  -- Герцог
+    'g070um0150', -- Рыцарь на Пегасе
+    'g070um0218', -- Рыцарь Смерти
+    'g070um0055', -- Королевский страж
+    'g070um0127', -- Вассал
+    'g070um0105', -- Вассал
+    'g070um0014', -- Некромант | Нежить
+    'g070um0064', -- Боевое построение | Рыцарь на Пегасе
+    'g070um0217', -- Шествие орд | Рыцарь Смерти
+    'g070um0069', -- Плечом к плечу | Королевский страж
+  },
+  [Id.new('g000uu0044').value] = {  -- Королевский страж
+    'g070um0150', -- Рыцарь на Пегасе
+    'g070um0218', -- Рыцарь Смерти
+    'g070um0070', -- Герцог
+    'g070um0127', -- Вассал
+    'g070um0105', -- Вассал
+    'g070um0014', -- Некромант | Нежить
+    'g070um0064', -- Боевое построение | Рыцарь на Пегасе
+    'g070um0217', -- Шествие орд | Рыцарь Смерти
+  },
+  [Id.new('g000uu8009').value] = {  -- Вассал леса
+    'g070um0218', -- Рыцарь Смерти
+    'g070um0070', -- Герцог
+    'g070um0055', -- Королевский страж
+    'g070um0014', -- Некромант | Нежить
+    'g070um0064', -- Боевое построение | Рыцарь на Пегасе
+    'g070um0217', -- Шествие орд | Рыцарь Смерти
+    'g070um0069', -- Плечом к плечу | Королевский страж
+  },
+
+  ---------------------------------------------------------------
+  -- Маги
+  ---------------------------------------------------------------
+  [Id.new('g000uu8248').value] = {  -- Архимаг
+    'g070um0090', -- Королева Личей
+    'g070um0093', -- Королева Личей
+    'g070um0054', -- Ученый
+    'g070um0126', -- Дриада
+    'g070um0014', -- Некромант | Нежить
+  },
+  [Id.new('g000uu8253').value] = {  -- Королева личей
+    'g070um0151', -- Архимаг
+    'g070um0054', -- Ученый
+    'g070um0126', -- Дриада
+    'g070um0130', -- Энергетическое эхо | Архимаг
+  },
+  [Id.new('g000uu8250').value] = {  -- Архидьявол
+    'g070um0151', -- Архимаг
+    'g070um0090', -- Королева Личей
+    'g070um0093', -- Королева Личей
+    'g070um0054', -- Ученый
+    'g070um0126', -- Дриада
+    'g070um0014', -- Некромант | Нежить
+    'g070um0130', -- Энергетическое эхо | Архимаг
+  },
+  [Id.new('g000uu8249').value] = {  -- Ученый
+    'g070um0151', -- Архимаг
+    'g070um0090', -- Королева Личей
+    'g070um0093', -- Королева Личей
+    'g070um0126', -- Дриада
+    'g070um0014', -- Некромант | Нежить
+    'g070um0130', -- Энергетическое эхо | Архимаг
+  },
+  [Id.new('g000uu8251').value] = {  -- Дриада
+    'g070um0151', -- Архимаг
+    'g070um0090', -- Королева Личей
+    'g070um0093', -- Королева Личей
+    'g070um0054', -- Ученый
+    'g070um0014', -- Некромант | Нежить
+    'g070um0130', -- Энергетическое эхо | Архимаг
+  },
+
+  ---------------------------------------------------------------
+  -- Разветчики
+  ---------------------------------------------------------------
+  [Id.new('g000uu0020').value] = {  -- Следопыт
+    'g070um0091', -- Носферату
+    'g070um0031', -- Инженер
+    'g070um0124', -- Страж леса
+    'g070um0014', -- Некромант | Нежить
+  },
+  [Id.new('g000uu8252').value] = {  -- Носферату
+    'g070um0152', -- Следопыт
+    'g070um0031', -- Инженер
+  },
+  [Id.new('g000uu0071').value] = {  -- Советник
+    'g070um0152', -- Следопыт
+    'g070um0091', -- Носферату
+    'g070um0031', -- Инженер
+    'g070um0124', -- Страж леса
+    'g070um0014', -- Некромант | Нежить
+  },
+  [Id.new('g000uu0045').value] = {  -- Инженер
+    'g070um0152', -- Следопыт
+    'g070um0091', -- Носферату
+    'g070um0124', -- Страж леса
+    'g070um0014', -- Некромант | Нежить
+  },
+  [Id.new('g000uu8011').value] = {  -- Страж леса
+    'g070um0152', -- Следопыт
+    'g070um0091', -- Носферату
+    'g070um0031', -- Инженер
+    'g070um0014', -- Некромант | Нежить
+  },
+}
+
+local mods_by_lord = {
+  [Lord.Warrior] = {
+    'g070um0150', -- Рыцарь на Пегасе
+    'g070um0218', -- Рыцарь Смерти
+    'g070um0070', -- Герцог
+    'g070um0055', -- Королевский страж
+    'g070um0127', -- Вассал
+    'g070um0105', -- Вассал
+    'g070um0014', -- Некромант | Нежить
+    'g070um0217', -- Шествие орд | Рыцарь Смерти
+    'g070um0064', -- Боевое построение | Рыцарь на Пегасе
+    'g070um0069', -- Плечом к плечу | Королевский страж
+  },
+  [Lord.Mage] = {
+    'g070um0151', -- Архимаг
+    'g070um0090', -- Королева Личей
+    'g070um0093', -- Королева Личей
+    'g070um0054', -- Ученый
+    'g070um0126', -- Дриада
+    'g070um0014', -- Некромант | Нежить
+    'g070um0130', -- Энергетическое эхо | Архимаг
+  },
+  [Lord.Diplomat] = {
+    'g070um0152', -- Следопыт
+    'g070um0091', -- Носферату
+    'g070um0031', -- Инженер
+    'g070um0124', -- Страж леса
+    'g070um0014', -- Некромант | Нежить
+  },
+}
+
+local result = false
+scenario:forEachStack(function (stack)
+	if result then return end
+  local player = stack.owner
+  if player.race ~= Race.Neutral and player.race == ]]
+
+local koto_mods_part_2 = [[ then
+    local leader = stack.leader
+
+    if leader.type ~= Leader.Rod and leader.type ~= Leader.Noble and leader.impl.type ~= Unit.Summon then
+      local mods = mods_by_leader_id[leader.impl.id.value] or mods_by_lord[player.lord]
+
+      if mods then
+        for _, mod in ipairs(mods) do
+          scenario:AddUnitModifier(leader.id, mod)
+        end
+        scenario:Heal(leader.id, 0)
+      end
+      result = true
+    end
+  end
+end)
+return result
+]]
+
+local koto_check_part_1 = [[
+  local result = true
+  scenario:forEachStack(function (stack)
+	  local owner = stack.owner
+	  if owner.race ~= Race.Neutral and owner.race == ]]
+
+local koto_check_part_2 = [[
+ then
+	    local leader = stack.leader
+	    if leader.type ~= Leader.Rod and leader.type ~= Leader.Noble and leader.impl.type ~= Unit.Summon then
+	      result = false
+	    end
+	  end
+  end)
+  return result
+]]
+------------------------------------------------------------------------------------------------------------------------
+local function effectAppliesTo(effect, zone)
+	if effect.tiers and not effect.tiers[zone.tier] then
+		return false
+	end
+	if effect.requiresStacks and #zone.stacks == 0 then
+		return false
+	end
+	if effect.requiresLandmarks and #zone.landmarks == 0 then
+		return false
+	end
+	if effect.appliesTo and not effect.appliesTo(effect, zone) then
+		return false
+	end
+	return true
+end
+
+--- Выбрать N значений из пула с учётом режима.
+---   mode = 'any'       — любое, повторы допустимы
+---   mode = 'different' — все значения разные (если пул позволяет)
+---   mode = 'same'      — все значения одинаковые
+local function pickFromPool(pool, count, mode)
+	count = count or 1
+	mode = mode or 'any'
+
+	local result = {}
+	if count <= 0 or #pool == 0 then
+		return result
+	end
+
+	if mode == 'same' then
+		local choice = rndt(pool)
+		for i = 1, count do
+			result[i] = choice
+		end
+
+	elseif mode == 'diff' then
+		-- делаем копию пула и перемешиваем её
+		local copy = {}
+		for i, v in ipairs(pool) do
+			copy[i] = v
+		end
+		shake(copy)
+
+		local n = math.min(count, #copy)
+		for i = 1, n do
+			result[i] = copy[i]
+		end
+
+	else -- 'any'
+		for i = 1, count do
+			result[i] = rndt(pool)
+		end
+	end
+
+	return result
+end
+
+local function defaultPrepare(self, tierKey)
+	self._cache = self._cache or {}
+	if not self._cache[tierKey] then
+		self._cache[tierKey] = pickFromPool(self.pool, self.count or 1, self.mode or 'any')
+	end
+end
+------------------------------------------------------------------------------------------------------------------------
+--- Пул эффектов рун
+------------------------------------------------------------------------------------------------------------------------
+--- Каждый элемент:
+---   id        : string, для логов
+---   appliesTo : function(zone) -> bool, применим ли эффект к этой зоне
+---   build     : function(zone) -> { effects }, конкретные эффекты для этой зоны
+---
+--- Эффект выбирается один раз на тир. Он применяется ко всем зонам тира,
+--- только если проходит appliesTo для ВСЕХ зон тира.
+
+local RUNE_EFFECT_POOL = {
+	--- Исцеление
+	{
+		tiers = { t0 = true, t1 = true, t2 = true },
+		count = 1,
+		mode = 'same',
+		pool = {
+			Spells.g000ss0007.id, -- Исцеление
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone)
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, spellId in ipairs(picks) do
+				table.insert(effects, { type = Effect.CastSpell, spellId = spellId })
+			end
+			return effects
+		end,
+	},
+	--- Усиление т1
+	{
+		tiers = { t0 = true, t1 = true, t2 = true },
+		count = 1,
+		mode = 'diff',
+		pool = {
+			Spells.g000ss0002.id, -- Быстрота
+			Spells.g000ss0021.id, -- Ледяной щит
+			Spells.g000ss0003.id, -- Сила
+			Spells.g000ss0023.id, -- Сила Витара
+			Spells.g000ss0181.id, -- Стальные кости
+			Spells.g000ss0102.id, -- Стойкость рощи
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone)
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, spellId in ipairs(picks) do
+				table.insert(effects, { type = Effect.CastSpell, spellId = spellId })
+			end
+			return effects
+		end,
+	},
+	--- Урон по всем нейтральным отрядам (обычно 1 заклинание — count=1)
+	{
+		tiers = { t0 = true, t1 = true, t2 = true },
+		requiresStacks = true,
+		count = 1,
+		mode = 'same',
+		pool = {
+			Spells.g000ss0043.id, -- Ignis mare
+			Spells.g000ss0024.id, -- Буран
+			Spells.g000ss0097.id, -- Кустарник
+			Spells.g000ss0004.id, -- Молния
+			Spells.g000ss0062.id, -- Мор
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone)
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, stack in ipairs(zone.stacks) do
+				for _, spellId in ipairs(picks) do
+					table.insert(effects, {
+						type = Effect.CastSpellLoc,
+						spellId = spellId,
+						uid = stack.locUid,
+					})
+				end
+			end
+			return effects
+		end,
+	},
+	--- Хилки
+	{
+		tiers = { t0 = true, t1 = true, t2 = true },
+		count = 2,
+		mode = 'diff',
+		pool = {
+			Items.heal.hres,
+			Items.heal.h50,
+			Items.heal.h75,
+			Items.heal.h100,
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone)
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, itemId in ipairs(picks) do
+				table.insert(effects, { type = Effect.GiveItem, itemId = itemId })
+			end
+			return effects
+		end,
+	},
+
+	--- Дебафф по всем нейтральным отрядам
+	{
+		tiers = { t0 = true, t1 = true, t2 = true },
+		requiresStacks = true,
+		count = 1,
+		mode = 'diff',
+		pool = {
+			Spells.g000ss0044.id, -- Menta minoris
+			Spells.g000ss0178.id, -- Неудача
+			Spells.g000ss0134.id, -- Порченая руна
+			Spells.g000ss0064.id, -- Слабость
+			Spells.g000ss0106.id, -- Смятение
+			Spells.g000ss0101.id, -- Стая
+			Spells.g000ss0179.id, -- Устрашающий гимн
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone)
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, stack in ipairs(zone.stacks) do
+				for _, spellId in ipairs(picks) do
+					table.insert(effects, {
+						type = Effect.CastSpellLoc,
+						spellId = spellId,
+						uid = stack.locUid,
+					})
+				end
+			end
+			return effects
+		end,
+	},
+	--- Родная земля
+	{
+		tiers = { t0 = true, t1 = true, t2 = true },
+		requiresLandmarks = true,
+		appliesTo = function(self, zone)
+			return zone.race ~= nil
+		end,
+		build = function(self, zone)
+			return {
+				{
+					type = Effect.ChangeTerrain,
+					uid = zone.landmarks[1].locUid,
+					terrain = getTerrainByRace(zone.race),
+					radius = 7,
+				},
+			}
+		end,
+	},
+}
+------------------------------------------------------------------------------------------------------------------------
+
 function getEvents()
 	local events = {}
 
 	local hire_disable_event = {
-		name = "Disable leader hire",
+		name = "101 Disable leader hire",
 		chance = 100,
 		occurOnce = true,
 		races = Races,
@@ -8481,23 +9085,100 @@ function getEvents()
 	}
 	table.insert(events, hire_disable_event)
 
+	if is_rune_mode then
+		local TIER_ORDER = { 't0', 't1', 't2' }
+
+		for _, tierKey in ipairs(TIER_ORDER) do
+			local zoneIds = ZoneRegistry.byTier[tierKey] or {}
+
+			if #zoneIds > 0 then
+				-- Отбираем эффекты, применимые ко ВСЕМ зонам этого тира
+				local applicable = {}
+				for _, effect in ipairs(RUNE_EFFECT_POOL) do
+					local ok = true
+					for _, zoneId in ipairs(zoneIds) do
+						local zone = ZoneRegistry.byId[zoneId]
+						if not effectAppliesTo(effect, zone) then
+							ok = false
+							break
+						end
+					end
+					if ok then
+						table.insert(applicable, effect)
+					end
+				end
+
+				if #applicable > 0 then
+					-- Один эффект на тир — все зоны получат одинаковый
+					local chosen = rndt(applicable)
+
+					-- Готовим выбранный эффект один раз для всего тира
+					if chosen.prepare then
+						chosen:prepare(tierKey)
+					end
+
+					for _, zoneId in ipairs(zoneIds) do
+						local zone = ZoneRegistry.byId[zoneId]
+						local landmarkLoc = zone.landmarks[1] and zone.landmarks[1].locUid
+
+						if landmarkLoc then
+							local effects = chosen:build(zone)
+							if #effects > 0 then
+								table.insert(events, {
+									name = "700 Rune event " .. zoneId,
+									chance = 100,
+									occurOnce = true,
+									races = Races,
+									targetRaces = Races,
+									conditions = {
+										{ type = Condition.EnterLocation, uid = landmarkLoc },
+										{ type = Condition.Script, scriptCode = [[
+											local result = false
+												scenario:forEachStack(function (stack)
+													local owner = stack.owner
+													if owner.race ~= Race.Neutral then
+														local leader = stack.leader
+														if leader.impl.type ~= Unit.Summon then
+															result = true
+														end
+													end
+												end)
+												return result
+											]] },
+									},
+									effects = effects,
+								})
+
+								table.insert(effects, {
+									type = Effect.ChangeLandmark,
+									uid = zone.landmarks[1].uid,
+									typeIds = { 'G000MG8121' },
+								})
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
 	for _,race in ipairs(Races) do
 		local own_city_event = {
-			name = "Own City "..race,
+			name = "102 Own City "..race,
 			chance = 100,
 			occurOnce = true,
 			races = {race},
 			targetRaces = {race},
 			conditions = {
 				{ type = Condition.Frequency, frequency = 21 },
-				{ type = Condition.OwnCity, cityUid = "ZONE_"..c4_1.."_CITY_1" },
+				{ type = Condition.OwnCity, uid = "ZONE_"..c4_1.."_CITY_1" },
 			},
 			effects = {
 				{ type = Effect.Win, race = race },
 			}
 		}
 		local lose_race_event = {
-			name = "Win race "..race,
+			name = "102 Win race "..race,
 			chance = 100,
 			occurOnce = true,
 			races = {race},
@@ -8526,7 +9207,7 @@ function getEvents()
 			}
 		}
 		local gm_spells_event = {
-			name = "Guildmaster spells "..race,
+			name = "201 Guildmaster spells "..race,
 			chance = 100,
 			occurOnce = true,
 			races = {race},
@@ -8548,7 +9229,7 @@ function getEvents()
 			}
 		}
 		local mage_spells_event = {
-			name = "Mage spells "..race,
+			name = "202 Mage spells "..race,
 			chance = 100,
 			occurOnce = true,
 			races = {race},
@@ -8575,6 +9256,45 @@ function getEvents()
 		table.insert(events, lose_race_event)
 		table.insert(events, gm_spells_event)
 		table.insert(events, mage_spells_event)
+
+		if is_koto_mode then
+			local koto_1_event = {
+				name = '001 Koto '..race,
+				chance = 100,
+				enabled = true,
+				occurOnce = false,
+				races = {race},
+				targetRaces = {race},
+				conditions = {
+					{ type = Condition.Frequency, frequency = 1 },
+					{ type = Condition.VarInRange, varName1 = 'KOTO_MODS_APPLIED_'..race, varMin1 = 0, varMax1 = 0, varMode = VarMode.Single },
+					{ type = Condition.PlayerType, ai = false },
+					{ type = Condition.Script, scriptCode = koto_mods_part_1..race..koto_mods_part_2 },
+				},
+				effects = {
+					{ type = Effect.EnableEvent, uid = '002 Koto '..race, enable = true },
+					{ type = Effect.ModifyVariable, varName = 'KOTO_MODS_APPLIED_'..race, operation=ModifyVariable.Set, value = 1 },
+				}
+			}
+			local koto_2_event = {
+				name = '002 Koto '..race,
+				chance = 100,
+				enabled = false,
+				occurOnce = true,
+				races = {race},
+				targetRaces = {race},
+				conditions = {
+					{ type = Condition.VarInRange, varName1 = 'KOTO_MODS_APPLIED_'..race, varMin1 = 1, varMax1 = 1, varMode = VarMode.Single },
+					{ type = Condition.Script, scriptCode = koto_check_part_1..race..koto_check_part_2 },
+				},
+				effects = {
+					{ type = Effect.ModifyVariable, varName = 'KOTO_MODS_APPLIED_'..race, operation=ModifyVariable.Set, value = 0 },
+				}
+			}
+
+			table.insert(events, koto_1_event)
+			table.insert(events, koto_2_event)
+		end
 	end
 	return events
 end
@@ -8620,6 +9340,7 @@ function getTemplateContents(races, size, parameters)
 
 	contents.diplomacy = getDiplomacyRelations()
 	contents.zones = getZones()
+	harvestZones(contents.zones)
 	contents.connections = getConnections()
 	contents.scenarioVariables = getScenarioVariables()
 	contents.events = getEvents()
