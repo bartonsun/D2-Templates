@@ -2792,7 +2792,7 @@ Pools.items.ruins.t4 = {
 			{ id = 'g001ig0424', amount = 1, weight = 4 }, -- Длани ангела (Реликвия) 1000
 			{ id = 'g000ig3005', amount = 1, weight = 4 }, -- Корона Мьолнира (Реликвия) 1200
 			{ id = 'g001ig0116', amount = 1, weight = 4 }, -- Пластинчатый доспех (Реликвия) 1550
-			{ id = 'g001ig0596', amount = 1, weight = 1 }, -- Линарет (Реликвия) 1250
+			{ id = 'g001ig0596', amount = 1, weight = 3 }, -- Линарет (Реликвия) 1250
 			{ id = 'g001ig0360', amount = 1, weight = 4 }, -- Стяг упырей 1300
 			{ id = 'g000ig9043', amount = 1, weight = 1 }, -- Сфера ярости 1000
 			{ id = 'g001ig0115', amount = 1, weight = 4 }, -- Железная поступь 1100
@@ -8745,7 +8745,7 @@ local mods_by_leader_id = {
   },
 
   ---------------------------------------------------------------
-  -- Разветчики
+  -- Разведчики
   ---------------------------------------------------------------
   [Id.new('g000uu0020').value] = {  -- Следопыт
     'g070um0091', -- Носферату
@@ -8808,8 +8808,6 @@ local mods_by_lord = {
     'g070um0014', -- Некромант | Нежить
   },
 }
-
-local result = false
 scenario:forEachStack(function (stack)
 	if result then return end
   local player = stack.owner
@@ -8827,11 +8825,10 @@ scenario:forEachStack(function (stack)
         end
         scenario:Heal(leader.id, 0)
       end
-      result = true
     end
   end
 end)
-return result
+return false
 ]]
 end
 
@@ -9255,6 +9252,7 @@ function getEvents()
 				races = {race},
 				targetRaces = {race},
 				conditions = {
+					{ type = Condition.Frequency, frequency = 1 },
 					{ type = Condition.PlayerType, ai = false },
 					{ type = Condition.Script, scriptCode = script_koto_mods(race) },
 				},
