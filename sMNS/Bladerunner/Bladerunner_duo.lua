@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.17'
+local ver = '3.4.18'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -2510,25 +2510,34 @@ Pools.loot.t5 = {
 			{ id = Items.heal.h200, amount = 2, weight = 1 },
 		}
 	},
+	ward_1 = {
+		priority = PoolPriority.AS_POSSIBLE,
+		items = {
+			{ id = 'g002ig0009', amount = 1, weight = 1 }, -- Эликсир очищения 1000
+		}
+	},
 	gold_1 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.gold.g200, amount = 2, weight = 1 },
-			{ id = Items.gold.g250, amount = 2, weight = 1 }, --{ id = Items.gold.g300, amount = 1, weight = 1 },
+			{ id = Items.gold.g250, amount = 2, weight = 1 },
+			--{ id = Items.gold.g300, amount = 1, weight = 1 },
 		}
 	},
 	gold_2 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.gold.g250, amount = 2, weight = 1 },
-			{ id = Items.gold.g300, amount = 2, weight = 1 }, --{ id = Items.gold.g350, amount = 1, weight = 1 },
+			{ id = Items.gold.g300, amount = 2, weight = 1 },
+			--{ id = Items.gold.g350, amount = 1, weight = 1 },
 		}
 	},
 	gold_3 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ id = Items.gold.g300, amount = 1, weight = 1 },
-			{ id = Items.gold.g400, amount = 1, weight = 1 }, --{ id = Items.gold.g500, amount = 1, weight = 1 },
+			{ id = Items.gold.g400, amount = 1, weight = 1 },
+			--{ id = Items.gold.g500, amount = 1, weight = 1 },
 		}
 	},
 	art_1 = {
@@ -2536,6 +2545,7 @@ Pools.loot.t5 = {
 		items = {
 			{ id = 'g001ig0182', amount = 1, weight = 1 }, -- Счастливая кость (Артефакт) 500
 			{ id = 'g000ig2002', amount = 1, weight = 1 }, -- Святая чаша (Артефакт) 500
+			{ id = 'g001ig0589', amount = 1, weight = 1 }, -- Щит неведения (Артефакт) 500
 		}
 	},
 	boots_1 = {
@@ -3249,7 +3259,7 @@ Pools.objects.mercenaries = {
 			{ data = { name = 'Зоомагазин «Барсик»', description = 'Восьмое чудо света!', units = { id = 'g000uu5037', level = 1, unique = true } }, weight = 1 },
 			{ data = { name = 'Аквариум', description = 'Бульк!', units = { id = 'g000uu5028', level = 1, unique = true } }, weight = 1 },
 			{ data = { name = 'Вечнотренировочный лагерь "Новичок"', description = 'Наш говорящий пенистый паук все время зовет Наташу. Пожалуйста, найдите ее!', units = { id = 'g001uu8282', level = 1, unique = true } }, weight = 1 },
-			{ data = { name = 'High-skill наемники"', description = 'У нас лучшие педальные кони', units = { id = 'g000uu7588', level = 1, unique = true } }, weight = 1 },
+			{ data = { name = 'High-skill наемники', description = 'У нас лучшие педальные кони', units = { id = 'g000uu7588', level = 1, unique = true } }, weight = 1 },
 		}
 	},
 	t3 = {
@@ -5076,10 +5086,13 @@ function absZone(id, size)
 		size = size,
 		type = Zone.Junction,
 		border = Border.Closed,
-		gapChance = 50, -------------------------
+		gapChance = 50,
+		-------------------------
 		--- только для столицы
 		-------------------------
-		--race = race, --capital = absCapital(), -------------------------
+		--race = race,
+		--capital = absCapital(),
+		-------------------------
 		towns = {},
 		mines = {},
 		bags = {},
@@ -5090,12 +5103,12 @@ function absZone(id, size)
 		mages = {},
 		trainers = {},
 		resourceMarkets = {},
-		landmarks = {}, --
+		landmarks = {},
 		water = -1,
 		waterType = Water.None,
-		allowPlaceOnWater = true, --
+		allowPlaceOnWater = true,
 		terrain = 100,
-		terrainType = Terrain.Neutral, --
+		terrainType = Terrain.Neutral,
 		forest = -1,
 		roads = -1,
 	}
@@ -5277,7 +5290,16 @@ end
 function absLandmark()
 	return {
 		description = "",
-		size = { min = { x = 1, y = 1 }, max = { x = 5, y = 5 } },
+		size = {
+			min = {
+				x = 1,
+				y = 1,
+			},
+			max = {
+				x = 5,
+				y = 5,
+			},
+		},
 		landmarkTypes = {},
 		typeIds = {},
 		forbiddenIds = {},
@@ -5516,6 +5538,8 @@ function getTowns1(race)
 	towns[i] = absTown()
 	Distributor:requestTownData(towns[i], Pools.objects.towns.t1)
 
+	towns[i].regen = 100
+
 	towns[i].stack = absStack()
 	towns[i].stack.value = getStackValue(towns[i].stack, 240)
 	towns[i].stack.loot.itemTypes = {Item.Scroll, Item.Orb}
@@ -5544,6 +5568,8 @@ function getTowns2(race)
 	--- 450
 	towns[i] = absTown()
 	Distributor:requestTownData(towns[i], Pools.objects.towns.t2)
+
+	towns[i].regen = 100
 
 	towns[i].stack = absStack()
 	towns[i].stack.subraceTypes = rsub(true)
@@ -5584,6 +5610,8 @@ function getTowns4()
 	--- 1100
 	towns[i] = absTown()
 	Distributor:requestTownData(towns[i], Pools.objects.towns.t4)
+
+	towns[i].regen = 100
 
 	towns[i].stack = absStack()
 	towns[i].stack.subraceTypes = { Subrace.NeutralDragon, Subrace.Human, Subrace.Heretic, Subrace.Dwarf, Subrace.Elf }
@@ -6178,6 +6206,7 @@ function getStacks5(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.art_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.ward_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_1, 1)
 	Distributor:requestItems(stacks[i], Pools.items.mana.normal, 1)
@@ -6190,6 +6219,7 @@ function getStacks5(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.boots_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.ward_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.scroll_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_1, 1)
@@ -6202,6 +6232,7 @@ function getStacks5(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.banner_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.ward_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_2, 1)
 	i = i + 1
@@ -6213,6 +6244,7 @@ function getStacks5(race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.heal_1, 3, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.gold_2, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.relic_1, 1, race)
+	Distributor:requestItems(stacks[i], Pools.loot.t5.ward_1, 1, race)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.staff_1, 1)
 	Distributor:requestItems(stacks[i], Pools.loot.t5.orb_2, 1)
 	Distributor:requestItems(stacks[i], Pools.items.buff_e2, 1)
@@ -7426,7 +7458,6 @@ local ZONE3_CONFIG = {}
 local BORDERS_1 = {Border.Open, Border.Water, Border.SemiOpen}
 local BORDERS_2 = {Border.Open, Border.Water, Border.SemiOpen}
 function initZone3()
-	-- Определяем список зон для текущего режима
 	local zone_ids
 	if template_mode == duo then
 		zone_ids = {c3_1, c3_2, c3_3, c3_4}
@@ -7438,7 +7469,6 @@ function initZone3()
 
 	local buildings = {"merchant", "mage", "trainer", "mercenary"}
 	if is_chill_mode or template_mode == trinity then
-		-- Удаляем trainer для указанных режимов
 		for i = #buildings, 1, -1 do
 			if buildings[i] == "trainer" then
 				table.remove(buildings, i)
@@ -7448,10 +7478,8 @@ function initZone3()
 	end
 
 	if template_mode == trinity then
-		-- Для trinity: каждую пару зон получает один объект и один тип руины
 		shake(buildings)
 		local pairs = {{c3_1, c3_4}, {c3_2, c3_5}, {c3_3, c3_6}}
-		-- Перемешиваем типы руин и берём первые 3
 		local ruin_types = {}
 		for _, v in ipairs(ruinsLootTypes2) do
 			table.insert(ruin_types, v)
@@ -7469,35 +7497,68 @@ function initZone3()
 			end
 		end
 	else
-		-- Для duo и clover: группируем зоны на A и B (нечётные – A, чётные – B)
-		-- Определяем количество объектов и руин в каждой группе
-		local object_amount = {2, 2}
-		if is_chill_mode then
-			object_amount = {2, 1}
-			shake(object_amount)
-		end
 
-		local ruins_amount = {2, 2}
-		if template_mode == duo or template_mode == clover then
-			if object_amount[1] == 2 then
-				ruins_amount = {2, 3}
-			else
-				ruins_amount = {3, 2}
-			end
-		end
-
-		shake(ruinsLootTypes2)
-		local typesA = {ruinsLootTypes2[1], ruinsLootTypes2[2]}
-		local typesB = {ruinsLootTypes2[3], ruinsLootTypes2[4]}
-
-		shake(buildings)
 		local objA = {}
 		local objB = {}
-		for i = 1, object_amount[1] do
-			table.insert(objA, buildings[i])
-		end
-		for i = object_amount[1] + 1, object_amount[1] + object_amount[2] do
-			table.insert(objB, buildings[i])
+		local typesA = {}
+		local typesB = {}
+
+		if is_koto_mode then
+			local group1 = {"merchant", "mage"}
+			local group2 = {"trainer", "mercenary"}
+			if is_chill_mode then
+
+				for i = #group2, 1, -1 do
+					if group2[i] == "trainer" then
+						table.remove(group2, i)
+					end
+				end
+			end
+
+			if math.random(2) == 1 then
+				objA = group1
+				objB = group2
+			else
+				objA = group2
+				objB = group1
+			end
+
+			local ruins_amount_A, ruins_amount_B
+			if is_chill_mode then
+				if #objA == 2 then
+					ruins_amount_A, ruins_amount_B = 2, 3
+				else
+					ruins_amount_A, ruins_amount_B = 3, 2
+				end
+			else
+				ruins_amount_A, ruins_amount_B = 2, 2
+			end
+
+			for i = 1, ruins_amount_A do
+				table.insert(typesA, rndt(ruinsLootTypes2))
+			end
+			for i = 1, ruins_amount_B do
+				table.insert(typesB, rndt(ruinsLootTypes2))
+			end
+		else
+
+			local object_amount = {2, 2}
+			if is_chill_mode then
+				object_amount = {2, 1}
+				shake(object_amount)
+			end
+
+			shake(ruinsLootTypes2)
+			typesA = {ruinsLootTypes2[1], ruinsLootTypes2[2]}
+			typesB = {ruinsLootTypes2[3], ruinsLootTypes2[4]}
+
+			shake(buildings)
+			for i = 1, object_amount[1] do
+				table.insert(objA, buildings[i])
+			end
+			for i = object_amount[1] + 1, object_amount[1] + object_amount[2] do
+				table.insert(objB, buildings[i])
+			end
 		end
 
 		-- Назначаем каждой зоне своей группы
@@ -8337,7 +8398,6 @@ function getScenarioVariables()
 
 	for _,race in pairs(Races) do
 		table.insert(result, { name = 'LOSE_RACE_'..race,  value = 0 })
-		table.insert(result, { name = 'KOTO_MODS_APPLIED_'..race, value = 0 })
 	end
 
 	if emd({false, true, true, false}) then
@@ -8645,7 +8705,7 @@ end
 --- Scripts
 function script_koto_mods(race)
 	return [[
-if scenario.day > 4 then
+if scenario.day == 0 then
 	return false
 end
 local mods_by_leader_id = {
