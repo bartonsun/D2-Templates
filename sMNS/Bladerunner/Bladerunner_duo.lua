@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.19'
+local ver = '3.4.20'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -640,97 +640,63 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 --- Реестр зон и их содержимого
 ------------------------------------------------------------------------------------------------------------------------
---- Ключ тира для таблицы byTier.
---- getZone0 ? label = 0  ? ключ 't0'
---- getZone5 ? label = 5  ? ключ 't5'
---- getZoneM ? label = 'M' ? ключ 'M'
---- getZoneW ? label = 'W' ? ключ 'W'
---- getZoneE ? label = ''  ? ключ 'other'
-local function zoneTierKey(label)
-	if type(label) == 'number' then
-		return 't' .. label
-	elseif type(label) == 'string' and label ~= '' then
-		return label
-	end
-	return 'other'
-end
+ZoneRegistry = { byTier = {}, byId = {} }
 
-ZoneRegistry = {
-	byTier = {}, -- ['t0'] = {100, 200}, ['t1'] = {101, 201}, ['M'] = {103}, ...
-	byId = {}, -- [100] = { id, tier, label, stacks = {...}, landmarks = {...} }
-}
-
---- Зарегистрировать одну зону. Вычисляет uid'ы её содержимого
---- в точности так же, как это делает генератор в TemplateZone::placeStacks
---- и TemplateZone::placeLandmarks.
 function registerZone(zone)
 	if not zone or not zone.id then return end
 
-	local tierKey = zoneTierKey(zone.label)
-	local entry = {
+	local tierKey = zone.tier
+	if not tierKey or tierKey == '' then
+		tierKey = 'other'
+	end
+
+	ZoneRegistry.byId[zone.id] = {
+		zone = zone,
 		id = zone.id,
 		tier = tierKey,
-		race = zone.race,
-		label = zone.label,
-		stacks = {},
-		landmarks = {},
 	}
-	ZoneRegistry.byId[zone.id] = entry
 	ZoneRegistry.byTier[tierKey] = ZoneRegistry.byTier[tierKey] or {}
 	table.insert(ZoneRegistry.byTier[tierKey], zone.id)
-
-	-- Лендмарки:
-	--   авто-uid:    ZONE_<zoneId>_LANDMARK_<n>   (n = 1..N)
-	--   локация:     LOC_ZONE_<zoneId>_LANDMARK_<n>
-	-- (генератор всегда использует авто-uid для локации, даже если задан customUid)
-	if zone.landmarks then
-		for i = 1, #zone.landmarks do
-			local autoUid = 'ZONE_' .. zone.id .. '_LANDMARK_' .. i
-			table.insert(entry.landmarks, {
-				uid = autoUid,
-				locUid = 'LOC_' .. autoUid,
-			})
-		end
-	end
-
-	-- Отряды:
-	--   auto-uid:  ZONE_<zoneId>_STACK_<groupIndex>_<i>
-	--   custom:    <customUid>            (если count == 1)
-	--              <customUid>_<i>         (если count > 1)
-	--   локация:   LOC_<finalUid>
-	if zone.stacks and #zone.stacks > 0 then
-		local groupIndex = 0
-		for _, group in ipairs(zone.stacks) do
-			groupIndex = groupIndex + 1
-			local count = group.count or 0
-			local customUid = group.uid
-
-			for i = 1, count do
-				local finalUid
-				if customUid and customUid ~= '' then
-					finalUid = (count <= 1) and customUid or (customUid .. '_' .. i)
-				else
-					finalUid = 'ZONE_' .. zone.id .. '_STACK_' .. groupIndex .. '_' .. i
-				end
-
-				table.insert(entry.stacks, {
-					uid = finalUid,
-					locUid = 'LOC_' .. finalUid,
-					groupIndex = groupIndex,
-					stackIndex = i,
-				})
-			end
-		end
-	end
 end
 
---- Построить реестр по списку зон.
 function harvestZones(zones)
 	ZoneRegistry.byTier = {}
 	ZoneRegistry.byId = {}
 	for _, zone in ipairs(zones or {}) do
 		registerZone(zone)
 	end
+end
+
+--- Возвращает список инстансов стеков зоны с готовыми uid/locUid.
+--- Схема совпадает с C++ TemplateZone::placeStacks.
+local function zoneStacks(zone)
+	local result = {}
+	if not zone.stacks then return result end
+	for gi = 1, #zone.stacks do
+		local group = zone.stacks[gi]
+		local count = group.count or 0
+		for si = 1, count do
+			local uid = 'ZONE_' .. zone.id .. '_STACK_' .. gi .. '_' .. si
+			result[#result + 1] = { uid = uid, locUid = 'LOC_' .. uid }
+		end
+	end
+	return result
+end
+
+--- Возвращает список лендмарков зоны с готовыми uid/locUid.
+--- Схема совпадает с C++ TemplateZone::placeLandmarks.
+local function zoneLandmarks(zone)
+	local result = {}
+	if not zone.landmarks then return result end
+	for i = 1, #zone.landmarks do
+		local uid = 'ZONE_' .. zone.id .. '_LANDMARK_' .. i
+		result[i] = {
+			uid    = uid,
+			locUid = 'LOC_' .. uid,
+			index  = i,
+		}
+	end
+	return result
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -3559,9 +3525,9 @@ Pools.mercenaries.t3 = {
 	m7 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
-			{ data = { id = 'g002uu5026', level = 1, unique = true }, weight = 1 }, -- Элементаль Воды 1450
+			{ data = { id = 'g000uu9026', level = 1, unique = true }, weight = 1 }, -- Элементаль Воды 1450
 			{ data = { id = 'g001uu7586', level = 1, unique = true }, weight = 1 }, -- Легат 1480
-			{ data = { id = 'g000uu6109', level = 1, unique = true }, weight = 1 }, -- Женщина-некромант 1500
+			{ data = { id = 'g000uu9109', level = 1, unique = true }, weight = 1 }, -- Женщина-некромант 1500
 			{ data = { id = 'g000uu8277', level = 1, unique = true }, weight = 1 }, -- Уста Богов 1520
 			{ data = { id = 'g001uu7620', level = 1, unique = true }, weight = 1 }, -- Одержимый великан 1560
 			{ data = { id = 'g000uu8035', level = 1, unique = true }, weight = 1 }, -- Вильсида 1620
@@ -3617,7 +3583,7 @@ Pools.mercenaries.t5 = {
 		priority = PoolPriority.AS_POSSIBLE,
 		items = {
 			{ data = { id = 'g000uu5014', level = 1, unique = true }, weight = 1 }, -- Хан орков 3000
-			{ data = { id = 'g001uu8255', level = 1, unique = true }, weight = 1 }, -- Эльф-тень 3200
+			{ data = { id = 'g000uu9255', level = 1, unique = true }, weight = 1 }, -- Эльф-тень 3200
 			{ data = { id = 'g000uu8278', level = 1, unique = true }, weight = 1 }, -- Божественная Длань 3400
 			{ data = { id = 'g001uu7600', level = 1, unique = true }, weight = 1 }, -- Длань инквизиции 3400
 			{ data = { id = 'g000uu7603', level = 1, unique = true }, weight = 1 }, -- Несущий скорбь 3800
@@ -5087,6 +5053,7 @@ end
 function absZone(id, size)
 	return {
 		id = id,
+		tier = 'Other', -- поле шаблона для событий рун
 		size = size,
 		type = Zone.Junction,
 		border = Border.Closed,
@@ -5475,7 +5442,7 @@ local BUILDINGS = {
 	},
 }
 local BUILDINGS_PLUS = {
-	EMPIRE = {
+	[Race.Human] = {
 		L_FIGHTER = {
 			{'g000bb0001', 'g000bb0002', 'g000bb0003', 'g000bb0004'}, -- Мастер клинка + Хранитель Ордена
 			{'g000bb0001', 'g000bb0002', 'g000bb0003', 'g000bb0005'}, -- Паладин + Кастелян
@@ -5501,8 +5468,11 @@ local BUILDINGS_PLUS = {
 		L_SIDESHOW = {
 			{'g000bb0022', 'g000bb0192'}, -- Рефаим
 		},
+		L_MISC = {
+			{'g000bb0023', 'g000bb0024', 'g000bb0025'}, -- Храм, Башня, Гильдия
+		},
 	},
-	CLANS = {
+	[Race.Dwarf] = {
 		L_FIGHTER = {
 			{'g000bb0026', 'g000bb0027', 'g000bb0028', 'g000bb0029'}, -- Ярл + Гарм
 			{'g000bb0026', 'g000bb0027', 'g000bb0028', 'g000bb0030'}, -- Конунг + Гарм
@@ -5528,8 +5498,11 @@ local BUILDINGS_PLUS = {
 		L_SIDESHOW = {
 			{'g000bb0046', 'g000bb0189'}, -- Йамму
 		},
+		L_MISC = {
+			{'g000bb0047', 'g000bb0048', 'g000bb0049'}, -- Храм, Башня, Гильдия
+		},
 	},
-	LEGIONS = {
+	[Race.Heretic] = {
 		L_FIGHTER = {
 			{ 'g000bb0050', 'g000bb0051', 'g000bb0052' }, -- Возвышенный
 			{ 'g000bb0050', 'g000bb0051', 'g000bb0159' }, -- Искоренитель
@@ -5560,8 +5533,11 @@ local BUILDINGS_PLUS = {
 		--L_CUSTOM = {
 		--	{ 'g000bb0186' }, -- Ведьмино отродье
 		--},
+		L_MISC = {
+			{'g000bb0072', 'g000bb0073', 'g000bb0074'}, -- Храм, Башня, Гильдия
+		},
 	},
-	UNDEAD = {
+	[Race.Undead] = {
 		L_FIGHTER = {
 			{'g000bb0075', 'g000bb0076', 'g000bb0077', 'g000bb0078'}, -- Воин-призрак
 			{'g000bb0075', 'g000bb0076', 'g000bb0077', 'g000bb0146'}, -- Черный рыцарь
@@ -5588,8 +5564,11 @@ local BUILDINGS_PLUS = {
 			{'g000bb0096', 'g000bb0165'}, -- Чумной оборотень
 			{'g000bb0096', 'g000bb0166'}, -- Хорт
 		},
+		L_MISC = {
+			{'g000bb0097', 'g000bb0098', 'g000bb0099'}, -- Храм, Башня, Гильдия
+		},
 	},
-	ELVES = {
+	[Race.Elf] = {
 		L_FIGHTER = {
 			{'g000bb0100', 'g000bb0101', 'g000bb0179'}, -- Кераст
 			{'g000bb0100', 'g000bb0134', 'g000bb0156'}, -- Штормовой кентавр
@@ -5615,9 +5594,12 @@ local BUILDINGS_PLUS = {
 		L_SIDESHOW = {
 			{'g000bb0116', 'g000bb0117', 'g000bb0147'}, -- Владыка Небес
 		},
+		L_MISC = {
+			{'g000bb0118', 'g000bb0119', 'g000bb0120'}, -- Храм, Башня, Гильдия
+		},
 	},
 }
-local RACES = {'EMPIRE', 'CLANS', 'LEGIONS', 'UNDEAD', 'ELVES'}
+local RACES = {Race.Human, Race.Dwarf, Race.Heretic, Race.Undead, Race.Elf}
 
 -- 2 Fighter, 1 Archer, 2 Mage, 1 Special, 1 Sideshow
 local SLOTS = {
@@ -5633,7 +5615,7 @@ local function hasCategory(raceName, category)
 	return raceData and raceData[category] and #raceData[category] > 0
 end
 
-local function tryAssignSlots()
+local function tryAssignSlots(nativeRace)
 	local counts = {}
 	for _, r in ipairs(RACES) do counts[r] = 0 end
 
@@ -5644,9 +5626,11 @@ local function tryAssignSlots()
 		local candidates = {}
 		for _, r in ipairs(RACES) do
 			if not hasCategory(r, category) then
-				-- у расы нет такой категории (например, CLANS + L_MAGE)
-			elseif counts[r] >= 2 then
-				-- раса уже заняла 2 слота
+				-- у расы нет этой категории
+			elseif r == nativeRace and counts[r] >= 1 then
+				-- родная раса уже заняла свой единственный слот
+			elseif r ~= nativeRace and counts[r] >= 2 then
+				-- у остальных — не больше 2 слотов
 			elseif category == 'L_FIGHTER' and usedFighter[r] then
 				-- второй Fighter у той же расы запрещён
 			elseif category == 'L_MAGE' and usedMage[r] then
@@ -5656,20 +5640,20 @@ local function tryAssignSlots()
 			end
 		end
 
-		if #candidates == 0 then
-			return nil
-		end
+		if #candidates == 0 then return nil end
 
 		local pick = candidates[math.random(#candidates)]
 		counts[pick] = counts[pick] + 1
 		if category == 'L_FIGHTER' then usedFighter[pick] = true end
-		if category == 'L_MAGE' then usedMage[pick] = true end
-		assignment[i] = {race = pick, category = category}
+		if category == 'L_MAGE'    then usedMage[pick]    = true end
+		assignment[i] = { race = pick, category = category }
 	end
 
-	-- все 5 рас должны быть задействованы
+	-- родная раса ровно 1 раз
+	if counts[nativeRace] ~= 1 then return nil end
+	-- все остальные 4 расы задействованы
 	for _, r in ipairs(RACES) do
-		if counts[r] == 0 then return nil end
+		if r ~= nativeRace and counts[r] == 0 then return nil end
 	end
 
 	return assignment
@@ -5679,18 +5663,41 @@ function getBuildings(race)
 	local buildings = {}
 
 	if is_koto_plus_mode then
+		local nativeRace = race  -- аргумент getBuildings
+
+		-- 1) 7 слотов с ограничениями по расам
 		local assignment
-		for _ = 1, 200 do
-			assignment = tryAssignSlots()
+		for _ = 1, 500 do
+			assignment = tryAssignSlots(nativeRace)
 			if assignment then break end
 		end
-		for _, a in ipairs(assignment) do
-			local variants = BUILDINGS_PLUS[a.race][a.category]
-			local chosen = variants[math.random(#variants)]
+
+		if not assignment then
+			for _ = 1, 500 do
+				assignment = tryAssignSlots(nil)
+				if assignment then break end
+			end
+		end
+
+		if assignment then
+			for _, a in ipairs(assignment) do
+				local variants = BUILDINGS_PLUS[a.race][a.category]
+				local chosen = variants[math.random(#variants)]
+				for _, id in ipairs(chosen) do
+					buildings[#buildings + 1] = id
+				end
+			end
+		end
+
+		-- 2) L_MISC — всегда, только для родной расы
+		local miscList = BUILDINGS_PLUS[nativeRace] and BUILDINGS_PLUS[nativeRace].L_MISC
+		if miscList and #miscList > 0 then
+			local chosen = miscList[math.random(#miscList)]
 			for _, id in ipairs(chosen) do
 				buildings[#buildings + 1] = id
 			end
 		end
+
 	elseif is_koto_mode then
 		for _, raceData in pairs(BUILDINGS) do
 			for _, categoryVariants in pairs(raceData) do
@@ -7408,7 +7415,7 @@ end
 --- Контент:Ориентиры
 ------------------------------------------------------------------------------------------------------------------------
 --- т0
-function getLandmarks0(race)
+function getLandmarks0()
 	local landmarks = {}
 
 	if not is_rune_mode then
@@ -7421,10 +7428,14 @@ function getLandmarks0(race)
 	landmarks[i].typeIds = {'G000MG8236'}
 	i = i + 1
 	---
+	landmarks[i] = absLandmark()
+	landmarks[i].typeIds = {'G000MG8236'}
+	i = i + 1
+
 	return landmarks
 end
 --- т1
-function getLandmarks1(race)
+function getLandmarks1()
 	local landmarks = {}
 
 	if not is_rune_mode then
@@ -7437,10 +7448,14 @@ function getLandmarks1(race)
 	landmarks[i].typeIds = {'G000MG8236'}
 	i = i + 1
 	---
+	landmarks[i] = absLandmark()
+	landmarks[i].typeIds = {'G000MG8236'}
+	i = i + 1
+
 	return landmarks
 end
 --- т2
-function getLandmarks2(race)
+function getLandmarks2()
 	local landmarks = {}
 
 	if not is_rune_mode then
@@ -7453,6 +7468,44 @@ function getLandmarks2(race)
 	landmarks[i].typeIds = {'G000MG8236'}
 	i = i + 1
 	---
+	landmarks[i] = absLandmark()
+	landmarks[i].typeIds = {'G000MG8236'}
+	i = i + 1
+
+	return landmarks
+end
+
+--- т3
+function getLandmarks3()
+	local landmarks = {}
+
+	if not is_rune_mode then
+		return landmarks
+	end
+
+	local i = 1
+	---
+	landmarks[i] = absLandmark()
+	landmarks[i].typeIds = {'G000MG8236'}
+	i = i + 1
+
+	return landmarks
+end
+
+--- т5
+function getLandmarks5()
+	local landmarks = {}
+
+	if not is_rune_mode then
+		return landmarks
+	end
+
+	local i = 1
+	---
+	landmarks[i] = absLandmark()
+	landmarks[i].typeIds = {'G000MG8236'}
+	i = i + 1
+
 	return landmarks
 end
 ------------------------------------------------------------------------------------------------------------------------
@@ -7593,6 +7646,7 @@ end
 function getZone0(id, race)
 	local zone = absZone(id, getZoneSizes().z0)
 	zone.label = 0
+	zone.tier = 't0'
 	zone.type = Zone.PlayerStart
 	zone.fill = tmd(Fill.Forest, Fill.Mountain, Fill.Forest)
 	zone.pathWidth = tmd(8, 11, 8)
@@ -7603,7 +7657,7 @@ function getZone0(id, race)
 		zone.bags = getBags0(race)
 		zone.stacks = getStacks0(race)
 		zone.ruins = getRuins0(race)
-		zone.landmarks = getLandmarks0(race)
+		zone.landmarks = getLandmarks0()
 	end
 	if is_island_mode then
 		zone.fill = Fill.Water
@@ -7621,6 +7675,7 @@ end
 function getZone1(id, race)
 	local zone = absZone(id, getZoneSizes().z1)
 	zone.label = 1
+	zone.tier = 't1'
 	zone.fill = tmd(Fill.Mountain, Fill.None, Fill.Mountain)
 	zone.pathWidth = tmd(9, 9, 9)
 	zone.race = race
@@ -7632,7 +7687,7 @@ function getZone1(id, race)
 		zone.ruins = getRuins1(race)
 		zone.merchants = getMerchants1(race)
 		zone.mages = getMages1(race)
-		zone.landmarks = getLandmarks1(race)
+		zone.landmarks = getLandmarks1()
 	end
 	if is_island_mode then
 		zone.fill = Fill.Water
@@ -7649,6 +7704,7 @@ end
 function getZone2(id, race)
 	local zone = absZone(id, getZoneSizes().z2)
 	zone.label = 2
+	zone.tier = 't2'
 	zone.fill = tmd(Fill.Mountain, Fill.Mountain, Fill.Mountain)
 	zone.pathWidth = tmd(8, 11, 8)
 	zone.race = race
@@ -7660,7 +7716,7 @@ function getZone2(id, race)
 		zone.ruins = getRuins2(race)
 		zone.merchants = getMerchants2(race)
 		zone.mercenaries = getMercenaries2(race)
-		zone.landmarks = getLandmarks2(race)
+		zone.landmarks = getLandmarks2()
 	end
 	if is_island_mode then
 		zone.fill = Fill.Water
@@ -7709,10 +7765,12 @@ function initZone3()
 		for i, pair in ipairs(pairs) do
 			local obj_type = buildings[i]
 			local rtype = ruin_types[i]
+			local tierKey = ({ 't3a', 't3b', 't3c' })[i]
 			for _, zone_id in ipairs(pair) do
 				ZONE3_CONFIG[zone_id] = {
 					object_types = {obj_type},
-					ruin_types = {rtype}
+					ruin_types = {rtype},
+					tier = tierKey,
 				}
 			end
 		end
@@ -7783,18 +7841,12 @@ function initZone3()
 
 		-- Назначаем каждой зоне своей группы
 		for idx, zone_id in ipairs(zone_ids) do
-			local isA = (idx % 2 == 1)  -- нечётные (1,3,5) – A, чётные – B
-			if isA then
-				ZONE3_CONFIG[zone_id] = {
-					object_types = objA,
-					ruin_types = typesA
-				}
-			else
-				ZONE3_CONFIG[zone_id] = {
-					object_types = objB,
-					ruin_types = typesB
-				}
-			end
+			local isA = (idx % 2 == 1)
+			ZONE3_CONFIG[zone_id] = {
+				object_types = isA and objA or objB,
+				ruin_types = isA and typesA or typesB,
+				tier = isA and 't3a' or 't3b',
+			}
 		end
 	end
 end
@@ -7830,6 +7882,7 @@ function getZone3(id)
 
 	local zone = absZone(id, getZoneSizes().z3)
 	zone.label = 3
+	zone.tier = config.tier or zone.tier
 	zone.fill = Fill.None
 	zone.pathWidth = 12
 	zone.border = getBorderType(id)
@@ -7837,6 +7890,7 @@ function getZone3(id)
 		zone.mines = getMines3()
 		zone.bags = getBags3(id)
 		zone.stacks = getStacks3(id)
+		zone.landmarks = getLandmarks3()
 
 		-- Руины
 		local ruin_types = config.ruin_types
@@ -7878,6 +7932,7 @@ end
 function getZone4(id)
 	local zone = absZone(id, getZoneSizes().z4)
 	zone.label = 4
+	zone.tier = 't4'
 	zone.fill = Fill.None
 	zone.pathWidth = 12
 	zone.border = Border.Open
@@ -7908,6 +7963,7 @@ end
 function getZone5(id)
 	local zone = absZone(id, getZoneSizes().z5)
 	zone.label = 5
+	zone.tier = 't5'
 	zone.fill = tmd(Fill.Mountain, Fill.Water, Fill.Mountain)
 	zone.pathWidth = tmd(9, 15, 9)
 	zone.border = tmd(Border.Close, Border.Open, Border.Close)
@@ -7916,6 +7972,7 @@ function getZone5(id)
 		zone.bags = getBags5(id)
 		zone.stacks = getStacks5(id)
 		zone.ruins = getRuins5()
+		zone.landmarks = getLandmarks5()
 	end
 	if is_island_mode then
 		zone.fill = Fill.Water
@@ -7946,6 +8003,7 @@ end
 function getZoneW(id)
 	local zone = absZone(id, getZoneSizes().z5)
 	zone.label = 'W'
+	zone.tier = 't5'
 	zone.pathWidth = 11
 	--zone.fill = Fill.Water
 	zone.type = Zone.Water
@@ -8627,6 +8685,7 @@ function getScenarioVariables()
 
 	if is_koto_plus_mode then
 		table.insert(result, { name = 'GLOBAL_HIRE_UNITS_KOTOVASIA', value = 1 })
+		table.insert(result, { name = 'MULTIPLE_BUILD_CAPITAL', value = -1 })
 	elseif is_koto_mode then
 		table.insert(result, { name = 'HIRE_UNIT_ANY_RACE', value = 1 })
 	end
@@ -8937,6 +8996,36 @@ end
 
 ------------------------------------------------------------------------------------------------------------------------
 --- Scripts
+function script_check_in_loc()
+	return [[
+local location = scenario:getLocation('%LOC_ID%')
+if location == nil then
+  return false
+end
+local lx = location.position.x
+local ly = location.position.y
+local radius = location.radius
+local result = false
+scenario:forEachStack(function (stack)
+  local owner = stack.owner
+  if owner == nil or owner.race == Race.Neutral then
+    return
+  end
+  local leader = stack.leader
+  if leader == nil or leader.impl.type == Unit.Summon then
+    return
+  end
+  local pos = stack.position
+  local dx = pos.x - lx
+  local dy = pos.y - ly
+  if math.abs(dx) <= radius and math.abs(dy) <= radius then
+    result = true
+	end
+end)
+return result
+]]
+end
+
 function script_koto_mods(race)
 	return [[
 if scenario.day == 0 then
@@ -9127,6 +9216,10 @@ return false
 end
 
 ------------------------------------------------------------------------------------------------------------------------
+--- Базовые хелперы пула
+------------------------------------------------------------------------------------------------------------------------
+
+--- Применим ли эффект к зоне.
 local function effectAppliesTo(effect, zone)
 	if effect.tiers and not effect.tiers[zone.tier] then
 		return false
@@ -9143,10 +9236,10 @@ local function effectAppliesTo(effect, zone)
 	return true
 end
 
---- Выбрать N значений из пула с учётом режима.
----   mode = 'any'       — любое, повторы допустимы
----   mode = 'different' — все значения разные (если пул позволяет)
----   mode = 'same'      — все значения одинаковые
+--- Выбрать N значений из пула с учётом режима:
+---   mode = 'any'  — любое, повторы допустимы
+---   mode = 'diff' — все значения разные (если пул позволяет)
+---   mode = 'same' — все значения одинаковые
 local function pickFromPool(pool, count, mode)
 	count = count or 1
 	mode = mode or 'any'
@@ -9163,7 +9256,6 @@ local function pickFromPool(pool, count, mode)
 		end
 
 	elseif mode == 'diff' then
-		-- делаем копию пула и перемешиваем её
 		local copy = {}
 		for i, v in ipairs(pool) do
 			copy[i] = v
@@ -9184,12 +9276,119 @@ local function pickFromPool(pool, count, mode)
 	return result
 end
 
+--- Кэширует случайный выбор из пула один раз на тир.
 local function defaultPrepare(self, tierKey)
 	self._cache = self._cache or {}
 	if not self._cache[tierKey] then
 		self._cache[tierKey] = pickFromPool(self.pool, self.count or 1, self.mode or 'any')
 	end
 end
+
+------------------------------------------------------------------------------------------------------------------------
+--- Лендмарки
+------------------------------------------------------------------------------------------------------------------------
+
+--- Дефолтные типы для ChangeLandmark, если у эффекта не задан landmark.changeIds.
+local DEFAULT_LANDMARK_TYPE_IDS = { 'G000MG8121' }
+
+--- Возвращает typeIds для размещения лендмарка в зоне.
+--- Приоритет: effect.landmark.typeIds > typeIds слота из образцовой зоны.
+local function resolvePlacementTypeIds(effect, sampleZone, slot)
+	local lm = effect.landmark
+	if lm and lm.placeIds and #lm.placeIds > 0 then
+		return { rndt(lm.placeIds) }
+	end
+	return { rndt(sampleZone.landmarks[slot].typeIds) }
+end
+
+--- Возвращает name для лендмарка (или nil, если эффект его не задаёт).
+local function resolveLandmarkName(effect)
+	local lm = effect.landmark
+	return lm and lm.name or nil
+end
+
+--- Строит Effect.ChangeLandmark для конкретного лендмарка.
+--- uid — uid объекта-лендмарка (НЕ локации).
+local function buildChangeLandmarkEffect(uid, effect)
+	local lm = effect.landmark
+	local changeIds
+	if lm and lm.changeIds and #lm.changeIds > 0 then
+		changeIds = lm.changeIds
+	else
+		changeIds = DEFAULT_LANDMARK_TYPE_IDS
+	end
+
+	return {
+		type = Effect.ChangeLandmark,
+		uid = uid,
+		typeIds = changeIds,
+	}
+end
+
+------------------------------------------------------------------------------------------------------------------------
+--- Хелперы для рун
+------------------------------------------------------------------------------------------------------------------------
+
+--- Возвращает массив объектов зон для заданного тира.
+local function zonesOfTier(tierKey)
+	local ids = ZoneRegistry.byTier[tierKey] or {}
+	local result = {}
+	for _, id in ipairs(ids) do
+		local entry = ZoneRegistry.byId[id]
+		if entry and entry.zone then
+			result[#result + 1] = entry.zone
+		end
+	end
+	return result
+end
+
+--- Эффекты из пула, применимые ко ВСЕМ зонам тира.
+local function pickApplicableEffects(pool, zones)
+	local result = {}
+	for _, effect in ipairs(pool) do
+		local ok = true
+		for _, zone in ipairs(zones) do
+			if not effectAppliesTo(effect, zone) then
+				ok = false
+				break
+			end
+		end
+		if ok then
+			result[#result + 1] = effect
+		end
+	end
+	return result
+end
+
+--- Минимум слотов лендмарков среди зон тира.
+local function commonLandmarkSlots(zones)
+	local min = math.huge
+	for _, zone in ipairs(zones) do
+		local n = zone.landmarks and #zone.landmarks or 0
+		if n < min then min = n end
+	end
+	return min == math.huge and 0 or min
+end
+
+--- Один раз на тир резолвит typeIds и name для каждого слота.
+--- Возвращает два массива: slotTypes[slot], slotNames[slot].
+local function resolveSlotConfigs(chosenPerSlot, sampleZone, slotsToFill)
+	local slotTypes, slotNames = {}, {}
+	for slot = 1, slotsToFill do
+		local chosen = chosenPerSlot[slot]
+		slotTypes[slot] = resolvePlacementTypeIds(chosen, sampleZone, slot)
+		slotNames[slot] = resolveLandmarkName(chosen)
+	end
+	return slotTypes, slotNames
+end
+
+--- Возвращает список индивидуальных стеков зоны (с uid и locUid),
+--- либо пустой массив, если зона не зарегистрирована или стеков нет.
+local function stacksOf(zone)
+	local entry = ZoneRegistry.byId[zone.id]
+	return entry and entry.stacks or {}
+end
+
 ------------------------------------------------------------------------------------------------------------------------
 --- Пул эффектов рун
 ------------------------------------------------------------------------------------------------------------------------
@@ -9200,67 +9399,66 @@ end
 ---
 --- Эффект выбирается один раз на тир. Он применяется ко всем зонам тира,
 --- только если проходит appliesTo для ВСЕХ зон тира.
-
 local RUNE_EFFECT_POOL = {
-	--- Исцеление
+	--{
+	--	landmark = { name = 'Исцеление'}, -- placeIds = {'G000MG8122'}, changeIds = {'G000MG8123'} },
+	--	tiers = { t0 = true, t1 = true, t2 = true, t3a = true, t3b = true, t3c = true, t4 = true, t5 = true },
+	--	count = 1,
+	--	mode = 'same',
+	--	pool = {
+	--		Spells.g000ss0007.id
+	--	},
+	--	prepare = defaultPrepare,
+	--	build = function(self, zone, slot, race)
+	--		local picks = self._cache[zone.tier]
+	--		local effects = {}
+	--		for _, spellId in ipairs(picks) do
+	--			table.insert(effects, { type = Effect.CastSpell, spellId = spellId })
+	--		end
+	--		return effects
+	--	end,
+	--},
+	--{
+	--	landmark = { name = 'Усиление' },
+	--	tiers = { t0 = true, t1 = true, t2 = true, t3a = true, t3b = true, t3c = true, t4 = true, t5 = true },
+	--	count = 1,
+	--	mode = 'diff',
+	--	pool = {
+	--		Spells.g000ss0002.id,
+	--		Spells.g000ss0021.id,
+	--		Spells.g000ss0003.id,
+	--		Spells.g000ss0023.id,
+	--		Spells.g000ss0181.id,
+	--		Spells.g000ss0102.id,
+	--	},
+	--	prepare = defaultPrepare,
+	--	build = function(self, zone, slot, race)
+	--		local picks = self._cache[zone.tier]
+	--		local effects = {}
+	--		for _, spellId in ipairs(picks) do
+	--			table.insert(effects, { type = Effect.CastSpell, spellId = spellId })
+	--		end
+	--		return effects
+	--	end,
+	--},
+	--- T0 - T2
 	{
-		tiers = { t0 = true, t1 = true, t2 = true },
-		count = 1,
-		mode = 'same',
-		pool = {
-			Spells.g000ss0007.id, -- Исцеление
-		},
-		prepare = defaultPrepare,
-		build = function(self, zone)
-			local picks = self._cache[zone.tier]
-			local effects = {}
-			for _, spellId in ipairs(picks) do
-				table.insert(effects, { type = Effect.CastSpell, spellId = spellId })
-			end
-			return effects
-		end,
-	},
-	--- Усиление т1
-	{
-		tiers = { t0 = true, t1 = true, t2 = true },
-		count = 1,
-		mode = 'diff',
-		pool = {
-			Spells.g000ss0002.id, -- Быстрота
-			Spells.g000ss0021.id, -- Ледяной щит
-			Spells.g000ss0003.id, -- Сила
-			Spells.g000ss0023.id, -- Сила Витара
-			Spells.g000ss0181.id, -- Стальные кости
-			Spells.g000ss0102.id, -- Стойкость рощи
-		},
-		prepare = defaultPrepare,
-		build = function(self, zone)
-			local picks = self._cache[zone.tier]
-			local effects = {}
-			for _, spellId in ipairs(picks) do
-				table.insert(effects, { type = Effect.CastSpell, spellId = spellId })
-			end
-			return effects
-		end,
-	},
-	--- Урон по всем нейтральным отрядам (обычно 1 заклинание — count=1)
-	{
+		landmark = { name = 'Руна Боли I' },
 		tiers = { t0 = true, t1 = true, t2 = true },
 		requiresStacks = true,
 		count = 1,
 		mode = 'same',
 		pool = {
-			Spells.g000ss0043.id, -- Ignis mare
-			Spells.g000ss0024.id, -- Буран
-			Spells.g000ss0097.id, -- Кустарник
-			Spells.g000ss0004.id, -- Молния
-			Spells.g000ss0062.id, -- Мор
+			Spells.g000ss0048.id,
+			Spells.g000ss0028.id,
+			Spells.g000ss0104.id,
+			Spells.g000ss0067.id,
 		},
 		prepare = defaultPrepare,
-		build = function(self, zone)
+		build = function(self, zone, slot, race)
 			local picks = self._cache[zone.tier]
 			local effects = {}
-			for _, stack in ipairs(zone.stacks) do
+			for _, stack in ipairs(zoneStacks(zone)) do
 				for _, spellId in ipairs(picks) do
 					table.insert(effects, {
 						type = Effect.CastSpellLoc,
@@ -9272,19 +9470,76 @@ local RUNE_EFFECT_POOL = {
 			return effects
 		end,
 	},
-	--- Хилки
 	{
+		landmark = { name = 'Руна Порчи I' },
 		tiers = { t0 = true, t1 = true, t2 = true },
-		count = 2,
+		requiresStacks = true,
+		count = 1,
 		mode = 'diff',
 		pool = {
-			Items.heal.hres,
-			Items.heal.h50,
-			Items.heal.h75,
-			Items.heal.h100,
+			Spells.g000ss0050.id,
+			Spells.g000ss0049.id,
+			Spells.g000ss0184.id,
+			Spells.g000ss0069.id,
+			Spells.g000ss0183.id,
 		},
 		prepare = defaultPrepare,
-		build = function(self, zone)
+		build = function(self, zone, slot, race)
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, stack in ipairs(zoneStacks(zone)) do
+				for _, spellId in ipairs(picks) do
+					table.insert(effects, {
+						type = Effect.CastSpellLoc,
+						spellId = spellId,
+						uid = stack.locUid,
+					})
+				end
+			end
+			return effects
+		end,
+	},
+	{
+		landmark = { name = 'Руна Земли I' },
+		perRace = true,
+		tiers = { t0 = true, t1 = true, t2 = true },
+		requiresLandmarks = true,
+		appliesTo = function(self, zone)
+			return zone.race ~= nil
+		end,
+		build = function(self, zone, slot, race)
+			local lms = zoneLandmarks(zone)
+			if #lms == 0 then return {} end
+			return {
+				{
+					type = Effect.ChangeTerrain,
+					uid = lms[slot].locUid,
+					terrain = getTerrainByRace(race),
+					radius = 5,
+				},
+			}
+		end,
+	},
+	{
+		landmark = { name = 'Руна Защиты I' },
+		tiers = { t0 = true, t1 = true, t2 = true },
+		count = 3,
+		mode = 'diff',
+		pool = {
+			'g001ig0329',
+			'g000ig0022',
+			'g000ig0021',
+			'g000ig0023',
+			'g000ig0024',
+			'g001ig0125',
+			'g001ig0036',
+			'g001ig0128',
+			'g001ig0351',
+			'g001ig0343',
+			'g001ig0341',
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone, slot, race)
 			local picks = self._cache[zone.tier]
 			local effects = {}
 			for _, itemId in ipairs(picks) do
@@ -9293,27 +9548,25 @@ local RUNE_EFFECT_POOL = {
 			return effects
 		end,
 	},
-
-	--- Дебафф по всем нейтральным отрядам
+	--- T3
 	{
-		tiers = { t0 = true, t1 = true, t2 = true },
+		landmark = { name = 'Руна Боли II' },
+		tiers = { t3a = true, t3b = true, t3c = true },
 		requiresStacks = true,
 		count = 1,
-		mode = 'diff',
+		mode = 'same',
 		pool = {
-			Spells.g000ss0044.id, -- Menta minoris
-			Spells.g000ss0178.id, -- Неудача
-			Spells.g000ss0134.id, -- Порченая руна
-			Spells.g000ss0064.id, -- Слабость
-			Spells.g000ss0106.id, -- Смятение
-			Spells.g000ss0101.id, -- Стая
-			Spells.g000ss0179.id, -- Устрашающий гимн
+			Spells.g000ss0054.id,
+			Spells.g000ss0109.id,
+			Spells.g000ss0033.id,
+			Spells.g000ss0014.id,
+			Spells.g000ss0072.id,
 		},
 		prepare = defaultPrepare,
-		build = function(self, zone)
+		build = function(self, zone, slot, race)
 			local picks = self._cache[zone.tier]
 			local effects = {}
-			for _, stack in ipairs(zone.stacks) do
+			for _, stack in ipairs(zoneStacks(zone)) do
 				for _, spellId in ipairs(picks) do
 					table.insert(effects, {
 						type = Effect.CastSpellLoc,
@@ -9325,27 +9578,198 @@ local RUNE_EFFECT_POOL = {
 			return effects
 		end,
 	},
-	--- Родная земля
 	{
-		tiers = { t0 = true, t1 = true, t2 = true },
-		requiresLandmarks = true,
-		appliesTo = function(self, zone)
-			return zone.race ~= nil
-		end,
-		build = function(self, zone)
+		landmark = { name = 'Руна Тени II' },
+		perRace = true,
+		tiers = { t3a = true, t3b = true, t3c = true },
+		build = function(self, zone, slot, race)
+			local lms = zoneLandmarks(zone)
+			if #lms == 0 then return {} end
+
+			local others = {}
+			for _, r in ipairs(Races) do
+				if r ~= race then
+					others[#others + 1] = r
+				end
+			end
+			if #others == 0 then return {} end
+
 			return {
 				{
-					type = Effect.ChangeTerrain,
-					uid = zone.landmarks[1].locUid,
-					terrain = getTerrainByRace(zone.race),
-					radius = 7,
+					type = Effect.Fog,
+					uid = lms[slot].locUid,
+					races = others,
+					enable = true,
+					fogSize = FogSize.x15,
 				},
 			}
 		end,
 	},
-}
-------------------------------------------------------------------------------------------------------------------------
+	{
+		landmark = { name = 'Руна Взора II' },
+		perRace = true,
+		tiers = { t3a = true, t3b = true, t3c = true },
+		build = function(self, zone, slot, race)
+			local effects = {}
+			local t2Ids = ZoneRegistry.byTier['t2'] or {}
+			for _, zoneId in ipairs(t2Ids) do
+				table.insert(effects, {
+					type = Effect.Fog,
+					uid = "LOC_ZONE_" .. zoneId .. "_CITY_1",
+					races   = { race },
+					enable  = false,
+					fogSize = FogSize.x7,
+				})
+			end
+			return effects
+		end,
+	},
+	{
+		landmark = { name = 'Руна Призыва II' },
+		tiers = { t3a = true, t3b = true, t3c = true },
+		count = 1,
+		mode = 'same',
+		pool = {
+			Spells.g000ss0046.id,
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone, slot, race)
+			local lms = zoneLandmarks(zone)
+			if #lms == 0 then return {} end
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, spellId in ipairs(picks) do
+				table.insert(effects, {
+					type = Effect.CastSpell,
+					spellId = spellId,
+					uid = lms[slot].locUid,
+				})
+			end
+			return effects
+		end,
+	},
+	{
+		landmark = { name = 'Усиление  отряда' },
+		tiers = { t3a = true, t3b = true, t3c = true },
+		count = 1,
+		mode = 'diff',
+		pool = {
+			Spells.g000ss0002.id,
+			Spells.g000ss0021.id,
+			Spells.g000ss0003.id,
+			Spells.g000ss0023.id,
+			Spells.g000ss0181.id,
+			Spells.g000ss0102.id,
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone, slot, race)
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, spellId in ipairs(picks) do
+				table.insert(effects, { type = Effect.CastSpell, spellId = spellId })
+			end
+			return effects
+		end,
+	},
+	--- T5
+	{
+		landmark = { name = 'Руна Целителя III' },
+		tiers = { t0 = false, t1 = false, t2 = false, t3a = false, t3b = false, t3c = false, t4 = false, t5 = true },
+		count = 3,
+		mode = 'diff',
+		pool = {
+			Items.heal.hres,
+			Items.heal.h50,
+			Items.heal.h75,
+			Items.heal.h100,
+			Items.heal.h200,
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone, slot, race)
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, itemId in ipairs(picks) do
+				table.insert(effects, { type = Effect.GiveItem, itemId = itemId })
+			end
+			return effects
+		end,
+	},
+	{
+		landmark = { name = 'Руна Взора III' },
+		perRace = true,
+		tiers = { t5 = true },
+		build = function(self, zone, slot, race)
+			return {
+				{
+					type = Effect.Fog,
+					uid = 'LOC_ZONE_' .. c4_1 .. '_CITY_1',
+					races = { race },
+					enable = false,
+					fogSize = FogSize.x7,
+				},
+			}
+		end,
+	},
+	{
+		landmark = { name = 'Руна Тени III' },
+		perRace = true,
+		tiers = { t5 = true },
+		build = function(self, zone, slot, race)
+			local lms = zoneLandmarks(zone)
+			if #lms == 0 then return {} end
 
+			local others = {}
+			for _, r in ipairs(Races) do
+				if r ~= race then
+					others[#others + 1] = r
+				end
+			end
+			if #others == 0 then return {} end
+
+			return {
+				{
+					type = Effect.Fog,
+					uid = lms[slot].locUid,
+					races = others,
+					enable = true,
+					fogSize = FogSize.x21,
+				},
+			}
+		end,
+	},
+	{
+		landmark = { name = 'Руна Призыва III' },
+		tiers = { t5 = true },
+		count = 1,
+		mode = 'same',
+		pool = {
+			Spells.g000ss0041.id,
+			Spells.g000ss0042.id,
+			Spells.g000ss0025.id,
+			Spells.g000ss0061.id,
+			Spells.g000ss0098.id,
+		},
+		prepare = defaultPrepare,
+		build = function(self, zone, slot, race)
+			local lms = zoneLandmarks(zone)
+			if #lms == 0 then return {} end
+			local picks = self._cache[zone.tier]
+			local effects = {}
+			for _, spellId in ipairs(picks) do
+				table.insert(effects, {
+					type = Effect.CastSpell,
+					spellId = spellId,
+					uid = lms[slot].locUid,
+				})
+			end
+			return effects
+		end,
+	},
+}
+
+------------------------------------------------------------------------------------------------------------------------
+--- События
+------------------------------------------------------------------------------------------------------------------------
 function getEvents()
 	local events = {}
 
@@ -9366,19 +9790,19 @@ function getEvents()
 	table.insert(events, hire_disable_event)
 
 	if is_rune_mode then
-		local TIER_ORDER = { 't0', 't1', 't2' }
+		local TIER_ORDER = { 't0', 't1', 't2', 't3a', 't3b', 't3c', 't4', 't5' }
 
 		for _, tierKey in ipairs(TIER_ORDER) do
 			local zoneIds = ZoneRegistry.byTier[tierKey] or {}
 
 			if #zoneIds > 0 then
-				-- Отбираем эффекты, применимые ко ВСЕМ зонам этого тира
+				-- Отбираем эффекты, применимые ко ВСЕМ зонам тира
 				local applicable = {}
 				for _, effect in ipairs(RUNE_EFFECT_POOL) do
 					local ok = true
 					for _, zoneId in ipairs(zoneIds) do
-						local zone = ZoneRegistry.byId[zoneId]
-						if not effectAppliesTo(effect, zone) then
+						local entry = ZoneRegistry.byId[zoneId]
+						if not effectAppliesTo(effect, entry.zone) then
 							ok = false
 							break
 						end
@@ -9388,52 +9812,102 @@ function getEvents()
 					end
 				end
 
-				if #applicable > 0 then
-					-- Один эффект на тир — все зоны получат одинаковый
-					local chosen = rndt(applicable)
+				-- Сколько слотов заполнять: минимум лендмарков среди зон тира
+				local slots = math.huge
+				for _, zoneId in ipairs(zoneIds) do
+					local n = #(ZoneRegistry.byId[zoneId].zone.landmarks or {})
+					if n < slots then slots = n end
+				end
+				if slots == math.huge then slots = 0 end
+				slots = math.min(slots, #applicable)
 
-					-- Готовим выбранный эффект один раз для всего тира
-					if chosen.prepare then
-						chosen:prepare(tierKey)
+				if slots > 0 then
+					shake(applicable)
+					local chosenPerSlot = {}
+					for slot = 1, slots do
+						local chosen = applicable[slot]
+						chosenPerSlot[slot] = chosen
+						if chosen.prepare then
+							chosen:prepare(tierKey)
+						end
 					end
 
 					for _, zoneId in ipairs(zoneIds) do
-						local zone = ZoneRegistry.byId[zoneId]
-						local landmarkLoc = zone.landmarks[1] and zone.landmarks[1].locUid
+						local entry = ZoneRegistry.byId[zoneId]
+						local zone = entry.zone
+						local lms = zoneLandmarks(zone)
 
-						if landmarkLoc then
-							local effects = chosen:build(zone)
-							if #effects > 0 then
-								table.insert(events, {
-									name = "700 Rune event " .. zoneId,
-									chance = 100,
-									occurOnce = true,
-									races = Races,
-									targetRaces = Races,
-									conditions = {
-										{ type = Condition.EnterLocation, uid = landmarkLoc },
-										{ type = Condition.Script, scriptCode = [[
-											local result = false
-												scenario:forEachStack(function (stack)
-													local owner = stack.owner
-													if owner.race ~= Race.Neutral then
-														local leader = stack.leader
-														if leader.impl.type ~= Unit.Summon then
-															result = true
-														end
-													end
-												end)
-												return result
-											]] },
-									},
-									effects = effects,
-								})
+						for slot = 1, slots do
+							local lm = lms[slot]
+							if not lm then break end
 
-								table.insert(effects, {
-									type = Effect.ChangeLandmark,
-									uid = zone.landmarks[1].uid,
-									typeIds = { 'G000MG8121' },
-								})
+							local chosen = chosenPerSlot[slot]
+							local lmMeta = chosen.landmark or {}
+							local lmObj  = zone.landmarks[slot]
+
+							-- placeIds/name применяем к объекту зоны — C++ увидит новые значения при размещении
+							if lmMeta.placeIds and #lmMeta.placeIds > 0 then
+								lmObj.typeIds = { rndt(lmMeta.placeIds) }
+							end
+							if lmMeta.name then
+								lmObj.description = lmMeta.name
+							end
+
+							if chosen.perRace then
+								-- ---- Одно событие на каждую расу из Races ----
+								for ri, race in ipairs(Races) do
+									local effects = chosen:build(zone, slot, race)
+									if #effects > 0 then
+										table.insert(effects, buildChangeLandmarkEffect(lm.uid, chosen))
+
+										-- Отключаем события этой же локации для остальных рас
+										for rj = 1, #Races do
+											if rj ~= ri then
+												table.insert(effects, {
+													type = Effect.EnableEvent,
+													uid = "700 Rune event " .. zoneId .. "-" .. slot .. "-r" .. rj,
+													enable = false,
+												})
+											end
+										end
+
+										table.insert(events, {
+											name = "700 Rune event " .. zoneId .. "-" .. slot .. "-r" .. ri,
+											chance = 100,
+											occurOnce = true,
+											races = {race},
+											targetRaces = {race},
+											conditions = {
+												{ type = Condition.EnterLocation, uid = lm.locUid },
+												{ type = Condition.Script,
+												  replacements = { LOC_ID = lm.locUid },
+												  scriptCode = script_check_in_loc() },
+											},
+											effects = effects,
+										})
+									end
+								end
+
+							else
+								-- ---- Обычное событие (без разбивки по расам) ----
+								local effects = chosen:build(zone, slot)
+								if #effects > 0 then
+									table.insert(effects, buildChangeLandmarkEffect(lm.uid, chosen))
+									table.insert(events, {
+										name = "700 Rune event " .. zoneId .. "-" .. slot,
+										chance = 100,
+										occurOnce = true,
+										races = Races,
+										targetRaces = Races,
+										conditions = {
+											{ type = Condition.EnterLocation, uid = lm.locUid },
+											{ type = Condition.Script,
+											  replacements = { LOC_ID = lm.locUid },
+											  scriptCode = script_check_in_loc() },
+										},
+										effects = effects,
+									})
+								end
 							end
 						end
 					end
@@ -9559,6 +10033,7 @@ function getEvents()
 	end
 	return events
 end
+
 ------------------------------------------------------------------------------------------------------------------------
 --- Расы
 ------------------------------------------------------------------------------------------------------------------------
