@@ -10,7 +10,7 @@ math.randomseed(os.time())
 --- Глобальные параметры
 ------------------------------------------------------------------------------------------------------------------------
 --- Версия шаблона
-local ver = '3.4.21'
+local ver = '3.4.22'
 ------------------------------------------------------------------------------------------------------------------------
 ---
 local content_0 = true
@@ -9098,6 +9098,13 @@ function script_koto_mods(race)
 if scenario.day == 0 then
 	return false
 end
+local mods_remove_list = {
+	'g070um0064', -- Боевое построение | Рыцарь на Пегасе
+  'g070um0217', -- Шествие орд | Рыцарь Смерти
+  'g070um0069', -- Плечом к плечу | Королевский страж
+	'g070um0130', -- Энергетическое эхо | Архимаг
+	'g070um0172', -- Мантра
+}
 local mods_by_leader_id = {
   ---------------------------------------------------------------
   -- Воины
@@ -9109,6 +9116,7 @@ local mods_by_leader_id = {
     'g070um0127', -- Вассал
     'g070um0105', -- Вассал
     'g070um0014', -- Некромант | Нежить
+    'g070um0064', -- Боевое построение | Рыцарь на Пегасе
     'g070um0217', -- Шествие орд | Рыцарь Смерти
     'g070um0069', -- Плечом к плечу | Королевский страж
   },
@@ -9119,6 +9127,7 @@ local mods_by_leader_id = {
     'g070um0127', -- Вассал
     'g070um0105', -- Вассал
     'g070um0064', -- Боевое построение | Рыцарь на Пегасе
+    'g070um0217', -- Шествие орд | Рыцарь Смерти
     'g070um0069', -- Плечом к плечу | Королевский страж
   },
   [Id.new('g000uu0070').value] = {  -- Герцог
@@ -9141,6 +9150,7 @@ local mods_by_leader_id = {
     'g070um0014', -- Некромант | Нежить
     'g070um0064', -- Боевое построение | Рыцарь на Пегасе
     'g070um0217', -- Шествие орд | Рыцарь Смерти
+    'g070um0069', -- Плечом к плечу | Королевский страж
   },
   [Id.new('g000uu8009').value] = {  -- Вассал леса
     'g070um0218', -- Рыцарь Смерти
@@ -9161,6 +9171,7 @@ local mods_by_leader_id = {
     'g070um0054', -- Ученый
     'g070um0126', -- Дриада
     'g070um0014', -- Некромант | Нежить
+    'g070um0130', -- Энергетическое эхо | Архимаг
   },
   [Id.new('g000uu8253').value] = {  -- Королева личей
     'g070um0151', -- Архимаг
@@ -9266,6 +9277,12 @@ scenario:forEachStack(function (stack)
 
     if leader.type ~= Leader.Rod and leader.type ~= Leader.Noble and leader.impl.type ~= Unit.Summon and leader.impl.type ~= Unit.Illusion then
       local mods = mods_by_leader_id[leader.impl.id.value] or mods_by_lord[player.lord]
+
+      if mods_remove_list then
+        for _, mod in ipairs(mods_remove_list) do
+         scenario:RemoveUnitModifier(leader.id, mod)
+        end
+      end
 
       if mods then
         for _, mod in ipairs(mods) do
